@@ -31,7 +31,7 @@ class UserController extends Controller
         $User->email    = $request->email;
         $User->password = $request->password;
         $User->major    = $request->major;
-        $User->role     = 'student';
+        $User->role     = 'นักศึกษา';
         $User->year     = $request->year;
         
         $User->save();
@@ -49,7 +49,13 @@ class UserController extends Controller
         $club = Member::all();
         $id = $user->std_id;
         if ($user && $request->password == $user->password) {
-            return view('homepage', compact('id','club'));
+            if($request->role=="หัวหน้า"){
+                return view('leaderhome', compact('id'));
+            }else if($request->role == "แอดมิน"){
+                return view('adminpage', compact('id'));
+            }else{
+                return view('homepage', compact('id','club'));
+            }
         }
         return redirect()->back()->withErrors([
             'std_id' => 'รหัสนักศึกษา หรือ รหัสผ่านไม่ถูกต้อง',
