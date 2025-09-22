@@ -10,10 +10,6 @@
                 margin: 0;
                 background: #d9e7f3;
             }
-            main {
-                display: flex;
-            }
-        
             header {
                 background: #2d3e50;
                 color: white;
@@ -44,13 +40,27 @@
                 margin-right: 15px;
                 display: inline-block;
             }
-            .Box-welcome{
-                font-size: 20px;
-                background: #ffffff;
-                color: #000000;
-                border-radius: 5px;
-                padding: 5px;
+            .welcome {
                 text-align: center;
+                margin: 20px 0;
+            }
+            .welcome span {
+                background: #f5f5f5ff;
+                padding: 10px 30px;
+                border-radius: 20px;
+                font-weight: bold;
+            }
+            .active-club{
+                background: #f5f5f5ff;
+                padding: 10px 30px;
+                margin: 40px 50px 10px;
+                border-radius: 20px; 
+            }
+            .activity-club{
+                background: #f5f5f5ff;
+                padding: 10px 30px;
+                margin: 10px 50px 10px 50px;
+                border-radius: 20px; 
             }
         </style>
     </head>
@@ -64,7 +74,19 @@
             </div>
         </header>
         <main>
-            <div class="Box-welcome">Wellcome</div>
+            <div class="welcome"><span>Welcome naja</span></div>
+            <div class="active-club">
+                <h3>ชมรมที่อยู่ : </h3>
+                @foreach($club as $c)
+                    @if($c->student_id == $id)
+                        <p><img src="{{ $c->club->image ? asset('storage/'.$c->club->image) : asset('default.jpg') }}" alt="club"> {{$c->club->name}}</p>
+                    @endif
+                @endforeach
+            </div>
+            <div class="activity-club">
+                <h3>กิจกรรมที่กำลังจะมาถึง : </h3>
+
+            </div>
         </main>
     </body>
 </html>

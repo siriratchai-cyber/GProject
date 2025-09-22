@@ -11,5 +11,8 @@ class Account extends Model
     protected $fillable = [
         'std_name', 'std_id' , 'email', 'password', 'major', 'role', 'year'
     ];
+    public function club() {
+        return $this->hasMany(Club::class);
+    }
     use HasFactory;
 }

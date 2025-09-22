@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Account;
+use App\Models\Member;
 
 
 class UserController extends Controller
@@ -45,9 +46,10 @@ class UserController extends Controller
     public function checklogin(Request $request)
     {
         $user = Account::where('std_id', $request->std_id)->first();
-
+        $club = Member::all();
+        $id = $user->std_id;
         if ($user && $request->password == $user->password) {
-            return view('homepage');
+            return view('homepage', compact('id','club'));
         }
         return redirect()->back()->withErrors([
             'std_id' => 'รหัสนักศึกษา หรือ รหัสผ่านไม่ถูกต้อง',

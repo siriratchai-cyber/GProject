@@ -13,4 +13,7 @@ class Club extends Model
     public function members() {
         return $this->hasMany(Member::class);
     }
+    public function account() {
+        return $this->hasMany(Account::class);
+    }
 }

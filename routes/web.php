@@ -31,6 +31,4 @@ Route::post('/login', [UserController::class, 'checklogin']);
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::get('/homepage',[userController::class, 'homepage' ]);
-Route::get('/homeadmin', function(){
-    return view('leaderHome');
-});
+Route::post('/homepage',[userController::class, 'checkinfo' ]);
