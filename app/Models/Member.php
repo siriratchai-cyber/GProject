@@ -14,6 +14,6 @@ class Member extends Model
         return $this->belongsTo(Club::class);
     }
     public function account() {
-        return $this->hasMany(Account::class);
+        return $this->belongsTo(Account::class,'student_id', 'std_id');
     }
 }

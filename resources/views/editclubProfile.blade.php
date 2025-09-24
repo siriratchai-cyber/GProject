@@ -1,5 +1,7 @@
 @extends('layouts.headclub')
 @section('title', 'Activity')
+@section('club_name', $club->name)
+@section('username', $leader->std_id)
 
 @section('style')
 <style>
@@ -90,16 +92,16 @@
         </div>
             <div class="box-showDetail">
                 <div>
-                    <img src="https://cdn.pixabay.com/photo/2024/11/08/12/57/cat-9183327_1280.jpg" alt="">
+                    <img src="{{ asset('uploads/' . $club->image )}}" alt="">
                 </div>
                 <div class="activityform">
-                    <form action="" method="">
+                    <form action="{{ route('editProfile', ['id_club' => $club->id, 'id_member' => $leader->id])  }}" method="post">
                         @csrf
                         <label>ชื่อชมรม: </label>
-                        <input type="text" name="name_club" required><br>
+                        <input type="text" name="name_club" required value="{{$club->name}}"><br>
 
                         <label>รายละเอียดชมรม:</label>
-                        <textarea name="club_detail" rows="7" ></textarea><br>
+                        <textarea name="club_detail" rows="7" >{{$club->description}}</textarea><br>
 
                         <button type="submit" class="btn-save">บันทึกข้อมูล</button>
                     </form>

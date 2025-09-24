@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ActivityController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,3 +33,12 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::get('/homepage',[userController::class, 'homepage' ]);
 Route::post('/homepage',[userController::class, 'checkinfo' ]);
+
+Route::get('/request/{id_club}/{id_member}',[ClubController::class, 'requestMembers'])->name('requestToleader');
+Route::post('/request/approved/{id_club}/{id_member}',[ClubController::class, 'approvedMembers'])->name('approved');
+Route::post('/request/rejected/{id_club}/{id_member}',[ClubController::class, 'rejectedMember'])->name('rejected');
+Route::get('/editProfile/{id_club}/{id_member}',[ClubController::class, 'editedProfileForleader'])->name('editProfile');
+Route::post('/editProfile/{id_club}/{id_member}',[ClubController::class, 'updateProfileForleader'])->name('editProfile');
+Route::get('/homepage/leader/{id_club}/{id_member}',[ClubController::class, 'backtoHomepage'])->name('backtoHome');
+Route::get('/homepage/club/{id_club}/{id_member}',[ClubController::class, 'clubHomepage'])->name('clubHomepage');
+

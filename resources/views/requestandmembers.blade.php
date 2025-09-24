@@ -1,5 +1,7 @@
 @extends('layouts.headclub')
-@section('title', 'Activity')
+@section('title', 'Request and Members')
+@section('club_name', $club->name)
+@section('username', $user->std_id)
 
 @section('style')
 <style>
@@ -90,13 +92,17 @@
         display: flex;
         flex-direction: column;
     }
+    span.request{
+        padding: 10px 350px;
+        margin: 0px 125px;
+    }
 </style>
 @endsection
 
 @section('body')
     <main>
         <div>
-            <a href="#" class="back">⬅ กลับไป</a>
+            <a href="{{ route('backtoHome', ['id_club' => $club->id, 'id_member' => $user->id]) }}" class="back">⬅ กลับไป</a>
         </div>
         <div>
             <p class="text">คำร้องขอสมัครเข้าชมรม</p>
@@ -105,30 +111,28 @@
                     <th>ชื่อ</th><th>รหัสนักศึกษา</th><th>สาขา</th><th>ชั้นปี</th><th class="empty"></th><th class="empty"></th>
                 </thead>
                 <tbody>
+                    @if($member_pending->isEmpty())
                     <tr>
-                        <td>นายกรกกฏ กรรกร</td>
-                        <td>683066666-6</td>
-                        <td>CS</td>
-                        <td>1</td>
-                        <td><form action="">
-                            <input type="submit" value="อนุมัติ" class="btn-approve">
-                        </form></td>
-                        <td><form action="">
-                            <input type="submit" value="ไม่อนุมัติ" class="btn-reject">
-                        </form></td>
+                        <td colspan="6"><span class="request">ขณะนี้ยังไม่มีคำร้องเข้ามา</span></td>
                     </tr>
-                    <tr>
-                        <td>นางสาวชยนะ ชนะชญา</td>
-                        <td>663077777-8</td>
-                        <td>GIS</td>
-                        <td>3</td>
-                        <td><form action="">
-                            <input type="submit" value="อนุมัติ" class="btn-approve">
-                        </form></td>
-                        <td><form action="">
-                            <input type="submit" value="ไม่อนุมัติ" class="btn-reject">
-                        </form></td>
-                    </tr>
+                    @else
+                        @foreach($member_pending as $member)      
+                        <tr>
+                            <td>{{$member->name}}</td>
+                            <td>{{$member->student_id}}</td>
+                            <td>{{$member->account->major}}</td>
+                            <td>{{$member->account->year}}</td>
+                            <td><form action="{{ route('approved',['id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
+                                @csrf
+                                <input type="submit" value="อนุมัติ" class="btn-approve">
+                            </form></td>
+                            <td><form action="{{ route('rejected',['id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
+                                @csrf
+                                <input type="submit" value="ไม่อนุมัติ" class="btn-reject">
+                            </form></td>
+                        </tr>
+                        @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>
@@ -139,19 +143,15 @@
                     <th>ชื่อ</th><th>รหัสนักศึกษา</th><th>สาขา</th><th>ชั้นปี</th><th>ตำแหน่ง</th>
                 </thead>
                 <tbody>
+                    @foreach($member_approved as $member)
                     <tr>
-                        <td>นายกรกกฏ กรรกร</td>
-                        <td>683066666-6</td>
-                        <td>CS</td>
-                        <td>1</td>
-                        <td>หัวหน้า</td>
+                        <td>{{$member->name}}</td>
+                        <td>{{$member->student_id}}</td>
+                        <td>{{$member->account->major}}</td>
+                        <td>{{$member->account->year}}</td>
+                        <td>{{$member->role}}</td>
                     </tr>
-                    <tr>
-                        <td>นางสาวชยนะ ชนะชญา</td>
-                        <td>663077777-8</td>
-                        <td>GIS</td>
-                        <td>3</td>
-                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>

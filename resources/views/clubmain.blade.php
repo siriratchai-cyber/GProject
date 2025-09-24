@@ -1,5 +1,7 @@
 @extends('layouts.headclub')
-@section('title', 'Home')
+@section('title', 'Club Homepage')
+@section('club_name', $club->name)
+@section('username', $user->std_id)
 
 @section('style')
 <style>
@@ -22,6 +24,8 @@
         align-items: center;
         justify-content: center;
         margin-left: 89%; 
+        text-align: center;
+        font-size: 14px;
     }
     a{
         color: black;
@@ -30,10 +34,6 @@
     .request:hover{
         color: white;
         background-color: #5E5F68;
-    }
-    .request {
-        text-align: center;
-        font-size: 14px;
     }
     span.showtotal{
         color:red;
@@ -145,23 +145,16 @@
     <main>
             <div class="box-select">
                 <a href="#" class="back">⬅ กลับไป</a>
-                <a href="#" class="request">คำร้องขอ | <span class="showtotal">0</span></a>
+                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id, 'id_member' => $user->id]) }}" class="request">คำร้องขอ | <span class="showtotal">{{$pendingCount}}</span></a>
             </div>
             <div class="box-member_edit">
-                <a href="">สมาชิกทั้งหมด</a>
-                <a href="">แก้ไขโปรไฟล์</a>
+                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id, 'id_member' => $user->id]) }}">สมาชิกทั้งหมด</a>
+                <a href="{{ route('editProfile', ['id_club' => $leaderclub->id, 'id_member' => $user->id]) }}">แก้ไขโปรไฟล์</a>
             </div>
             <div class="box-showclub">
                 <p>
                    <img src="https://cdn.pixabay.com/photo/2024/11/08/12/57/cat-9183327_1280.jpg" alt="">
-                    <p>ป่าไม้ไม่เพียงแต่เป็นแหล่งที่อยู่อาศัยของพืชและสัตว์นานาชนิด แต่ยังช่วยควบคุมสภาพภูมิอากาศ ลดการกัดเซาะของดิน 
-                        และรักษาสมดุลของระบบนิเวศ การอนุรักษ์ทรัพยากรป่าไม้จึงเป็นภารกิจสำคัญที่ทุกคนควรมีส่วนร่วมเพื่อสร้างความยั่งยืนให้กับโลก
-                        ป่าไม้ไม่เพียงแต่เป็นแหล่งที่อยู่อาศัยของพืชและสัตว์นานาชนิด แต่ยังช่วยควบคุมสภาพภูมิอากาศ ลดการกัดเซาะของดิน 
-                        และรักษาสมดุลของระบบนิเวศ การอนุรักษ์ทรัพยากรป่าไม้จึงเป็นภารกิจสำคัญที่ทุกคนควรมีส่วนร่วมเพื่อสร้างความยั่งยืนให้กับโลก
-                        ป่าไม้ไม่เพียงแต่เป็นแหล่งที่อยู่อาศัยของพืชและสัตว์นานาชนิด แต่ยังช่วยควบคุมสภาพภูมิอากาศ ลดการกัดเซาะของดิน 
-                        และรักษาสมดุลของระบบนิเวศ การอนุรักษ์ทรัพยากรป่าไม้จึงเป็นภารกิจสำคัญที่ทุกคนควรมีส่วนร่วมเพื่อสร้างความยั่งยืนให้กับโลก
-                        ป่าไม้ไม่เพียงแต่เป็นแหล่งที่อยู่อาศัยของพืชและสัตว์นานาชนิด แต่ยังช่วยควบคุมสภาพภูมิอากาศ ลดการกัดเซาะของดิน 
-                        และรักษาสมดุลของระบบนิเวศ การอนุรักษ์ทรัพยากรป่าไม้จึงเป็นภารกิจสำคัญที่ทุกคนควรมีส่วนร่วมเพื่อสร้างความยั่งยืนให้กับโลก
+                    <p>{{$club->description}}
                     </p>
                 </p>
             </div>

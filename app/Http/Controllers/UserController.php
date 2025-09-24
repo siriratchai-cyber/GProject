@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Account;
+use App\Models\Club;
 use App\Models\Member;
 
 
@@ -47,10 +48,14 @@ class UserController extends Controller
     {
         $user = Account::where('std_id', $request->std_id)->first();
         $club = Member::all();
+        $leaderclub = $user->clubs()->wherePivot('role', 'หัวหน้าชมรม')->first();
+        $pendingCount = Member::where('club_id', $leaderclub->id)
+                      ->where('status', 'pending')
+                      ->count();
         $id = $user->std_id;
         if ($user && $request->password == $user->password) {
-            if($request->role=="หัวหน้า"){
-                return view('leaderhome', compact('id'));
+            if($user->role=="หัวหน้าชมรม"){
+                return view('leaderHome', compact('user','leaderclub', 'pendingCount'));
             }else if($request->role == "แอดมิน"){
                 return view('adminpage', compact('id'));
             }else{
