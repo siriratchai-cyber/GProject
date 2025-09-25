@@ -39,6 +39,7 @@
         border-collapse: collapse;
         font-size: 16px;
         min-width: 400px;
+        width: 100%;
         border-radius: 5px 5px 0 0;
         overflow: hidden;
         box-shadow: 0 0 20px rgba(0, 0, 0,0.15);
