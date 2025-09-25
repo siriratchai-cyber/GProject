@@ -1,7 +1,7 @@
 @extends('layouts.headclub')
 @section('title', 'Activity')
-@section('club_name', $club->name)
-@section('username', $leader->std_id)
+@section('club_name', $leaderclub->name)
+@section('username', $user->std_id)
 
 @section('style')
 <style>
@@ -88,20 +88,20 @@
 @section('body')
     <main>
         <div>
-            <a href="#" class="back">⬅ กลับไป</a>
+            <a href="{{ route('backtoHome', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
         </div>
             <div class="box-showDetail">
                 <div>
-                    <img src="{{ asset('uploads/' . $club->image )}}" alt="">
+                    <img src="{{ asset('uploads/' . $leaderclub->image )}}" alt="">
                 </div>
                 <div class="activityform">
-                    <form action="{{ route('editProfile', ['id_club' => $club->id, 'id_member' => $leader->id])  }}" method="post">
+                    <form action="{{ route('editProfile', ['id_club' => $leaderclub->id ])  }}" method="post">
                         @csrf
                         <label>ชื่อชมรม: </label>
-                        <input type="text" name="name_club" required value="{{$club->name}}"><br>
+                        <input type="text" name="name_club" required value="{{$leaderclub->name}}"><br>
 
                         <label>รายละเอียดชมรม:</label>
-                        <textarea name="club_detail" rows="7" >{{$club->description}}</textarea><br>
+                        <textarea name="club_detail" rows="7" >{{$leaderclub->description}}</textarea><br>
 
                         <button type="submit" class="btn-save">บันทึกข้อมูล</button>
                     </form>

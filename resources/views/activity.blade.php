@@ -1,5 +1,8 @@
 @extends('layouts.headclub')
 @section('title', 'Activity')
+@section('club_name', $leaderclub->name)
+@section('username', $user->std_id)
+
 
 @section('style')
 <style>
@@ -94,7 +97,8 @@
     .showactivity{
         border-collapse: collapse;
         font-size: 16px;
-        width: 89%;
+        min-width: 400px;
+        width: 100%;
         border-radius: 10px 10px 5px 5px;
         overflow: hidden;
         box-shadow: 0 0 20px rgba(0, 0, 0,0.15);
@@ -146,50 +150,55 @@
         color: white;
         background-color: #5E5F68;
     }
+    span{
+        margin: 0% 45%;
+    }
+    .action-btns {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        justify-content: flex-end;
+    }
 </style>
 @endsection
 
 @section('body')
     <main>
         <div>
-            <a href="#" class="back">⬅ กลับไป</a>
+            <a href="{{ route('backtoclub', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
         </div>
         <p class="text-show">กิจกรรมที่กำลังดำเนินการอยู่</p>
         <div class="box-showactivity">
             <table class="showactivity">
                 <thead>
-                    <th>ชื่อกิจกรรม</th><th></th><th></th>
+                    <th>ชื่อกิจกรรม</th><th></th>
                 </thead>
                 <tbody>
+                    @if($activities->isEmpty())
+                        <tr><td colspan="3"><span>ยังไม่มีกิจกรรม</span></td></tr>
+                    @else
+                    @foreach($activities as $activity)
                     <tr>
-                        <td>แบดมินตันพบเพื่อน</td>
+                        <td>{{ $activity->activity_name }}</td>
                         <td>
-                            <form action="">
-                                <input type="submit" value="ลบ" class="btn-delete">
-                            </form>
-                        </td>
-                        <td>
-                            <a href="" class="btn-edit">แก้ไข</a>
+                            <div class="action-btns">
+                                <form action="" method="post">
+                                    @csrf
+                                    <input type="submit" value="ลบ" class="btn-delete">
+                                </form>
+                                <a href="" class="btn-edit">แก้ไข</a>
+                            </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td>เทคนิคเบื้องต้นพบเพื่อนเทคนิคเบื้องต้นพบเพื่อนเทคนิคเบื้องต้นพบเพื่อนเทคนิคเบื้องต้นพบเพื่อนเทคนิคเบื้องต้นพบเพื่อนเทคนิคเบื้องต้นพบเพื่อน</td>
-                        <td>
-                            <form action="">
-                                <input type="submit" value="ลบ" class="btn-delete">
-                            </form>
-                        </td>
-                        <td>
-                            <a href="" class="btn-edit">แก้ไข</a>
-                        </td>
-                    </tr>
+                    @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>
         <p>เพิ่มกิจกรรมใหม่</p>
         <div>
             <div class="box-activity">
-               <form action="" method="">
+               <form action="{{ route('addActivity', ['id_club' => $leaderclub->id ]) }}" method="post">
                 @csrf
                 <label>ชื่อกิจกรรม: </label>
                 <input type="text" name="name" required><br>

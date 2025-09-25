@@ -1,6 +1,6 @@
 @extends('layouts.headclub')
 @section('title', 'Request and Members')
-@section('club_name', $club->name)
+@section('club_name', $leaderclub->name)
 @section('username', $user->std_id)
 
 @section('style')
@@ -97,24 +97,30 @@
         padding: 10px 350px;
         margin: 0px 125px;
     }
+    div.btn-a_r{
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        justify-content: flex-end;
+    }
 </style>
 @endsection
 
 @section('body')
     <main>
         <div>
-            <a href="{{ route('backtoHome', ['id_club' => $club->id, 'id_member' => $user->id]) }}" class="back">⬅ กลับไป</a>
+            <a href="{{ route('backtoHome', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
         </div>
         <div>
             <p class="text">คำร้องขอสมัครเข้าชมรม</p>
             <table class="showtable">
                 <thead>
-                    <th>ชื่อ</th><th>รหัสนักศึกษา</th><th>สาขา</th><th>ชั้นปี</th><th class="empty"></th><th class="empty"></th>
+                    <th>ชื่อ</th><th>รหัสนักศึกษา</th><th>สาขา</th><th>ชั้นปี</th><th></th>
                 </thead>
                 <tbody>
                     @if($member_pending->isEmpty())
                     <tr>
-                        <td colspan="6"><span class="request">ขณะนี้ยังไม่มีคำร้องเข้ามา</span></td>
+                        <td colspan="5"><span class="request">ขณะนี้ยังไม่มีคำร้องเข้ามา</span></td>
                     </tr>
                     @else
                         @foreach($member_pending as $member)      
@@ -123,14 +129,18 @@
                             <td>{{$member->student_id}}</td>
                             <td>{{$member->account->major}}</td>
                             <td>{{$member->account->year}}</td>
-                            <td><form action="{{ route('approved',['id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
-                                @csrf
-                                <input type="submit" value="อนุมัติ" class="btn-approve">
-                            </form></td>
-                            <td><form action="{{ route('rejected',['id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
-                                @csrf
-                                <input type="submit" value="ไม่อนุมัติ" class="btn-reject">
-                            </form></td>
+                            <td>
+                                <div class="btn-a_r">
+                                <form action="{{ route('approved',['id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
+                                    @csrf
+                                    <input type="submit" value="อนุมัติ" class="btn-approve">
+                                </form>
+                                <form action="{{ route('rejected',['id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
+                                    @csrf
+                                    <input type="submit" value="ไม่อนุมัติ" class="btn-reject">
+                                </form> 
+                                </div>    
+                            </td>
                         </tr>
                         @endforeach
                     @endif

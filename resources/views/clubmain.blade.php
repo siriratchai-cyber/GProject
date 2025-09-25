@@ -1,6 +1,6 @@
 @extends('layouts.headclub')
 @section('title', 'Club Homepage')
-@section('club_name', $club->name)
+@section('club_name', $leaderclub->name)
 @section('username', $user->std_id)
 
 @section('style')
@@ -144,17 +144,17 @@
 @section('body')
     <main>
             <div class="box-select">
-                <a href="#" class="back">⬅ กลับไป</a>
-                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id, 'id_member' => $user->id]) }}" class="request">คำร้องขอ | <span class="showtotal">{{$pendingCount}}</span></a>
+                <a href="{{ route('backtoHome', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
+                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id ]) }}" class="request">คำร้องขอ | <span class="showtotal">{{$pendingCount}}</span></a>
             </div>
             <div class="box-member_edit">
-                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id, 'id_member' => $user->id]) }}">สมาชิกทั้งหมด</a>
-                <a href="{{ route('editProfile', ['id_club' => $leaderclub->id, 'id_member' => $user->id]) }}">แก้ไขโปรไฟล์</a>
+                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id ]) }}">สมาชิกทั้งหมด</a>
+                <a href="{{ route('editProfile', ['id_club' => $leaderclub->id ]) }}">แก้ไขโปรไฟล์</a>
             </div>
             <div class="box-showclub">
                 <p>
-                   <img src="https://cdn.pixabay.com/photo/2024/11/08/12/57/cat-9183327_1280.jpg" alt="">
-                    <p>{{$club->description}}
+                   <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="">
+                    <p>{{$leaderclub->description}}
                     </p>
                 </p>
             </div>
@@ -177,7 +177,7 @@
                 <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
                 <hr>
             </div>
-            <a href="" class="edit-activity">แก้ไขกิจกรรม</a>
+            <a href="{{ route('activity', ['id_club' => $leaderclub->id ]) }}" class="edit-activity">แก้ไขกิจกรรม</a>
     </main>
     
 @endsection

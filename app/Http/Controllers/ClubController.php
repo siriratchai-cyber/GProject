@@ -76,64 +76,78 @@ class ClubController extends Controller
         return redirect()->route('clubs.index')->with('success','สร้างชมรมใหม่เรียบร้อยแล้ว');
     }
 
-    public function requestMembers($id_club, $id_member){
-        $club = Club::findOrFail($id_club);
-        $user = Account::findOrFail($id_member);
+    public function requestMembers($id_club){
+        $leaderclub = Club::findOrFail($id_club);
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        $user = $leader->account;
         $member_pending = Member::where('club_id', $id_club)->where('status','pending')->get();
         $member_approved = Member::where('club_id', $id_club)->where('status','approved')->get();
-        return view('requestandmembers',compact('member_pending','member_approved','club','user'));
+        return view('requestandmembers',compact('member_pending','member_approved','leaderclub','user'));
     }
     public function approvedMembers($id_club, $id_member){
         $member = Member::findOrFail($id_member);
-        $user = $member->account;
-        $club = Club::findOrFail($id_club);
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        $user = $leader->account;
+        $leaderclub = Club::findOrFail($id_club);
         $member->status = "approved";
         $member->save();
         $member_pending = Member::where('club_id', $id_club)->where('status','pending')->get();
         $member_approved = Member::where('club_id',$id_club)->where('status','approved')->get();
-        return view('requestandmembers',compact('member_pending','member_approved','club','user'));
+        return view('requestandmembers',compact('member_pending','member_approved','leaderclub','user'));
     }
     public function rejectedMember($id_club, $id_member){
         $member = Member::findOrFail($id_member);
-        $club = Club::find($id_club);
         $member->delete();
+        $leaderclub = Club::findOrFail($id_club);
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        $user = $leader->account;
         $member_pending = Member::where('club_id', $id_club)->where('status','pending')->get();
         $member_approved = Member::where('club_id',$id_club)->where('status','approved')->get();
-        return view('requestandmembers',compact('member_pending','member_approved','club'));
+        return view('requestandmembers',compact('member_pending','member_approved','leaderclub','user'));
     }
-    public function editedProfileForleader($id_club, $id){
-        $club = Club::findOrFail($id_club);
-        $leader = Account::findOrFail($id);
-        return view('editclubProfile',compact('club','leader'));
+    public function editedProfileForleader($id_club){
+        $leaderclub = Club::findOrFail($id_club);
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        $user = $leader->account;
+        return view('editclubProfile',compact('leaderclub','user'));
     }
-    public function updateProfileForleader(Request $request, $id_club, $id_member){
-        $club = Club::findOrFail($id_club);
-        $club->name = $request->name_club;
-        $club->description = $request->club_detail;
-        $club->save();
-        $user= Account::findOrFail($id_member);
-        $leaderclub = $user->clubs()->wherePivot('role', 'หัวหน้าชมรม')->first();
+    public function updateProfileForleader(Request $request, $id_club){
+        $leaderclub = Club::findOrFail($id_club);
+        $leaderclub->name = $request->name_club;
+        $leaderclub->description = $request->club_detail;
+        $leaderclub->save();
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        $user = $leader->account;
         $pendingCount = Member::where('club_id', $leaderclub->id)
                       ->where('status', 'pending')
                       ->count();
         return view('leaderHome',compact('leaderclub','pendingCount','user'));
     }
-    public function backtoHomepage($id_club, $id_member){
-        $club = Club::findOrFail($id_club);
-        $user= Account::findOrFail($id_member);
-        $leaderclub = $user->clubs()->wherePivot('role', 'หัวหน้าชมรม')->first();
-        $pendingCount = Member::where('club_id', $club->id)
+    public function backtoHomepage($id_club){
+        $leaderclub = Club::findOrFail($id_club);
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        $user = $leader->account;
+        $pendingCount = Member::where('club_id', $leaderclub->id)
                       ->where('status', 'pending')
                       ->count();
         return view('leaderHome',compact('leaderclub','pendingCount','user'));
     }
-    public function clubHomepage($id_club, $id_member){
-        $club = Club::findOrFail($id_club);
-        $user= Account::findOrFail($id_member);
-        $leaderclub = $user->clubs()->wherePivot('role', 'หัวหน้าชมรม')->first();
-        $pendingCount = Member::where('club_id', $club->id)
+    public function clubHomepage($id_club){
+        $leaderclub = Club::findOrFail($id_club);
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        $user = $leader->account;
+        $pendingCount = Member::where('club_id', $leaderclub->id)
                       ->where('status', 'pending')
                       ->count();
-        return view('clubmain',compact('club','user','leaderclub','pendingCount'));
+        return view('clubmain',compact('user','leaderclub','pendingCount'));
+    }
+    public function backtoclubHomepage($id_club){
+        $leaderclub = Club::findOrFail($id_club);
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        $user = $leader->account;
+        $pendingCount = Member::where('club_id', $leaderclub->id)
+                      ->where('status', 'pending')
+                      ->count();
+        return view('clubmain',compact('user','leaderclub','pendingCount'));
     }
 };

@@ -181,15 +181,15 @@
                 <p class="textWelcome">Welcome Club leader</p>
             </div> 
             <div class="box-request">
-                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id, 'id_member' => $user->id]) }}" class="request">คำร้องขอ | <span>{{$pendingCount}}</span></a>
+                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id ]) }}" class="request">คำร้องขอ | <span>{{$pendingCount}}</span></a>
             </div>
         </div>
         <div class="box-clubLeader">
             <p class="text-1">ชมรมที่คุณดูแลอยู่</p>
             <div class="club-info">
                 <p class="club-detail">
-                    <img src="{{ asset('uploads/' . $leaderclub->image)}}" alt="Club Image">
-                    <a href="{{ route('clubHomepage',['id_club' => $leaderclub->id, 'id_member' => $user->id]) }}">
+                    <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="Club Image">
+                    <a href="{{ route('clubHomepage',['id_club' => $leaderclub->id]) }}">
                         {{$leaderclub->name}}</a>
                 </p>
             </div>
@@ -214,9 +214,9 @@
             <div class="showProfile">
                 <p>โปรไฟล์ชมรม</p>
                 <p class="head">{{$leaderclub->name}}</p>
-                <p><img src="{{ asset('uploads/' . $leaderclub->image )}}" alt="Club Image"></p>
+                <p><img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="Club Image"></p>
                 <br>
-                <form action="{{ route('editProfile', ['id_club' => $leaderclub->id, 'id_member' => $user->id]) }}" method="get">
+                <form action="{{ route('editProfile', ['id_club' => $leaderclub->id]) }}" method="get">
                     <input type="submit" value="แก้ไขโปรไฟล์ชมรม" class="btn_edit">
                 </form>
             </div>
