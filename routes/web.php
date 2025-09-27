@@ -28,8 +28,7 @@ Route::post('/register', [UserController::class, 'register']);
 
 Route::get('/login', [UserController::class, 'login']);
 Route::post('/login', [UserController::class, 'checklogin']);
-
-Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::get('/homepage',[userController::class, 'homepage' ]);
 Route::post('/homepage',[userController::class, 'checkinfo' ]);

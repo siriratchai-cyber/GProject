@@ -88,7 +88,6 @@
             </div>
             <div class="activity-club">
                 <h3>กิจกรรมที่กำลังจะมาถึง : </h3>
-
             </div>
         </main>
     </body>

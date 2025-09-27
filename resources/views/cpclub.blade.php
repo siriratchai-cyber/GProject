@@ -125,7 +125,7 @@
     <div class="logo">CP club</div>
     <div class="nav">
       <a href="#">Dashboard</a>
-      <a href="/login">Logout</a>
+      <a href="/logout">Logout</a>
     </div>
   </header>
 

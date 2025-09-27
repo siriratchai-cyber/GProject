@@ -46,32 +46,53 @@ class UserController extends Controller
     public function checklogin(Request $request)
     {
         $user = Account::where('std_id', $request->std_id)->first();
-
         $club = Member::all();
-        $leaderclub = $user->clubs()->wherePivot('role', 'หัวหน้าชมรม')->first();
-        $pendingCount = Member::where('club_id', $leaderclub->id)
-                      ->where('status', 'pending')
-                      ->count();
-        $activities = $leaderclub->activities()
-                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
-        $id = $user->std_id;
+        $leaderclub = $user ? $user->clubs()->wherePivot('role', 'หัวหน้าชมรม')->first() : null;
+
+        if (!$user) {
+            return back()->withErrors(['std_id' => 'ไม่พบผู้ใช้งาน']);
+        }
+
+        if ($user->role === "หัวหน้าชมรม" && $leaderclub) {
+            $pendingCount = Member::where('club_id', $leaderclub->id)
+                ->where('status', 'pending')
+                ->count();
+            $activities = $leaderclub->activities()
+                ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
+                ->orderBy('date', 'asc')
+                ->get();
+            return view('leaderHome', compact('user', 'leaderclub', 'pendingCount', 'activities'));
+        }
+
         if (!$user || $request->password != $user->password) {
             return redirect()->back()->withErrors([
                 'std_id' => 'รหัสนักศึกษา หรือ รหัสผ่านไม่ถูกต้อง',
             ]);
         }
 
-        // ดึงชมรมที่ user อยู่
-        $clubs = Member::where('student_id', $user->id)->get(); 
-
-        if ($clubs->isEmpty()) {
-            // ถ้า user ยังไม่มีชมรม → ส่งไปหน้าเลือกชมรม
-            
-            return redirect()->route('clubs.index')->with(['user' => $user,'clubs' => $clubs]);
+        if ($user->role === "แอดมิน") {
+            return view('adminpage', ['std_id' => $user->std_id]);
         }
 
-        // ถ้ามีชมรม → ไป homepage
-        return view('homepage', compact('user', 'clubs'));
-    }
+        $clubs = Member::where('student_id', $user->std_id)->get();
+        if (!$clubs->isEmpty()) {
+        $activities = [];
+        $pendingCount = 0;
+        if ($leaderclub) {
+            $activities = $leaderclub->activities()
+                ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
+                ->orderBy('date', 'asc')
+                ->get();
+            $pendingCount = Member::where('club_id', $leaderclub->id)->where('status', 'pending')->count();
+        }
+        $club = Member::all();
+        return view('homepage', compact('user', 'club'));
+        }
 
+        return redirect()->route('clubs.index')->with(['user' => $user, 'clubs' => $clubs]);
+    }
+    public function logout()
+    {
+        return view('login');
+    }
 }
