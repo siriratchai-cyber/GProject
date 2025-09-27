@@ -113,12 +113,11 @@
         overflow-wrap: break-word;
         overflow-y: auto;
         overflow-x: hidden;
-        gap: 10px;
     }
     .activity hr {
         height: 1px;  
         background-color: #000000ff; 
-        margin: 10px 0;       
+        margin: 10px 20px 10px -30px;       
     }
     .activity p.content{
         margin: 2px 2px;
@@ -198,18 +197,22 @@
         <div class="showall">
             <div class="activity">
                 <p>กิจกรรมทั้งหมดของชมรม</p>
-                <p class="content_head">กิจกรรมที่ 1</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
-                <p class="content_head">กิจกรรมที่ 2</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
-                <p class="content_head">กิจกรรมที่ 3</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
-                <p class="content_head">กิจกรรมที่ 4</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
+                @if($activities->isEmpty())
+                    <p>ยังไม่มีกิจกรรม</p>
+                @else
+                    <ul>
+                        @foreach($activities as $activity)
+                            <li>
+                                <p class="content_head"><strong>{{ $activity->activity_name }}</strong></p>
+                                <p class="content" >
+                                รายละเอียด: {{ $activity->description }} <br>
+                                วันที่: {{ $activity->date }} เวลา: {{ $activity->time }} <br>
+                                สถานที่: {{ $activity->location }}</p>
+                            </li>
+                            <hr>
+                        @endforeach
+                    </ul>
+                @endif
             </div>
             <div class="showProfile">
                 <p>โปรไฟล์ชมรม</p>

@@ -159,6 +159,24 @@
         gap: 20px;
         justify-content: flex-end;
     }
+    .btn-save_cancel{
+        display: flex;
+    }
+    .btn-cancel{
+        border: 1px solid black;
+        color: black;
+        background-color: #f9f6f2;
+        font-size: 14px;
+        cursor: pointer;
+        padding: 10px 20px;
+        border-radius: 20px;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+    .btn-cancel:hover{
+        color: white;
+        background-color: red;
+    }
 </style>
 @endsection
 
@@ -171,7 +189,7 @@
         <div class="box-showactivity">
             <table class="showactivity">
                 <thead>
-                    <th>ชื่อกิจกรรม</th><th></th>
+                    <th>วัน</th><th>ชื่อกิจกรรม</th><th></th>
                 </thead>
                 <tbody>
                     @if($activities->isEmpty())
@@ -179,14 +197,15 @@
                     @else
                     @foreach($activities as $activity)
                     <tr>
+                        <td>{{ $activity->date }}</td>
                         <td>{{ $activity->activity_name }}</td>
                         <td>
                             <div class="action-btns">
-                                <form action="" method="post">
+                                <form action="{{ route('deleteActivity', ['id_club' => $leaderclub->id, 'id_activity' => $activity->id ]) }}" method="post">
                                     @csrf
                                     <input type="submit" value="ลบ" class="btn-delete">
                                 </form>
-                                <a href="" class="btn-edit">แก้ไข</a>
+                                <a href="{{ route('editActivity', ['id_club' => $leaderclub->id, 'id_activity' => $activity->id ]) }}" class="btn-edit">แก้ไข</a>
                             </div>
                         </td>
                     </tr>
@@ -195,6 +214,7 @@
                 </tbody>
             </table>
         </div>
+        @if( $r == 1 )
         <p>เพิ่มกิจกรรมใหม่</p>
         <div>
             <div class="box-activity">
@@ -219,5 +239,34 @@
             </form>
             </div>
         </div>
+        @elseif($r == 0)
+        <p>แก้ไขรายละเอียดกิจกรรม</p>
+        <div>
+            <div class="box-activity">
+               <form action="{{ route('updateActivity', ['id_club' => $leaderclub->id, 'id_activity' => $activity->id ]) }}" method="post">
+                @csrf
+                <label>ชื่อกิจกรรม: </label>
+                <input type="text" name="name" value="{{ $activity->activity_name }}" required><br>
+
+                <label>รายละเอียดกิจกรรม:</label>
+                <textarea name="description">{{ $activity->description }}</textarea><br>
+
+                <label>วันที่: </label>
+                <input type="date" name="date" value="{{ $activity->date }}" required>
+
+                <label>เวลา: </label>
+                <input type="time" name="time" value="{{ $activity->time }}" required><br>
+
+                <label>สถานที่: </label>
+                <input type="text" name="location" value="{{ $activity->location }}" required><br><br>
+
+                <div class="btn-save_cancel">
+                    <button type="submit" class="btn-save">บันทึกข้อมูล</button>
+                    <a href="{{ route('showActivity', ['id_club' => $leaderclub->id ]) }}" class="btn-cancel">ยกเลิก</a>
+                </div>
+            </form>
+            </div>
+        </div>
+        @endif
     </main>
 @endsection

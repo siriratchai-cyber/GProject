@@ -86,24 +86,16 @@ class ClubController extends Controller
     }
     public function approvedMembers($id_club, $id_member){
         $member = Member::findOrFail($id_member);
-        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
-        $user = $leader->account;
-        $leaderclub = Club::findOrFail($id_club);
         $member->status = "approved";
         $member->save();
-        $member_pending = Member::where('club_id', $id_club)->where('status','pending')->get();
-        $member_approved = Member::where('club_id',$id_club)->where('status','approved')->get();
-        return view('requestandmembers',compact('member_pending','member_approved','leaderclub','user'));
+        return redirect()->route('requestToleader', ['id_club' => $id_club])
+            ->with('success', 'อนุมัติสำเร็จ');
     }
     public function rejectedMember($id_club, $id_member){
         $member = Member::findOrFail($id_member);
         $member->delete();
-        $leaderclub = Club::findOrFail($id_club);
-        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
-        $user = $leader->account;
-        $member_pending = Member::where('club_id', $id_club)->where('status','pending')->get();
-        $member_approved = Member::where('club_id',$id_club)->where('status','approved')->get();
-        return view('requestandmembers',compact('member_pending','member_approved','leaderclub','user'));
+        return redirect()->route('requestToleader', ['id_club' => $id_club])
+            ->with('success', 'ไม่อนุมัติสำเร็จ');
     }
     public function editedProfileForleader($id_club){
         $leaderclub = Club::findOrFail($id_club);
@@ -116,12 +108,8 @@ class ClubController extends Controller
         $leaderclub->name = $request->name_club;
         $leaderclub->description = $request->club_detail;
         $leaderclub->save();
-        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
-        $user = $leader->account;
-        $pendingCount = Member::where('club_id', $leaderclub->id)
-                      ->where('status', 'pending')
-                      ->count();
-        return view('leaderHome',compact('leaderclub','pendingCount','user'));
+        return redirect()->route('editProfile', ['id_club' => $id_club])
+            ->with('success', 'แก้ไขโปรไฟล์สำเร็จ');
     }
     public function backtoHomepage($id_club){
         $leaderclub = Club::findOrFail($id_club);
@@ -130,7 +118,9 @@ class ClubController extends Controller
         $pendingCount = Member::where('club_id', $leaderclub->id)
                       ->where('status', 'pending')
                       ->count();
-        return view('leaderHome',compact('leaderclub','pendingCount','user'));
+        $activities = $leaderclub->activities()
+                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
+        return view('leaderHome',compact('activities','leaderclub','pendingCount','user'));
     }
     public function clubHomepage($id_club){
         $leaderclub = Club::findOrFail($id_club);
@@ -139,7 +129,9 @@ class ClubController extends Controller
         $pendingCount = Member::where('club_id', $leaderclub->id)
                       ->where('status', 'pending')
                       ->count();
-        return view('clubmain',compact('user','leaderclub','pendingCount'));
+        $activities = $leaderclub->activities()
+                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
+        return view('clubmain',compact('activities','user','leaderclub','pendingCount'));
     }
     public function backtoclubHomepage($id_club){
         $leaderclub = Club::findOrFail($id_club);
@@ -148,6 +140,8 @@ class ClubController extends Controller
         $pendingCount = Member::where('club_id', $leaderclub->id)
                       ->where('status', 'pending')
                       ->count();
-        return view('clubmain',compact('user','leaderclub','pendingCount'));
+        $activities = $leaderclub->activities()
+                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
+        return view('clubmain',compact('activities','user','leaderclub','pendingCount'));
     }
 };

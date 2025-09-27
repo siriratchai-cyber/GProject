@@ -129,10 +129,10 @@
     .activity hr {
         height: 1px;  
         background-color: #000000ff; 
-        margin: 10px 0px 2px 0px;       
+        margin: 10px 10px 15px -25px;       
     }
     .activity p.content{
-        margin: 2px 2px;
+        margin: 0px 2px;
     }
     .activity p.content_head{
         margin: 5px 2px;
@@ -164,20 +164,24 @@
             </div>
             <p class="text-1">กิจกรรมของชมรม</p>
             <div class="activity">
-                <p class="content_head">กิจกรรมที่ 1</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
-                <p class="content_head">กิจกรรมที่ 2</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
-                <p class="content_head">กิจกรรมที่ 3</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
-                <p class="content_head">กิจกรรมที่ 4</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
+                @if($activities->isEmpty())
+                    <p>ยังไม่มีกิจกรรม</p>
+                @else
+                    <ul>
+                        @foreach($activities as $activity)
+                            <li>
+                                <p class="content_head"><strong>{{ $activity->activity_name }}</strong></p>
+                                <p class="content" >
+                                รายละเอียด: {{ $activity->description }} <br>
+                                วันที่: {{ $activity->date }} เวลา: {{ $activity->time }} <br>
+                                สถานที่: {{ $activity->location }}</p>
+                            </li>
+                            <hr>
+                        @endforeach
+                    </ul>
+                @endif
             </div>
-            <a href="{{ route('activity', ['id_club' => $leaderclub->id ]) }}" class="edit-activity">แก้ไขกิจกรรม</a>
+            <a href="{{ route('showActivity', ['id_club' => $leaderclub->id ]) }}" class="edit-activity">แก้ไขกิจกรรม</a>
     </main>
     
 @endsection

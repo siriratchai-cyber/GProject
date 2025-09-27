@@ -42,5 +42,8 @@ Route::post('/editProfile/{id_club}',[ClubController::class, 'updateProfileForle
 Route::get('/homepage/leader/{id_club}',[ClubController::class, 'backtoHomepage'])->name('backtoHome');
 Route::get('/homepage/club/{id_club}',[ClubController::class, 'backtoclubHomepage'])->name('backtoclub');
 Route::get('/club/homepage/{id_club}',[ClubController::class, 'clubHomepage'])->name('clubHomepage');
-Route::get('/club/Activity/{id_club}',[ActivityController::class, 'activity'])->name('activity');
+Route::get('/club/Activity/{id_club}',[ActivityController::class, 'showActivity'])->name('showActivity');
 Route::post('/club/addActivity/{id_club}',[ActivityController::class, 'addActivity'])->name('addActivity');
+Route::post('/club/deleteActivity/{id_club}/{id_activity}',[ActivityController::class, 'deleteActivity'])->name('deleteActivity');
+Route::get('/club/editActivity/{id_club}/{id_activity}',[ActivityController::class, 'editActivity'])->name('editActivity');
+Route::post('/club/updateActivity/{id_club}/{id_activity}',[ActivityController::class, 'updateActivity'])->name('updateActivity');
