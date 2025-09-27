@@ -23,7 +23,7 @@ Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index'); // 
 Route::get('/clubs/create', [ClubController::class, 'create'])->name('clubs.create'); // หน้า create_club.blade.php
 Route::post('/clubs', [ClubController::class, 'store'])->name('clubs.store'); // บันทึกข้อมูลชมรม
 
-Route::get('/register', [UserController::class, 'showRegisterForm'])->name('register');
+Route::get('/register', [UserController::class, 'showRegisterForm']);
 Route::post('/register', [UserController::class, 'register']);
 
 Route::get('/login', [UserController::class, 'login']);

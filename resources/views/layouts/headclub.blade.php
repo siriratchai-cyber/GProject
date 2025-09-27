@@ -47,7 +47,7 @@
 </head>
 <body>
     <header>
-        <div class="username-box">@yield('username')</div>
+        <div class="username-box">@yield('User std_id')</div>
         <div class="logo">@yield('club_name')</div>
         <div class="nav">
             <a href="/clubs">Club</a>

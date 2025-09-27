@@ -78,8 +78,11 @@
             <div class="active-club">
                 <h3>ชมรมที่อยู่ : </h3>
                 @foreach($club as $c)
-                    @if($c->student_id == $id)
-                        <p><img src="{{ $c->club->image ? asset('storage/'.$c->club->image) : asset('default.jpg') }}" alt="club"> {{$c->club->name}}</p>
+                    @if($c->student_id == $user->std_id)
+                        <p>
+                            <img src="{{ $c->club->image ? asset('storage/'.$c->club->image) : asset('default.jpg') }}" alt="club">
+                            {{$c->club->name}}
+                        </p>
                     @endif
                 @endforeach
             </div>
