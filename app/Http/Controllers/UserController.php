@@ -52,10 +52,12 @@ class UserController extends Controller
         $pendingCount = Member::where('club_id', $leaderclub->id)
                       ->where('status', 'pending')
                       ->count();
+        $activities = $leaderclub->activities()
+                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
         $id = $user->std_id;
         if ($user && $request->password == $user->password) {
             if($user->role=="หัวหน้าชมรม"){
-                return view('leaderHome', compact('user','leaderclub', 'pendingCount'));
+                return view('leaderHome', compact('user','leaderclub', 'pendingCount', 'activities'));
             }else if($request->role == "แอดมิน"){
                 return view('adminpage', compact('id'));
             }else{
