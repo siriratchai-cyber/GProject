@@ -46,7 +46,7 @@ class UserController extends Controller
     public function checklogin(Request $request)
     {
         $user = Account::where('std_id', $request->std_id)->first();
-<<<<<<< HEAD
+
         $club = Member::all();
         $leaderclub = $user->clubs()->wherePivot('role', 'หัวหน้าชมรม')->first();
         $pendingCount = Member::where('club_id', $leaderclub->id)
@@ -55,21 +55,10 @@ class UserController extends Controller
         $activities = $leaderclub->activities()
                     ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
         $id = $user->std_id;
-        if ($user && $request->password == $user->password) {
-            if($user->role=="หัวหน้าชมรม"){
-                return view('leaderHome', compact('user','leaderclub', 'pendingCount', 'activities'));
-            }else if($request->role == "แอดมิน"){
-                return view('adminpage', compact('id'));
-            }else{
-                return view('homepage', compact('id','club'));
-            }
-=======
-
         if (!$user || $request->password != $user->password) {
             return redirect()->back()->withErrors([
                 'std_id' => 'รหัสนักศึกษา หรือ รหัสผ่านไม่ถูกต้อง',
             ]);
->>>>>>> 9a13378 (add function go to club)
         }
 
         // ดึงชมรมที่ user อยู่
