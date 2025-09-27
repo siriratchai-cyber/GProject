@@ -1,5 +1,8 @@
 @extends('layouts.headclub')
 @section('title', 'Activity')
+@section('club_name', $leaderclub->name)
+@section('username', $user->std_id)
+
 
 @section('style')
 <style>
@@ -94,7 +97,8 @@
     .showactivity{
         border-collapse: collapse;
         font-size: 16px;
-        width: 89%;
+        min-width: 400px;
+        width: 100%;
         border-radius: 10px 10px 5px 5px;
         overflow: hidden;
         box-shadow: 0 0 20px rgba(0, 0, 0,0.15);
@@ -146,50 +150,75 @@
         color: white;
         background-color: #5E5F68;
     }
+    span{
+        margin: 0% 45%;
+    }
+    .action-btns {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        justify-content: flex-end;
+    }
+    .btn-save_cancel{
+        display: flex;
+    }
+    .btn-cancel{
+        border: 1px solid black;
+        color: black;
+        background-color: #f9f6f2;
+        font-size: 14px;
+        cursor: pointer;
+        padding: 10px 20px;
+        border-radius: 20px;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+    .btn-cancel:hover{
+        color: white;
+        background-color: red;
+    }
 </style>
 @endsection
 
 @section('body')
     <main>
         <div>
-            <a href="#" class="back">⬅ กลับไป</a>
+            <a href="{{ route('backtoclub', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
         </div>
         <p class="text-show">กิจกรรมที่กำลังดำเนินการอยู่</p>
         <div class="box-showactivity">
             <table class="showactivity">
                 <thead>
-                    <th>ชื่อกิจกรรม</th><th></th><th></th>
+                    <th>วัน</th><th>ชื่อกิจกรรม</th><th></th>
                 </thead>
                 <tbody>
+                    @if($activities->isEmpty())
+                        <tr><td colspan="3"><span>ยังไม่มีกิจกรรม</span></td></tr>
+                    @else
+                    @foreach($activities as $activity)
                     <tr>
-                        <td>แบดมินตันพบเพื่อน</td>
+                        <td>{{ $activity->date }}</td>
+                        <td>{{ $activity->activity_name }}</td>
                         <td>
-                            <form action="">
-                                <input type="submit" value="ลบ" class="btn-delete">
-                            </form>
-                        </td>
-                        <td>
-                            <a href="" class="btn-edit">แก้ไข</a>
+                            <div class="action-btns">
+                                <form action="{{ route('deleteActivity', ['id_club' => $leaderclub->id, 'id_activity' => $activity->id ]) }}" method="post">
+                                    @csrf
+                                    <input type="submit" value="ลบ" class="btn-delete">
+                                </form>
+                                <a href="{{ route('editActivity', ['id_club' => $leaderclub->id, 'id_activity' => $activity->id ]) }}" class="btn-edit">แก้ไข</a>
+                            </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td>เทคนิคเบื้องต้นพบเพื่อนเทคนิคเบื้องต้นพบเพื่อนเทคนิคเบื้องต้นพบเพื่อนเทคนิคเบื้องต้นพบเพื่อนเทคนิคเบื้องต้นพบเพื่อนเทคนิคเบื้องต้นพบเพื่อน</td>
-                        <td>
-                            <form action="">
-                                <input type="submit" value="ลบ" class="btn-delete">
-                            </form>
-                        </td>
-                        <td>
-                            <a href="" class="btn-edit">แก้ไข</a>
-                        </td>
-                    </tr>
+                    @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>
+        @if( $r == 1 )
         <p>เพิ่มกิจกรรมใหม่</p>
         <div>
             <div class="box-activity">
-               <form action="" method="">
+               <form action="{{ route('addActivity', ['id_club' => $leaderclub->id ]) }}" method="post">
                 @csrf
                 <label>ชื่อกิจกรรม: </label>
                 <input type="text" name="name" required><br>
@@ -210,5 +239,34 @@
             </form>
             </div>
         </div>
+        @elseif($r == 0)
+        <p>แก้ไขรายละเอียดกิจกรรม</p>
+        <div>
+            <div class="box-activity">
+               <form action="{{ route('updateActivity', ['id_club' => $leaderclub->id, 'id_activity' => $activity->id ]) }}" method="post">
+                @csrf
+                <label>ชื่อกิจกรรม: </label>
+                <input type="text" name="name" value="{{ $activity->activity_name }}" required><br>
+
+                <label>รายละเอียดกิจกรรม:</label>
+                <textarea name="description">{{ $activity->description }}</textarea><br>
+
+                <label>วันที่: </label>
+                <input type="date" name="date" value="{{ $activity->date }}" required>
+
+                <label>เวลา: </label>
+                <input type="time" name="time" value="{{ $activity->time }}" required><br>
+
+                <label>สถานที่: </label>
+                <input type="text" name="location" value="{{ $activity->location }}" required><br><br>
+
+                <div class="btn-save_cancel">
+                    <button type="submit" class="btn-save">บันทึกข้อมูล</button>
+                    <a href="{{ route('showActivity', ['id_club' => $leaderclub->id ]) }}" class="btn-cancel">ยกเลิก</a>
+                </div>
+            </form>
+            </div>
+        </div>
+        @endif
     </main>
 @endsection

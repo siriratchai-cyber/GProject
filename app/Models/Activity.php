@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Activity extends Model
 {
     use HasFactory;
+    public function club(){
+        return $this->belongsTo(Club::class);
+    }
 }

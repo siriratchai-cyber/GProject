@@ -47,11 +47,11 @@
 </head>
 <body>
     <header>
-        <div class="username-box">username</div>
-        <div class="logo">CP club</div>
+        <div class="username-box">@yield('username')</div>
+        <div class="logo">@yield('club_name')</div>
         <div class="nav">
-            <a href="#">Club</a>
-            <a href="#">Logout</a>
+            <a href="/clubs">Club</a>
+            <a href="/logout">Logout</a>
         </div>
     </header>
     @section('body')

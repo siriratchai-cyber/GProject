@@ -1,5 +1,7 @@
 @extends('layouts.headclub')
-@section('title', 'Home')
+@section('title', 'Club Homepage')
+@section('club_name', $leaderclub->name)
+@section('username', $user->std_id)
 
 @section('style')
 <style>
@@ -22,6 +24,8 @@
         align-items: center;
         justify-content: center;
         margin-left: 89%; 
+        text-align: center;
+        font-size: 14px;
     }
     a{
         color: black;
@@ -30,10 +34,6 @@
     .request:hover{
         color: white;
         background-color: #5E5F68;
-    }
-    .request {
-        text-align: center;
-        font-size: 14px;
     }
     span.showtotal{
         color:red;
@@ -129,10 +129,10 @@
     .activity hr {
         height: 1px;  
         background-color: #000000ff; 
-        margin: 10px 0px 2px 0px;       
+        margin: 10px 10px 15px -25px;       
     }
     .activity p.content{
-        margin: 2px 2px;
+        margin: 0px 2px;
     }
     .activity p.content_head{
         margin: 5px 2px;
@@ -144,24 +144,17 @@
 @section('body')
     <main>
             <div class="box-select">
-                <a href="#" class="back">⬅ กลับไป</a>
-                <a href="#" class="request">คำร้องขอ | <span class="showtotal">0</span></a>
+                <a href="{{ route('backtoHome', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
+                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id ]) }}" class="request">คำร้องขอ | <span class="showtotal">{{$pendingCount}}</span></a>
             </div>
             <div class="box-member_edit">
-                <a href="">สมาชิกทั้งหมด</a>
-                <a href="">แก้ไขโปรไฟล์</a>
+                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id ]) }}">สมาชิกทั้งหมด</a>
+                <a href="{{ route('editProfile', ['id_club' => $leaderclub->id ]) }}">แก้ไขโปรไฟล์</a>
             </div>
             <div class="box-showclub">
                 <p>
-                   <img src="https://cdn.pixabay.com/photo/2024/11/08/12/57/cat-9183327_1280.jpg" alt="">
-                    <p>ป่าไม้ไม่เพียงแต่เป็นแหล่งที่อยู่อาศัยของพืชและสัตว์นานาชนิด แต่ยังช่วยควบคุมสภาพภูมิอากาศ ลดการกัดเซาะของดิน 
-                        และรักษาสมดุลของระบบนิเวศ การอนุรักษ์ทรัพยากรป่าไม้จึงเป็นภารกิจสำคัญที่ทุกคนควรมีส่วนร่วมเพื่อสร้างความยั่งยืนให้กับโลก
-                        ป่าไม้ไม่เพียงแต่เป็นแหล่งที่อยู่อาศัยของพืชและสัตว์นานาชนิด แต่ยังช่วยควบคุมสภาพภูมิอากาศ ลดการกัดเซาะของดิน 
-                        และรักษาสมดุลของระบบนิเวศ การอนุรักษ์ทรัพยากรป่าไม้จึงเป็นภารกิจสำคัญที่ทุกคนควรมีส่วนร่วมเพื่อสร้างความยั่งยืนให้กับโลก
-                        ป่าไม้ไม่เพียงแต่เป็นแหล่งที่อยู่อาศัยของพืชและสัตว์นานาชนิด แต่ยังช่วยควบคุมสภาพภูมิอากาศ ลดการกัดเซาะของดิน 
-                        และรักษาสมดุลของระบบนิเวศ การอนุรักษ์ทรัพยากรป่าไม้จึงเป็นภารกิจสำคัญที่ทุกคนควรมีส่วนร่วมเพื่อสร้างความยั่งยืนให้กับโลก
-                        ป่าไม้ไม่เพียงแต่เป็นแหล่งที่อยู่อาศัยของพืชและสัตว์นานาชนิด แต่ยังช่วยควบคุมสภาพภูมิอากาศ ลดการกัดเซาะของดิน 
-                        และรักษาสมดุลของระบบนิเวศ การอนุรักษ์ทรัพยากรป่าไม้จึงเป็นภารกิจสำคัญที่ทุกคนควรมีส่วนร่วมเพื่อสร้างความยั่งยืนให้กับโลก
+                   <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="">
+                    <p>{{$leaderclub->description}}
                     </p>
                 </p>
             </div>
@@ -171,20 +164,24 @@
             </div>
             <p class="text-1">กิจกรรมของชมรม</p>
             <div class="activity">
-                <p class="content_head">กิจกรรมที่ 1</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
-                <p class="content_head">กิจกรรมที่ 2</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
-                <p class="content_head">กิจกรรมที่ 3</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
-                <p class="content_head">กิจกรรมที่ 4</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
+                @if($activities->isEmpty())
+                    <p>ยังไม่มีกิจกรรม</p>
+                @else
+                    <ul>
+                        @foreach($activities as $activity)
+                            <li>
+                                <p class="content_head"><strong>{{ $activity->activity_name }}</strong></p>
+                                <p class="content" >
+                                รายละเอียด: {{ $activity->description }} <br>
+                                วันที่: {{ $activity->date }} เวลา: {{ $activity->time }} <br>
+                                สถานที่: {{ $activity->location }}</p>
+                            </li>
+                            <hr>
+                        @endforeach
+                    </ul>
+                @endif
             </div>
-            <a href="" class="edit-activity">แก้ไขกิจกรรม</a>
+            <a href="{{ route('showActivity', ['id_club' => $leaderclub->id ]) }}" class="edit-activity">แก้ไขกิจกรรม</a>
     </main>
     
 @endsection

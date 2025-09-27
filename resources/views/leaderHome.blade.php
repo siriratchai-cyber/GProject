@@ -1,5 +1,7 @@
 @extends('layouts.headclub')
 @section('title', 'Home')
+@section('club_name', 'CP club')
+@section('username', $user->std_id)
 
 @section('style')
 <style>
@@ -65,50 +67,35 @@
         color: #333;
         margin-bottom: 20px;
     }
-    .box-request {
+    .request {
         background: #f9f6f2;
         border-radius: 30px;
         border: 1px solid black;
-        padding: 5px 15px;
+        padding: 5px 25px;
         height: auto;
         display: flex; 
         align-items: center;
         justify-content: center;
-        margin-left: 89%; 
     }
+    .box-request{
+        margin-left: 80%;
+    }
+
     a{
         color: black;
         text-decoration: none;
     }
-    .box-request:hover{
-        background-color: #5E5F68;
-    }
     .request:hover{
+        background-color: #5E5F68;
         color: white;
     }
-    .request {
-        text-align: center;
-        font-size: 14px;
-    }
+    
     .box-request span {
         color:red;
         font-weight: bold;
         margin-left: 5px;
     }
-    .box-wel_rq {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        height: 5vh;
-        padding: 0 50px;
-        box-sizing: border-box;
-        position: relative;
-    }
-    .box-welcome-wrapper {
-        position: absolute;
-        left: 42%;
-    }
-    .container{
+    .showall{
         display: flex;
         justify-content: flex-start;
         align-items: flex-start;
@@ -126,12 +113,11 @@
         overflow-wrap: break-word;
         overflow-y: auto;
         overflow-x: hidden;
-        gap: 10px;
     }
     .activity hr {
         height: 1px;  
         background-color: #000000ff; 
-        margin: 10px 0;       
+        margin: 10px 20px 10px -30px;       
     }
     .activity p.content{
         margin: 2px 2px;
@@ -190,49 +176,50 @@
 
 @section('body')
     <main>
-        <div class="box-wel_rq">
-            <div class="box-welcome-wrapper">
-                <div class="box-welcome">
-                    <p class="textWelcome">Welcome Club leader</p>
-                </div>
-            </div>
+            <div class="box-welcome">
+                <p class="textWelcome">Welcome Club leader</p>
+            </div> 
             <div class="box-request">
-                <a href="#" class="request">คำร้องขอ | <span>0</span></a>
-            </div>  
+                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id ]) }}" class="request">คำร้องขอ | <span>{{$pendingCount}}</span></a>
+            </div>
         </div>
         <div class="box-clubLeader">
             <p class="text-1">ชมรมที่คุณดูแลอยู่</p>
             <div class="club-info">
                 <p class="club-detail">
-                    <img src="https://cdn.pixabay.com/photo/2024/11/08/12/57/cat-9183327_1280.jpg" alt="Club Image">
-                    <a href="#">ชมรมแบดมินตัน</a>
+                    <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="Club Image">
+                    <a href="{{ route('clubHomepage',['id_club' => $leaderclub->id]) }}">
+                        {{$leaderclub->name}}</a>
                 </p>
             </div>
         </div>
     </main>
-        <div class="container">
+        <div class="showall">
             <div class="activity">
                 <p>กิจกรรมทั้งหมดของชมรม</p>
-                <p class="content_head">กิจกรรมที่ 1</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
-                <p class="content_head">กิจกรรมที่ 2</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
-                <p class="content_head">กิจกรรมที่ 3</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
-                <p class="content_head">กิจกรรมที่ 4</p>
-                <p class="content">welfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkwepfewwwwwwwwwwwwwwwwwwdlfpslfffffffffffffffffffffffffff</p>
-                <hr>
+                @if($activities->isEmpty())
+                    <p>ยังไม่มีกิจกรรม</p>
+                @else
+                    <ul>
+                        @foreach($activities as $activity)
+                            <li>
+                                <p class="content_head"><strong>{{ $activity->activity_name }}</strong></p>
+                                <p class="content" >
+                                รายละเอียด: {{ $activity->description }} <br>
+                                วันที่: {{ $activity->date }} เวลา: {{ $activity->time }} <br>
+                                สถานที่: {{ $activity->location }}</p>
+                            </li>
+                            <hr>
+                        @endforeach
+                    </ul>
+                @endif
             </div>
             <div class="showProfile">
                 <p>โปรไฟล์ชมรม</p>
-                <p class="head">ชมรมแบดมินตัน</p>
-                <p><img src="https://cdn.pixabay.com/photo/2024/11/08/12/57/cat-9183327_1280.jpg" alt=""></p>
+                <p class="head">{{$leaderclub->name}}</p>
+                <p><img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="Club Image"></p>
                 <br>
-                <form action="">
-                    @csrf
+                <form action="{{ route('editProfile', ['id_club' => $leaderclub->id]) }}" method="get">
                     <input type="submit" value="แก้ไขโปรไฟล์ชมรม" class="btn_edit">
                 </form>
             </div>

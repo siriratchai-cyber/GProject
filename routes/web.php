@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ActivityController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,6 +32,18 @@ Route::post('/login', [UserController::class, 'checklogin']);
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::get('/homepage',[userController::class, 'homepage' ]);
-Route::get('/homeadmin', function(){
-    return view('leaderHome');
-});
+Route::post('/homepage',[userController::class, 'checkinfo' ]);
+
+Route::get('/request/{id_club}',[ClubController::class, 'requestMembers'])->name('requestToleader');
+Route::post('/request/approved/{id_club}/{id_member}',[ClubController::class, 'approvedMembers'])->name('approved');
+Route::post('/request/rejected/{id_club}/{id_member}',[ClubController::class, 'rejectedMember'])->name('rejected');
+Route::get('/editProfile/{id_club}',[ClubController::class, 'editedProfileForleader'])->name('editProfile');
+Route::post('/editProfile/{id_club}',[ClubController::class, 'updateProfileForleader'])->name('editProfile');
+Route::get('/homepage/leader/{id_club}',[ClubController::class, 'backtoHomepage'])->name('backtoHome');
+Route::get('/homepage/club/{id_club}',[ClubController::class, 'backtoclubHomepage'])->name('backtoclub');
+Route::get('/club/homepage/{id_club}',[ClubController::class, 'clubHomepage'])->name('clubHomepage');
+Route::get('/club/Activity/{id_club}',[ActivityController::class, 'showActivity'])->name('showActivity');
+Route::post('/club/addActivity/{id_club}',[ActivityController::class, 'addActivity'])->name('addActivity');
+Route::post('/club/deleteActivity/{id_club}/{id_activity}',[ActivityController::class, 'deleteActivity'])->name('deleteActivity');
+Route::get('/club/editActivity/{id_club}/{id_activity}',[ActivityController::class, 'editActivity'])->name('editActivity');
+Route::post('/club/updateActivity/{id_club}/{id_activity}',[ActivityController::class, 'updateActivity'])->name('updateActivity');
