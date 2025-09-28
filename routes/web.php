@@ -33,11 +33,11 @@ Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 Route::get('/homepage',[userController::class, 'homepage' ]);
 Route::post('/homepage',[userController::class, 'checkinfo' ]);
 
-Route::get('/request/{id_club}',[ClubController::class, 'requestMembers'])->name('requestToleader');
-Route::post('/request/approved/{id_club}/{id_member}',[ClubController::class, 'approvedMembers'])->name('approved');
-Route::post('/request/rejected/{id_club}/{id_member}',[ClubController::class, 'rejectedMember'])->name('rejected');
-Route::get('/editProfile/{id_club}',[ClubController::class, 'editedProfileForleader'])->name('editProfile');
-Route::post('/editProfile/{id_club}',[ClubController::class, 'updateProfileForleader'])->name('editProfile');
+Route::get('{from}/request/{id_club}',[ClubController::class, 'requestMembers'])->name('requestToleader');
+Route::post('{from}/request/approved/{id_club}/{id_member}',[ClubController::class, 'approvedMembers'])->name('approved');
+Route::post('{from}/request/rejected/{id_club}/{id_member}',[ClubController::class, 'rejectedMember'])->name('rejected');
+Route::get('{from}/editProfile/{id_club}',[ClubController::class, 'editedProfileForleader'])->name('editProfile');
+Route::post('{from}/editProfile/{id_club}',[ClubController::class, 'updateProfileForleader'])->name('updateProfile');
 Route::get('/homepage/leader/{id_club}',[ClubController::class, 'backtoHomepage'])->name('backtoHome');
 Route::get('/homepage/club/{id_club}',[ClubController::class, 'backtoclubHomepage'])->name('backtoclub');
 Route::get('/club/homepage/{id_club}',[ClubController::class, 'clubHomepage'])->name('clubHomepage');
@@ -46,3 +46,4 @@ Route::post('/club/addActivity/{id_club}',[ActivityController::class, 'addActivi
 Route::post('/club/deleteActivity/{id_club}/{id_activity}',[ActivityController::class, 'deleteActivity'])->name('deleteActivity');
 Route::get('/club/editActivity/{id_club}/{id_activity}',[ActivityController::class, 'editActivity'])->name('editActivity');
 Route::post('/club/updateActivity/{id_club}/{id_activity}',[ActivityController::class, 'updateActivity'])->name('updateActivity');
+Route::post('/club/{id_club}/requestResign',[ClubController::class, 'requestResign'])->name('requestResign');

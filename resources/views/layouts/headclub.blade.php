@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
             font-family: "Arial", sans-serif;
@@ -47,7 +49,7 @@
 </head>
 <body>
     <header>
-        <div class="username-box">@yield('User std_id')</div>
+        <div class="username-box">@yield('username')</div>
         <div class="logo">@yield('club_name')</div>
         <div class="nav">
             <a href="/clubs">Club</a>
