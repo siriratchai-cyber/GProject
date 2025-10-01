@@ -91,7 +91,7 @@
             @if($from == "homepage")
             <a href="{{ route('backtoHome', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
             @elseif($from == "club")
-            <a href="{{ route('backtoclub', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
+            <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
             @endif
         </div>
             <div class="box-showDetail">
