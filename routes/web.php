@@ -39,7 +39,6 @@ Route::post('{from}/request/rejected/{id_club}/{id_member}',[ClubController::cla
 Route::get('{from}/editProfile/{id_club}',[ClubController::class, 'editedProfileForleader'])->name('editProfile');
 Route::post('{from}/editProfile/{id_club}',[ClubController::class, 'updateProfileForleader'])->name('updateProfile');
 Route::get('/homepage/leader/{id_club}',[ClubController::class, 'backtoHomepage'])->name('backtoHome');
-Route::get('/homepage/club/{id_club}',[ClubController::class, 'backtoclubHomepage'])->name('backtoclub');
 Route::get('/club/homepage/{id_club}',[ClubController::class, 'clubHomepage'])->name('clubHomepage');
 Route::get('/club/Activity/{id_club}',[ActivityController::class, 'showActivity'])->name('showActivity');
 Route::post('/club/addActivity/{id_club}',[ActivityController::class, 'addActivity'])->name('addActivity');

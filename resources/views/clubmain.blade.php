@@ -176,7 +176,7 @@
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content" style="border-radius: 20px;">
                     <div class="modal-body text-center">
-                        <p class="fs-5 fw-bold">คุณต้องการที่จะออกจากชมรม ใช่หรือไม่</p>
+                        <p class="fs-5 fw-bold">คุณต้องการที่จะออกจากการเป็นหัวหน้าชมรม <br>ใช่หรือไม่</p>
                         <div class="d-flex justify-content-center gap-3 mt-3">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ผมไม่ออก</button>
                         <form action="{{ route('requestResign', ['id_club' => $leaderclub->id ]) }}" method="POST">
