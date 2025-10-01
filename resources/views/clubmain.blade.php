@@ -46,11 +46,11 @@
         border: 1px solid black;
         width: 10%;
         height: 10%;
-        padding: 5px 15px;
+        padding: 5px 20px;
         margin-left: -8%;
         display: flex; 
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
     }
     .back:hover{
         background-color: #5E5F68;
@@ -60,8 +60,7 @@
         color: black;
         text-decoration: none;
     }
-    .box-member_edit a
-    , .box-leave a{
+    .box-member_edit a{
         background-color: #f9f6f2;
         border-radius: 30px;
         margin: 0px 5px;
@@ -69,7 +68,6 @@
         font-size: 14px;
     }
     .box-member_edit a:hover
-    , .box-leave a:hover
     , .edit-activity:hover{
         background-color: #5E5F68;
         color: white;
@@ -93,8 +91,7 @@
     .box-leave{
         display: flex; 
         align-items: center;
-        justify-content: center;
-        margin-left: 950px; 
+        justify-content: end;
     }
     .text-1{
         font-size: 18px;
@@ -138,6 +135,18 @@
         margin: 5px 2px;
         padding-top: 15px;
     }
+    .btn-leave{
+        background: #f9f6f2;
+        border-radius: 30px;
+        border: 1px solid black;
+        padding: 5px 15px;
+        height: auto;
+        font-size: 14px;
+    }
+    .btn-leave:hover{
+        color: white;
+        background-color: red;
+    }
 </style>
 @endsection
 
@@ -145,22 +154,40 @@
     <main>
             <div class="box-select">
                 <a href="{{ route('backtoHome', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
-                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id ]) }}" class="request">คำร้องขอ | <span class="showtotal">{{$pendingCount}}</span></a>
+                <a href="{{ route('requestToleader',['from' => 'club', 'id_club' => $leaderclub->id ]) }}" class="request">คำร้องขอ | <span class="showtotal">{{$pendingCount}}</span></a>
             </div>
             <div class="box-member_edit">
-                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id ]) }}">สมาชิกทั้งหมด</a>
-                <a href="{{ route('editProfile', ['id_club' => $leaderclub->id ]) }}">แก้ไขโปรไฟล์</a>
+                <a href="{{ route('requestToleader',['from' => 'club', 'id_club' => $leaderclub->id ]) }}">สมาชิกทั้งหมด</a>
+                <a href="{{ route('editProfile', ['from' => 'club', 'id_club' => $leaderclub->id ]) }}">แก้ไขโปรไฟล์</a>
             </div>
             <div class="box-showclub">
                 <p>
-                   <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="">
+                   <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="club Image">
                     <p>{{$leaderclub->description}}
                     </p>
                 </p>
             </div>
             <div class="box-leave">
-                <a href="">เลิกเป็นหัวหน้าชมรม</a>
-                <a href="">ออกจากชมรม</a>
+                <button type="button" class="btn-leave" data-bs-toggle="modal" data-bs-target="#leaveClubModal">
+                เลิกเป็นหัวหน้าชมรม
+                </button>
+                <!-- Modal -->
+                <div class="modal fade" id="leaveClubModal" tabindex="-1" aria-labelledby="leaveClubModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content" style="border-radius: 20px;">
+                    <div class="modal-body text-center">
+                        <p class="fs-5 fw-bold">คุณต้องการที่จะออกจากชมรม ใช่หรือไม่</p>
+                        <div class="d-flex justify-content-center gap-3 mt-3">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ผมไม่ออก</button>
+                        <form action="{{ route('requestResign', ['id_club' => $leaderclub->id ]) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-dark">ตกลง</button>
+                        </form>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
             </div>
             <p class="text-1">กิจกรรมของชมรม</p>
             <div class="activity">

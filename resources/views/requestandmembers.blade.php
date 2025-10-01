@@ -24,7 +24,7 @@
         margin-left: -8%;
         display: flex; 
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
     }
     .back:hover{
         background-color: #5E5F68;
@@ -109,7 +109,11 @@
 @section('body')
     <main>
         <div>
+            @if($from == "homepage")
             <a href="{{ route('backtoHome', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
+            @elseif($from == "club")
+            <a href="{{ route('backtoclub', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
+            @endif
         </div>
         <div>
             <p class="text">คำร้องขอสมัครเข้าชมรม</p>
@@ -131,11 +135,11 @@
                             <td>{{$member->account->year}}</td>
                             <td>
                                 <div class="btn-a_r">
-                                <form action="{{ route('approved',['id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
+                                <form action="{{ route('approved',['from' => $from,'id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
                                     @csrf
                                     <input type="submit" value="อนุมัติ" class="btn-approve">
                                 </form>
-                                <form action="{{ route('rejected',['id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
+                                <form action="{{ route('rejected',['from' => $from, 'id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
                                     @csrf
                                     <input type="submit" value="ไม่อนุมัติ" class="btn-reject">
                                 </form> 
