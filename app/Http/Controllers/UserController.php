@@ -85,14 +85,30 @@ class UserController extends Controller
                 ->get();
             $pendingCount = Member::where('club_id', $leaderclub->id)->where('status', 'pending')->count();
         }
-        $club = Member::all();
-        return view('homepage', compact('user', 'club'));
+        $clubs = Member::where('student_id', $user->std_id)->get();
+
+        if (!$clubs->isEmpty()) {
+            $activities = collect(); // เริ่มจาก collection ว่าง
+
+            foreach ($clubs as $c) {
+                $clubActivities = $c->club->activities()
+                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
+                    ->orderBy('date', 'asc')
+                    ->get();
+
+                $activities = $activities->merge($clubActivities);
+            }
+            // เรียงใหม่ตามวันที่
+            $activities = $activities->sortBy('date');
+            $club = Member::all();
+            return view('homepage', compact('user', 'club', 'activities'));
+            }
         }
 
         return redirect()->route('clubs.index')->with(['user' => $user, 'clubs' => $clubs]);
     }
     public function logout()
-    {
-        return view('login');
+    {  
+        return redirect()->route('login');
     }
 }

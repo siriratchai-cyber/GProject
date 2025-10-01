@@ -62,6 +62,33 @@
                 margin: 10px 50px 10px 50px;
                 border-radius: 20px; 
             }
+            .img-club{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .club-box{
+                padding-bottom: 20px;
+                padding-left: 10%;
+                position: absolute;
+                color: black;
+                font-size: 16px; 
+                font-weight: bold;
+                text-align: center;
+                /*text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);  เงาเพื่อความชัดเจน */
+            }
+            .img-box{
+                position: relative;
+                width: 50px; 
+                height: 50px; 
+                border-radius: 50%; 
+                overflow: hidden; 
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: #f0f0f0; 
+            }
         </style>
     </head>
     <body>
@@ -74,20 +101,43 @@
             </div>
         </header>
         <main>
-            <div class="welcome"><span>Welcome naja</span></div>
             <div class="active-club">
-                <h3>ชมรมที่อยู่ : </h3>
+            <h3>ชมรมที่คุณอยู่</h3>
+            <div style="display: flex; gap: 30px; margin-top: 10px;">
                 @foreach($club as $c)
                     @if($c->student_id == $user->std_id)
-                        <p>
-                            <img src="{{ $c->club->image ? asset('storage/'.$c->club->image) : asset('default.jpg') }}" alt="club">
-                            {{$c->club->name}}
-                        </p>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="img-box">
+                                <img class="img-club" 
+                                    src="{{ $c->club->image ? asset('storage/'.$c->club->image) : asset('default.jpg') }}" 
+                                    alt="club">
+                            </span>
+                            <span class="club-box" style="position: static; font-weight: bold;">
+                                {{ $c->club->name }}
+                            </span>
+                        </div>
                     @endif
                 @endforeach
             </div>
-            <div class="activity-club">
-                <h3>กิจกรรมที่กำลังจะมาถึง : </h3>
+        </div>
+
+        <div class="activity-club">
+            <h3>กิจกรรมที่กำลังมาถึง</h3>
+            @foreach($activities as $a)
+                <div style="display: flex; align-items: center; gap: 15px; margin: 15px 0; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                    <span class="img-box">
+                        <img class="img-club" 
+                            src="{{ $a->club->image ? asset('storage/'.$a->club->image) : asset('default.jpg') }}" 
+                            alt="club">
+                    </span>
+                    <div style="flex: 1;">
+                        <strong>{{ $a->club->name }}</strong><br>
+                        • วันที่ {{ \Carbon\Carbon::parse($a->date)->translatedFormat('d F Y') }} | 
+                        เวลา {{ \Carbon\Carbon::parse($a->date)->format('H:i') }} น. | 
+                        {{ $a->detail }}
+                    </div>
+                </div>
+            @endforeach
             </div>
         </main>
     </body>
