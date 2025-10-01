@@ -158,11 +158,11 @@
         border: none;
         border-radius: 20px;
         color: white;
-        padding: 8px 15px;
+        padding: 8px 10px;
         cursor: pointer;
         font-size: 14px;
         width: fit-content;
-        margin: 0px 70%;
+        margin-left: 60%;
     }
     .btn_edit:hover{
         background-color: #323339ff;
@@ -180,7 +180,7 @@
                 <p class="textWelcome">Welcome Club leader</p>
             </div> 
             <div class="box-request">
-                <a href="{{ route('requestToleader',['id_club' => $leaderclub->id ]) }}" class="request">คำร้องขอ | <span>{{$pendingCount}}</span></a>
+                <a href="{{ route('requestToleader',['from' => 'homepage', 'id_club' => $leaderclub->id ]) }}" class="request">คำร้องขอ | <span>{{$pendingCount}}</span></a>
             </div>
         </div>
         <div class="box-clubLeader">
@@ -219,9 +219,7 @@
                 <p class="head">{{$leaderclub->name}}</p>
                 <p><img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="Club Image"></p>
                 <br>
-                <form action="{{ route('editProfile', ['id_club' => $leaderclub->id]) }}" method="get">
-                    <input type="submit" value="แก้ไขโปรไฟล์ชมรม" class="btn_edit">
-                </form>
+                    <a href="{{ route('editProfile', ['from' => 'homepage', 'id_club' => $leaderclub->id ]) }}" class="btn_edit">แก้ไขโปรไฟล์ชมรม</a>
             </div>
         </div>
     

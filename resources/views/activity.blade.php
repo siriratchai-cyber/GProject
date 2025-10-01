@@ -34,13 +34,13 @@
         background: #d9e7f3;
         border-radius: 30px;
         border: 1px solid black;
-        width: 8%;
+        width: 10%;
         height: 10%;
-        padding: 5px 15px;
+        padding: 5px 20px;
         margin-left: -8%;
         display: flex; 
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
     }
     a{
         color: black;
@@ -195,17 +195,17 @@
                     @if($activities->isEmpty())
                         <tr><td colspan="3"><span>ยังไม่มีกิจกรรม</span></td></tr>
                     @else
-                    @foreach($activities as $activity)
+                    @foreach($activities as $a)
                     <tr>
-                        <td>{{ $activity->date }}</td>
-                        <td>{{ $activity->activity_name }}</td>
+                        <td>{{ $a->date }}</td>
+                        <td>{{ $a->activity_name }}</td>
                         <td>
                             <div class="action-btns">
-                                <form action="{{ route('deleteActivity', ['id_club' => $leaderclub->id, 'id_activity' => $activity->id ]) }}" method="post">
+                                <form action="{{ route('deleteActivity', ['id_club' => $leaderclub->id, 'id_activity' => $a->id ]) }}" method="post">
                                     @csrf
                                     <input type="submit" value="ลบ" class="btn-delete">
                                 </form>
-                                <a href="{{ route('editActivity', ['id_club' => $leaderclub->id, 'id_activity' => $activity->id ]) }}" class="btn-edit">แก้ไข</a>
+                                <a href="{{ route('editActivity', ['id_club' => $leaderclub->id, 'id_activity' => $a->id ]) }}" class="btn-edit">แก้ไข</a>
                             </div>
                         </td>
                     </tr>
@@ -214,7 +214,7 @@
                 </tbody>
             </table>
         </div>
-        @if( $r == 1 )
+        @if( $activity == null )
         <p>เพิ่มกิจกรรมใหม่</p>
         <div>
             <div class="box-activity">
@@ -239,7 +239,7 @@
             </form>
             </div>
         </div>
-        @elseif($r == 0)
+        @elseif($activity != null)
         <p>แก้ไขรายละเอียดกิจกรรม</p>
         <div>
             <div class="box-activity">

@@ -15,8 +15,8 @@ class ActivityController extends Controller
         $user = $leader->account;
         $activities = $leaderclub->activities()
                     ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
-        $r = 1;
-        return view('activity',compact('r','leaderclub','user','activities'));
+        $activity = null;
+        return view('activity',compact('activity','leaderclub','user','activities'));
     }
 
     public function addActivity(Request $request,$id_club){
@@ -47,8 +47,7 @@ class ActivityController extends Controller
                     ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
         $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
         $user = $leader->account;
-        $r = 0;
-        return view('activity',compact('activity','activities','leaderclub','user','r'));
+        return view('activity',compact('activity','activities','leaderclub','user'));
     }
 
     public function updateActivity(Request $request, $id_club, $id_activity){

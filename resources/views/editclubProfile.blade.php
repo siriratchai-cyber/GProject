@@ -27,13 +27,13 @@
         background: #d9e7f3;
         border-radius: 30px;
         border: 1px solid black;
-        width: 8%;
+        width: 10%;
         height: 10%;
-        padding: 5px 15px;
+        padding: 5px 20px;
         margin-left: -8%;
         display: flex; 
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
     }
     a{
         color: black;
@@ -88,14 +88,18 @@
 @section('body')
     <main>
         <div>
+            @if($from == "homepage")
             <a href="{{ route('backtoHome', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
+            @elseif($from == "club")
+            <a href="{{ route('backtoclub', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
+            @endif
         </div>
             <div class="box-showDetail">
                 <div>
-                    <img src="{{ asset('uploads/' . $leaderclub->image )}}" alt="">
+                    <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="Club Image">
                 </div>
                 <div class="activityform">
-                    <form action="{{ route('editProfile', ['id_club' => $leaderclub->id ])  }}" method="post">
+                    <form action="{{ route('updateProfile', ['from' => $from,'id_club' => $leaderclub->id ])  }}" method="post">
                         @csrf
                         <label>ชื่อชมรม: </label>
                         <input type="text" name="name_club" required value="{{$leaderclub->name}}"><br>
