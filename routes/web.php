@@ -19,6 +19,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/clubdetail/{id}/{std_id}', [UserController::class, 'detail'])->name('club.detail');
+Route::post('/clubdetail/{id}/leave', [UserController::class, 'leave'])->name('club.leave');
+
 Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index'); // หน้า cpclub.blade.php
 Route::get('/clubs/create', [ClubController::class, 'create'])->name('clubs.create'); // หน้า create_club.blade.php
 Route::post('/clubs', [ClubController::class, 'store'])->name('clubs.store'); // บันทึกข้อมูลชมรม
@@ -30,7 +33,7 @@ Route::get('/login', [UserController::class, 'login'])->name('login');
 Route::post('/login', [UserController::class, 'checklogin']);
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 
-Route::get('/homepage',[userController::class, 'homepage' ]);
+Route::get('/homepage',[userController::class, 'homepage' ])->name('home');
 Route::post('/homepage',[userController::class, 'checkinfo' ]);
 
 Route::get('{from}/request/{id_club}',[ClubController::class, 'requestMembers'])->name('requestToleader');
@@ -40,8 +43,6 @@ Route::post('{from}/request/rejected/{id_club}/{id_member}',[ClubController::cla
 Route::get('{from}/editProfile/{id_club}',[ClubController::class, 'editedProfileForleader'])->name('editProfile');
 Route::post('{from}/editProfile/{id_club}',[ClubController::class, 'updateProfileForleader'])->name('updateProfile');
 Route::get('/homepage/leader/{id_club}',[ClubController::class, 'backtoHomepage'])->name('backtoHome');
-Route::get('/homepage/club/{id_club}',[ClubController::class, 'backtoclubHomepage'])->name('backtoclub');
-
 Route::get('/club/homepage/{id_club}',[ClubController::class, 'clubHomepage'])->name('clubHomepage');
 Route::get('/club/Activity/{id_club}',[ActivityController::class, 'showActivity'])->name('showActivity');
 Route::post('/club/addActivity/{id_club}',[ActivityController::class, 'addActivity'])->name('addActivity');

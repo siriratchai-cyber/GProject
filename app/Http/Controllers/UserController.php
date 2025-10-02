@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Account;
 use App\Models\Member;
+use App\Models\Club;
+use App\Models\Activity;
 
 
 class UserController extends Controller
@@ -85,27 +87,42 @@ class UserController extends Controller
                 ->get();
             $pendingCount = Member::where('club_id', $leaderclub->id)->where('status', 'pending')->count();
         }
-        $clubs = Member::where('student_id', $user->std_id)->get();
 
-        if (!$clubs->isEmpty()) {
-            $activities = collect(); // เริ่มจาก collection ว่าง
+        $MemberInClub = Member::where('student_id', $user->std_id)->with('club')->get();
 
-            foreach ($clubs as $c) {
-                $clubActivities = $c->club->activities()
-                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
-                    ->orderBy('date', 'asc')
-                    ->get();
+        if (!$MemberInClub->isEmpty()) {
+            $userId = $request->std_id;
 
-                $activities = $activities->merge($clubActivities);
-            }
-            // เรียงใหม่ตามวันที่
-            $activities = $activities->sortBy('date');
-            $club = Member::all();
-            return view('homepage', compact('user', 'club', 'activities'));
+            // ชมรมที่เข้าร่วม
+            $myClubs = Club::whereHas('members', function($q) use($userId) {
+                $q->where('student_id', $userId);
+            })->get();
+
+            // กิจกรรมที่กำลังจะมาถึง (วันนี้ - อนาคต)
+            $clubIds = $myClubs->pluck('id');
+            $upcomingActivities = Activity::whereIn('club_id', $clubIds)   // เฉพาะชมรมนี้
+                                  ->where('date', '>=', now())     // ตั้งแต่วันนี้เป็นต้นไป
+                                  ->orderBy('date', 'asc')
+                                  ->get();
+
+            return view('Homepage', compact('myClubs', 'upcomingActivities','user'));
             }
         }
 
         return redirect()->route('clubs.index')->with(['user' => $user, 'clubs' => $clubs]);
+    }
+    public function detail($id,$userId)
+    {
+        $club = Club::with('activities')->findOrFail($id);
+        return view('ClubDetail', compact('club','userId'));
+    }
+
+    public function leave($id,Request $request)
+    {
+        $userId = $request->std_id;
+        Member::where('club_id', $id)->where('student_id', $userId)->delete();
+
+        return redirect()->route('home')->with('success', 'คุณออกจากชมรมเรียบร้อยแล้ว');
     }
     public function logout()
     {  
