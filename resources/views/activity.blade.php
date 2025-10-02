@@ -16,12 +16,11 @@
         font-size: 18px;
     }
     div .box-activity{
-        width: 95%;
+        width: 100%;
         height: auto;
         background: #f9f6f2;
         border-radius: 30px; 
         padding: 10px;
-        margin-left: 10px;
         display: flex;
         padding: 10px 20px;
         display: flex;
@@ -177,13 +176,14 @@
         color: white;
         background-color: red;
     }
+
 </style>
 @endsection
 
 @section('body')
     <main>
         <div>
-            <a href="{{ route('backtoclub', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
+            <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
         </div>
         <p class="text-show">กิจกรรมที่กำลังดำเนินการอยู่</p>
         <div class="box-showactivity">
@@ -224,7 +224,7 @@
                 <input type="text" name="name" required><br>
 
                 <label>รายละเอียดกิจกรรม:</label>
-                <textarea name="description"></textarea><br>
+                <textarea name="description" required></textarea><br>
 
                 <label>วันที่: </label>
                 <input type="date" name="date" required>

@@ -134,28 +134,16 @@ class ClubController extends Controller
                     ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
         return view('clubmain',compact('activities','user','leaderclub','pendingCount'));
     }
-    public function backtoclubHomepage($id_club){
-        $leaderclub = Club::findOrFail($id_club);
+    public function requestResign($id_club){
         $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
-        $user = $leader->account;
-        $pendingCount = Member::where('club_id', $leaderclub->id)
-                      ->where('status', 'pending')
-                      ->count();
-        $activities = $leaderclub->activities()
-                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
-        return view('clubmain',compact('activities','user','leaderclub','pendingCount'));
-    }
-    public function requestResign(Request $request , $id_club){
-        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
-        $leader->status = "pending_resign";
-        $leader->save();
-        $leaderclub = Club::findOrFail($id_club);
-        $user = $leader->account;
-        $pendingCount = Member::where('club_id', $leaderclub->id)
-                      ->where('status', 'pending')
-                      ->count();
-        $activities = $leaderclub->activities()
-                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
-        return view('clubmain',compact('activities','user','leaderclub','pendingCount'));
+        if($leader != null){
+            if($leader->status == "approved"){
+               $leader->status = "pending_resign"; 
+            }else{
+                $leader->status = "approved";
+            }
+            $leader->save();
+        }
+        return redirect()->route('clubHomepage', ['id_club' => $id_club]);
     }
 };
