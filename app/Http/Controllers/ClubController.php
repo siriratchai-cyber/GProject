@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Account;
 use App\Models\Club;
 use App\Models\Member;
 use Illuminate\Http\Request;
@@ -72,5 +74,76 @@ class ClubController extends Controller
         }
 
         return redirect()->route('clubs.index')->with('success','สร้างชมรมใหม่เรียบร้อยแล้ว');
+    }
+
+    public function requestMembers($from, $id_club){
+        $leaderclub = Club::findOrFail($id_club);
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        $user = $leader->account;
+        $member_pending = Member::where('club_id', $id_club)->where('status','pending')->get();
+        $member_approved = Member::where('club_id', $id_club)->where('status','approved')->get();
+        $from = $from;
+        return view('requestandmembers',compact('member_pending','member_approved','leaderclub','user','from'));
+    }
+    public function approvedMembers($from, $id_club, $id_member){
+        $member = Member::findOrFail($id_member);
+        $member->status = "approved";
+        $member->save();
+        return redirect()->route('requestToleader', ['from' => $from, 'id_club' => $id_club])
+            ->with('success', 'อนุมัติสำเร็จ');
+    }
+    public function rejectedMember($from, $id_club, $id_member){
+        $member = Member::findOrFail($id_member);
+        $member->delete();
+        return redirect()->route('requestToleader', ['from' => $from, 'id_club' => $id_club])
+            ->with('success', 'ไม่อนุมัติสำเร็จ');
+    }
+    public function editedProfileForleader($from, $id_club){
+        $leaderclub = Club::findOrFail($id_club);
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        $user = $leader->account;
+        return view('editclubProfile',compact('leaderclub','user','from'));
+    }
+    public function updateProfileForleader(Request $request, $from, $id_club){
+        $leaderclub = Club::findOrFail($id_club);
+        $leaderclub->name = $request->name_club;
+        $leaderclub->description = $request->club_detail;
+        $leaderclub->save();
+        return redirect()->route('editProfile', ['from' => $from, 'id_club' => $id_club])
+            ->with('success', 'แก้ไขโปรไฟล์สำเร็จ');
+    }
+    public function backtoHomepage($id_club){
+        $leaderclub = Club::findOrFail($id_club);
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        $user = $leader->account;
+        $pendingCount = Member::where('club_id', $leaderclub->id)
+                      ->where('status', 'pending')
+                      ->count();
+        $activities = $leaderclub->activities()
+                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
+        return view('leaderHome',compact('activities','leaderclub','pendingCount','user'));
+    }
+    public function clubHomepage($id_club){
+        $leaderclub = Club::findOrFail($id_club);
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        $user = $leader->account;
+        $pendingCount = Member::where('club_id', $leaderclub->id)
+                      ->where('status', 'pending')
+                      ->count();
+        $activities = $leaderclub->activities()
+                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
+        return view('clubmain',compact('activities','user','leaderclub','pendingCount'));
+    }
+    public function requestResign($id_club){
+        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
+        if($leader != null){
+            if($leader->status == "approved"){
+               $leader->status = "pending_resign"; 
+            }else{
+                $leader->status = "approved";
+            }
+            $leader->save();
+        }
+        return redirect()->route('clubHomepage', ['id_club' => $id_club]);
     }
 };

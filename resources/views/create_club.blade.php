@@ -152,7 +152,7 @@ function checkMemberCount() {
   document.getElementById("saveBtn").disabled = rows < 5;
 }
 
-// ตรวจชื่อ/รหัสซ้ำ (รวมแถว)
+// ตรวจชื่อ/รหัสซ้ำ
 function checkDuplicate() {
   let idMap = {}, nameMap = {}, errors = [];
 
@@ -205,21 +205,32 @@ function checkLeaderLimit(select){
   });
 }
 
-// submit form
+// submit form + reindex สมาชิก
 document.querySelector("form").addEventListener("submit", function(e){
-  if(!checkDuplicate()){ e.preventDefault(); return; }
+  // Reindex สมาชิกให้ต่อเนื่อง
+  document.querySelectorAll(".member-row").forEach((row, idx) => {
+      row.querySelectorAll("input, select").forEach(input => {
+          input.name = input.name.replace(/members\[\d+\]/, `members[${idx}]`);
+      });
+  });
+
+  if(!checkDuplicate()){ 
+      e.preventDefault(); 
+      return; 
+  }
 
   let leaderCount = 0;
   document.querySelectorAll(".position-select").forEach(s=>{
-    if(s.value === "หัวหน้าชมรม") leaderCount++;
+      if(s.value === "หัวหน้าชมรม") leaderCount++;
   });
 
   if(leaderCount < 1){
-    e.preventDefault();
-    Swal.fire("❌ ต้องมีหัวหน้าชมรมอย่างน้อย 1 คน");
+      e.preventDefault();
+      Swal.fire("❌ ต้องมีหัวหน้าชมรมอย่างน้อย 1 คน");
   }
 });
 
+// อัปเดตปุ่มบันทึก
 document.addEventListener("input", checkMemberCount);
 </script>
 
