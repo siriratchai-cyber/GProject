@@ -1,4 +1,4 @@
-@extends('layouts.headclub')
+git commit -m "เพิ่มหน้าและคอนโทรลเลอร์ของ admin + ปรับ ActivityController"@extends('layouts.headclub')
 @section('title', 'Activity')
 @section('club_name', $leaderclub->name)
 @section('username', $user->std_id)
