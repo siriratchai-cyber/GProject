@@ -80,11 +80,11 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     .club-card img {
-       width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     .club-card h3 {
       margin: 15px 0 10px;
@@ -102,7 +102,7 @@
       font-size: 13px;
       color: #333;
     }
-    .club-card button {
+    .club-card form button {
       margin-top: 15px;
       background: #333;
       color: white;
@@ -113,24 +113,39 @@
       font-size: 14px;
       transition: 0.3s;
     }
-    .club-card button.cancel {
+    .club-card form button.cancel {
       background: red;
     }
+    .pending-text {
+      margin-top: 8px;
+      font-size: 12px;
+      color: orange;
+    }
+
+    .pending {
+  text-align: center;
+  font-weight: bold;
+  color: #555;
+  margin-top: 10px;
+}
+
   </style>
 </head>
 <body>
 
   <header>
-    <div class="username-box">username</div>
+    <div class="username-box">{{ $user->std_id }}</div>
     <div class="logo">CP club</div>
     <div class="nav">
-      <a href="#">Dashboard</a>
-      <a href="/logout">Logout</a>
+      <a href="{{ route('clubs.index') }}">All Clubs</a>
+      <a href="{{ route('homepage.index') }}">Dashboard</a>
+      <a href="{{ route('logout') }}">Logout</a>
     </div>
   </header>
 
+
   <div class="welcome">
-    <span>Welcome naja</span>
+    <span>Welcome {{ $user->std_name }}</span>
   </div>
 
   <div class="create-btn">
@@ -144,29 +159,42 @@
         <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('default.jpg') }}" alt="club">
         <p>{{ $club->description }}</p>
         <div class="member">
-          สมาชิกในชมรม : {{ $club->members->count() }}
+          สมาชิกในชมรม : {{ $club->members->where('status','approved')->count() }}
         </div>
-        <button class="join-btn" data-id="{{ $club->id }}">สมัคร</button>
+
+        @php
+          $isMember = $club->members->where('student_id', $user->std_id)->first();
+        @endphp
+
+        @if($isMember && $isMember->status == 'pending')
+          {{-- กรณีรออนุมัติ --}}
+          <form action="{{ route('clubs.cancel',$club->id) }}" method="POST">
+            @csrf
+            <button type="submit" class="cancel">ยกเลิกคำขอ</button>
+          </form>
+          <div class="pending">
+           รอหัวหน้าชมรมอนุมัติ...
+          </div>
+
+
+        @elseif($isMember && $isMember->status == 'approved')
+          {{-- กรณีอนุมัติแล้ว --}}
+          <form action="{{ route('clubs.leave',$club->id) }}" method="POST">
+            @csrf
+            <button type="submit" class="cancel">ออกจากชมรม</button>
+          </form>
+
+        @else
+          {{-- ยังไม่ได้เป็นสมาชิก --}}
+          <form action="{{ route('clubs.join',$club->id) }}" method="POST">
+            @csrf
+            <button type="submit">สมัคร</button>
+          </form>
+        @endif
+
       </div>
     @endforeach
   </div>
-
-  <script>
-  document.addEventListener("click", function(e) {
-    if(e.target.classList.contains("join-btn")){
-      let btn = e.target;
-      if(btn.innerText === "สมัคร"){
-        btn.innerText = "ยกเลิก";
-        btn.classList.add("cancel");
-        // TODO: ส่ง AJAX ไปบันทึกการสมัคร
-      } else {
-        btn.innerText = "สมัคร";
-        btn.classList.remove("cancel");
-        // TODO: ส่ง AJAX ไปยกเลิกการสมัคร
-      }
-    }
-  });
-  </script>
 
 </body>
 </html>

@@ -9,15 +9,20 @@ use App\Models\Activity;
 
 class ActivityController extends Controller
 {
-    public function showActivity($id_club){
-        $leaderclub = Club::findOrFail($id_club);
-        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
-        $user = $leader->account;
-        $activities = $leaderclub->activities()
-                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
-        $activity = null;
-        return view('activity',compact('activity','leaderclub','user','activities'));
-    }
+   public function showActivity($id_club){
+    $leaderclub = Club::findOrFail($id_club);
+
+    $std_id = Session::get('std_id');
+    $user = Account::where('std_id', $std_id)->first();
+
+    $activities = $leaderclub->activities()
+        ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
+        ->orderBy('date','asc')->get();
+
+    $activity = null;
+    return view('activity', compact('activity','leaderclub','user','activities'));
+}
+
 
     public function addActivity(Request $request,$id_club){
         $new_activity = new Activity;
@@ -41,14 +46,19 @@ class ActivityController extends Controller
     }
 
     public function editActivity($id_club, $id_activity){
-        $activity = Activity::findOrFail($id_activity);
-        $leaderclub = Club::findOrFail($id_club);
-        $activities = $leaderclub->activities()
-                    ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")->orderBy('date','asc')->get();
-        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
-        $user = $leader->account;
-        return view('activity',compact('activity','activities','leaderclub','user'));
-    }
+    $activity = Activity::findOrFail($id_activity);
+    $leaderclub = Club::findOrFail($id_club);
+
+    $std_id = Session::get('std_id');
+    $user = Account::where('std_id', $std_id)->first();
+
+    $activities = $leaderclub->activities()
+        ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
+        ->orderBy('date','asc')->get();
+
+    return view('activity', compact('activity','activities','leaderclub','user'));
+}
+
 
     public function updateActivity(Request $request, $id_club, $id_activity){
         $activity = Activity::findOrFail($id_activity);

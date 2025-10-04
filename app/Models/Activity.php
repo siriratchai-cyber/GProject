@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Activity extends Model
 {
     use HasFactory;
-    public function club(){
-        return $this->belongsTo(Club::class);
-    }
+
+    protected $fillable = ['activity_name','description','date','time','location','club_id','status'];
+
+    public function club(){ return $this->belongsTo(Club::class); }
 }
