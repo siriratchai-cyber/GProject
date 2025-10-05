@@ -131,8 +131,9 @@
                         <tr>
                             <td>{{$member->name}}</td>
                             <td>{{$member->student_id}}</td>
-                            <td>{{$member->account->major}}</td>
-                            <td>{{$member->account->year}}</td>
+                            <td>{{ $member->account->major ?? '-' }}</td>
+                            <td>{{ $member->account->year ?? '-' }}</td>
+
                             <td>
                                 <div class="btn-a_r">
                                 <form action="{{ route('approved',['from' => $from,'id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
@@ -162,8 +163,9 @@
                     <tr>
                         <td>{{$member->name}}</td>
                         <td>{{$member->student_id}}</td>
-                        <td>{{$member->account->major}}</td>
-                        <td>{{$member->account->year}}</td>
+                        <td>{{ optional($member->account)->major ?? '-' }}</td>
+                        <td>{{ optional($member->account)->year ?? '-' }}</td>
+
                         <td>{{$member->role}}</td>
                     </tr>
                     @endforeach

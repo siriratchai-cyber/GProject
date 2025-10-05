@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Account;
 use App\Models\Club;
 use App\Models\Member;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Activity;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
-    // ✅ ฟอร์มสมัครสมาชิก
+    /** ✅ แสดงฟอร์มสมัครสมาชิก */
     public function showRegisterForm()
     {
         return view('register');
     }
 
-    // ✅ สมัครสมาชิก
+    /** ✅ สมัครสมาชิกใหม่ */
     public function register(Request $request)
     {
         $request->validate([
@@ -29,82 +29,98 @@ class UserController extends Controller
             'year'     => 'required|integer',
         ]);
 
-        $User = new Account;
-        $User->std_name = $request->std_name;
-        $User->std_id   = $request->std_id;
-        $User->email    = $request->email;
-        $User->password = Hash::make($request->password);
-        $User->major    = $request->major;
-        $User->role     = 'นักศึกษา'; // ค่าเริ่มต้นเป็นนักศึกษา
-        $User->year     = $request->year;
-        $User->save();
+        $user = new Account();
+        $user->std_name = $request->std_name;
+        $user->std_id   = $request->std_id;
+        $user->email    = $request->email;
+        $user->password = $request->password; // ❗เก็บเป็น string
+        $user->major    = $request->major;
+        $user->year     = $request->year;
+        $user->role     = 'นักศึกษา'; // ค่าเริ่มต้น
+        $user->save();
 
         return redirect('login')->with('success', '✅ สมัครสมาชิกสำเร็จ');
     }
 
-    // ✅ ฟอร์ม login
+    /** ✅ แสดงหน้า Login */
     public function login()
     {
         return view('login');
     }
 
-    // ✅ ตรวจสอบการ login
+    /** ✅ ตรวจสอบการเข้าสู่ระบบ */
     public function checklogin(Request $request)
     {
-        $user = Account::where('std_id', $request->std_id)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return back()->withErrors(['std_id' => '❌ รหัสนักศึกษา หรือ รหัสผ่านไม่ถูกต้อง']);
-        }
-
-        // ตั้งค่า session
-        Session::put('std_id', $user->std_id);
-        Session::put('role', $user->role);
-
-        // 👉 ถ้าเป็นแอดมิน
-        if ($user->role === "แอดมิน") {
-            return redirect()->route('admin.dashboard');
-        }
-
-        // 👉 ถ้าเป็นหัวหน้าชมรม
-        $leaderclub = $user->clubs()->wherePivot('role', 'หัวหน้าชมรม')->first();
-        if ($user->role === "หัวหน้าชมรม" && $leaderclub) {
-            $pendingCount = Member::where('club_id', $leaderclub->id)->where('status', 'pending')->count();
-            $activities = $leaderclub->activities()
-                ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
-                ->orderBy('date', 'asc')->get();
-            return view('leaderHome', compact('user', 'leaderclub', 'pendingCount', 'activities'));
-        }
-
-        // 👉 ถ้าเป็นนักศึกษา → ไปหน้า homepage
-        return redirect()->route('homepage.index');
-    }
-
-    // ✅ Dashboard ของนักศึกษา (ชมรม + กิจกรรม)
-    public function homepage()
-    {
-        $std_id = Session::get('std_id');
-        $user = Account::where('std_id', $std_id)->first();
+        $user = Account::where('std_id', $request->std_id)
+            ->where('password', $request->password)
+            ->first();
 
         if (!$user) {
-            return redirect()->route('login')->withErrors(['std_id' => 'กรุณาเข้าสู่ระบบใหม่']);
+            return redirect('/login')->with('error', '❌ รหัสนักศึกษาหรือรหัสผ่านไม่ถูกต้อง');
         }
 
-        // ✅ ชมรมที่ user เข้าร่วม
-        $myClubs = $user->clubs()->with('activities')->get();
-
-        // ✅ รวมกิจกรรมทั้งหมดจากทุกชมรม
-        $activities = [];
-        foreach ($myClubs as $c) {
-            foreach ($c->activities as $a) {
-                $activities[] = $a;
-            }
-        }
-
-        return view('homepage', compact('user', 'myClubs', 'activities'));
+        // ✅ บันทึก session ผู้ใช้
+        session(['user' => $user]);
+        return redirect('/homepage');
     }
 
-    // ✅ logout
+    /** ✅ หน้าหลัก (ระบบตรวจ role อัตโนมัติ) */
+  public function homepage()
+{
+    $user = session('user');
+    if (!$user) return redirect('/login');
+
+    $account = Account::where('std_id', $user->std_id)->first();
+
+    // 🧩 1. ถ้าเป็นแอดมิน
+    if ($account->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+    
+
+    // 🧩 2. ถ้าเป็นหัวหน้าชมรม
+    $leaderclub = Member::where('student_id', $account->std_id)
+        ->where('role', 'หัวหน้าชมรม')
+        ->with('club')
+        ->first();
+
+    if ($leaderclub) {
+        $club = $leaderclub->club;
+        $pendingCount = Member::where('club_id', $club->id)
+            ->where('status', 'pending')
+            ->count();
+
+        $activities = Activity::where('club_id', $club->id)
+            ->orderBy('date', 'asc')
+            ->get();
+
+        // 👉 หน้าเฉพาะของหัวหน้าชมรม
+        return view('leaderHome', [
+            'leaderclub' => $club,
+            'pendingCount' => $pendingCount,
+            'activities' => $activities,
+            'account' => $account
+        ]);
+    }
+
+    // 🧩 3. นักศึกษาทั่วไป
+    $myClubs = Member::with('club')
+        ->where('student_id', $account->std_id)
+        ->where('status', 'approved')
+        ->get()
+        ->pluck('club');
+
+    $upcomingActivities = Activity::whereIn('club_id', $myClubs->pluck('id'))
+        ->where('date', '>=', now())
+        ->orderBy('date', 'asc')
+        ->get();
+
+    return view('homepage', compact('account', 'myClubs', 'upcomingActivities'));
+}
+
+
+
+    /** ✅ ออกจากระบบ */
     public function logout()
     {
         Session::flush();

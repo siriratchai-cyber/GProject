@@ -1,226 +1,195 @@
 @extends('layouts.headclub')
-@section('title', 'Home')
-@section('club_name', 'CP club')
-@section('username', $user->std_id)
+
+@section('title', 'Club Leader Home')
+@section('club_name', $leaderclub->name)
+@section('username', $account->std_id)
+
 
 @section('style')
 <style>
-    * {
-    box-sizing: border-box;
-    }
-    main {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin: 2%; 
-        gap: 20px;
-    }
-    .box-welcome {
-        background: #f9f6f2;
-        border-radius: 40px;
-        padding: 10px 20px;
-        min-width: 200px;
-        text-align: center;
-    }
-    p.textWelcome {
-        text-align: center;
-        margin: 0;
-        font-size: 16px;
-        color: #333;
-    }
-    .box-clubLeader {
-        width: 90%;
-        height: 22vh;
-        background: #f9f6f2;
-        border-radius: 30px; 
-        padding: 10px;
-        box-sizing: border-box;
-    }
-    p.text-1 {
-        padding: 10px;
-        text-indent: 25px;
-        margin: 10px 0 10px 0;
-    }
-    .box-clubLeader img {
-        padding: 10px;
-        margin-top: -20px;
-        margin-left: 5em;
-        width: auto;
-        height: 100px;
-        border-radius: 30px;
-    }
-    .club-detail {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin: 30px 0px;
-    }
-    .club-detail img {
-        width: 5vw;
-        height: 9vh;
-        border-radius: 50%;
-    }
-    .club-detail a {
-        text-decoration: none;
-        font-size: 16px;
-        color: #333;
-        margin-bottom: 20px;
-    }
-    .request {
-        background: #f9f6f2;
-        border-radius: 30px;
-        border: 1px solid black;
-        padding: 5px 25px;
-        height: auto;
-        display: flex; 
-        align-items: center;
-        justify-content: center;
-    }
-    .box-request{
-        margin-left: 80%;
+    body {
+        background-color: #d9e7f3;
+        font-family: "Arial", sans-serif;
     }
 
-    a{
+    main {
+        width: 85%;
+        margin: 2% auto;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .welcome {
+        text-align: center;
+    }
+    .welcome span {
+        background: #f9f6f2;
+        padding: 10px 30px;
+        border-radius: 25px;
+        font-weight: bold;
+        font-size: 18px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    }
+
+    .request-btn {
+        position: absolute;
+        right: 70px;
+        top: 120px;
+        background: #f9f6f2;
+        border: 1px solid #000;
+        border-radius: 20px;
+        padding: 6px 20px;
         color: black;
+        font-weight: bold;
         text-decoration: none;
     }
-    .request:hover{
+
+    .request-btn:hover {
         background-color: #5E5F68;
         color: white;
     }
-    
-    .box-request span {
-        color:red;
+
+    .request-btn span {
+        color: red;
         font-weight: bold;
-        margin-left: 5px;
-    }
-    .showall{
-        display: flex;
-        justify-content: flex-start;
-        align-items: flex-start;
-        margin-left: 7%; 
-    }
-    .activity{
-        width: 45%;
-        height: 400px;
-        background: #f9f6f2;
-        border-radius: 30px; 
-        padding: 5px 30px;
-        display: flex;
-        flex-direction: column;
-        word-wrap: break-word;  
-        overflow-wrap: break-word;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    .activity hr {
-        height: 1px;  
-        background-color: #000000ff; 
-        margin: 10px 20px 10px -30px;       
-    }
-    .activity p.content{
-        margin: 2px 2px;
-    }
-    .activity p.content_head{
-        margin: 2px 2px;
     }
 
-    .showProfile{
-        width: 45%;
-        height: 400px;
+    /* กล่องโปรไฟล์ชมรม */
+    .club-header {
         background: #f9f6f2;
-        border-radius: 30px; 
-        padding: 15px 30px;
+        border-radius: 25px;
+        padding: 20px 40px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .club-header img {
+        width: 200px;
+        height: 120px;
+        border-radius: 15px;
+        object-fit: cover;
+        border: 1px solid #ccc;
+    }
+
+    .club-info {
+        flex: 1;
         margin-left: 40px;
-        overflow-y: auto;
-        overflow-x: hidden;
     }
-    .showProfile img{
-        width: 300px;
-        height: 200px;
-        margin: 0px 25%;
-        border-radius: 30px;
-    }
-    .showProfile p{
-        margin: 10px 0px;
 
-    }
-    .showProfile p.head{
-        text-align: center;
+    .club-info h3 {
+        font-size: 22px;
         font-weight: bold;
+        margin-bottom: 5px;
     }
-    .showProfile .btn_edit{
+
+    .club-info p {
+        margin: 0;
+        color: #444;
+    }
+
+    .edit-btn {
         background-color: #5E5F68;
         color: white;
         border: none;
         border-radius: 20px;
-        color: white;
-        padding: 8px 10px;
+        padding: 8px 20px;
         cursor: pointer;
-        font-size: 14px;
-        width: fit-content;
-        margin-left: 60%;
+        transition: 0.2s;
+        text-decoration: none;
     }
-    .btn_edit:hover{
-        background-color: #323339ff;
+
+    .edit-btn:hover {
+        background-color: #323339;
     }
-    .club-detail a:hover{
-        color: #5E5F68;
-        text-decoration: underline;
+
+    /* กล่องกิจกรรม */
+    .activity-section {
+        display: flex;
+        justify-content: center;
     }
+
+    .activity-box {
+        width: 60%;
+        background: #f9f6f2;
+        border-radius: 25px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        padding: 20px 30px;
+    }
+
+    .activity-box h4 {
+        font-size: 18px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .activity-item {
+        margin-bottom: 15px;
+    }
+
+    .activity-item strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .no-data {
+        font-style: italic;
+        color: #666;
+        text-align: center;
+    }
+
 </style>
 @endsection
 
 @section('body')
-    <main>
-            <div class="box-welcome">
-                <p class="textWelcome">Welcome Club leader</p>
-            </div> 
-            <div class="box-request">
-                <a href="{{ route('requestToleader',['from' => 'homepage', 'id_club' => $leaderclub->id ]) }}" class="request">คำร้องขอ | <span>{{$pendingCount}}</span></a>
-            </div>
+<main>
+    <div class="welcome">
+        <span>👋 Welcome Club Leader</span>
+    </div>
+
+    <!-- ปุ่มคำร้องขอ -->
+    <a href="{{ route('requestToleader', ['from' => 'homepage', 'id_club' => $leaderclub->id]) }}" class="request-btn">
+        คำร้องขอ | <span>{{ $pendingCount }}</span>
+    </a>
+
+    <!-- โปรไฟล์ชมรม -->
+    <div class="club-header">
+        <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="Club Image">
+        <div class="club-info">
+            <h3>{{ $leaderclub->name }}</h3>
+            <p>{{ $leaderclub->description ?? 'ไม่มีคำอธิบายชมรม' }}</p>
         </div>
-        <div class="box-clubLeader">
-            <p class="text-1">ชมรมที่คุณดูแลอยู่</p>
-            <div class="club-info">
-                <p class="club-detail">
-                    <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="Club Image">
-                    <a href="{{ route('clubHomepage',['id_club' => $leaderclub->id]) }}">
-                        {{$leaderclub->name}}</a>
-                </p>
-            </div>
+        <a href="{{ route('editProfile', ['from' => 'homepage', 'id_club' => $leaderclub->id]) }}" class="edit-btn">แก้ไขโปรไฟล์ชมรม</a>
+    </div>
+
+    <!-- กิจกรรม -->
+    <div class="activity-section">
+        <div class="activity-box">
+            <h4>
+                กิจกรรมทั้งหมดของชมรม
+                <a href="{{ route('showActivity', ['id_club' => $leaderclub->id]) }}" class="edit-btn">แก้ไขกิจกรรม</a>
+
+
+            </h4>
+
+            @if($activities->isEmpty())
+                <p class="no-data">ยังไม่มีกิจกรรม</p>
+            @else
+                @foreach($activities as $activity)
+                    <div class="activity-item">
+                        <strong>{{ $activity->activity_name }}</strong>
+                        <p>{{ $activity->description }}</p>
+                        <p>📅 {{ $activity->date }} | 🕒 {{ $activity->time }} | 📍 {{ $activity->location }}</p>
+                    </div>
+                @endforeach
+            @endif
         </div>
-    </main>
-        <div class="showall">
-            <div class="activity">
-                <p>กิจกรรมทั้งหมดของชมรม</p>
-                @if($activities->isEmpty())
-                    <p>ยังไม่มีกิจกรรม</p>
-                @else
-                    <ul>
-                        @foreach($activities as $activity)
-                            <li>
-                                <p class="content_head"><strong>{{ $activity->activity_name }}</strong></p>
-                                <p class="content" >
-                                รายละเอียด: {{ $activity->description }} <br>
-                                วันที่: {{ $activity->date }} เวลา: {{ $activity->time }} <br>
-                                สถานที่: {{ $activity->location }}</p>
-                            </li>
-                            <hr>
-                        @endforeach
-                    </ul>
-                @endif
-            </div>
-            <div class="showProfile">
-                <p>โปรไฟล์ชมรม</p>
-                <p class="head">{{$leaderclub->name}}</p>
-                <p><img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="Club Image"></p>
-                <br>
-                    <a href="{{ route('editProfile', ['from' => 'homepage', 'id_club' => $leaderclub->id ]) }}" class="btn_edit">แก้ไขโปรไฟล์ชมรม</a>
-            </div>
-        </div>
-    
+    </div>
+</main>
 @endsection

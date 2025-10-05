@@ -6,130 +6,94 @@ use App\Models\Club;
 use App\Models\Member;
 use App\Models\Account;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
 {
-    // ✅ หน้า Dashboard → แสดงเฉพาะชมรม approved
     public function dashboard()
     {
-        $clubs = Club::withCount('members')->where('status','approved')->get();
-        $user = Account::where('std_id', Session::get('std_id'))->first();
+        $user = session('user');
+        if (!$user) return redirect('/login');
 
+        $clubs = Club::withCount('members')->where('status', 'approved')->get();
         return view('admin_dashboard', compact('clubs', 'user'));
     }
 
-    // ✅ หน้า Requests → แสดงคำร้องทั้งหมด
     public function requests()
     {
-        $pendingClubs = Club::where('status','pending')->get();
+        $user = session('user');
+        if (!$user) return redirect('/login');
 
-        $pendingLeaders = Member::with('account','club')
-            ->where('role','หัวหน้าชมรม')
-            ->where('status','pending_leader')->get();
+        $pendingClubs = Club::where('status', 'pending')->get();
+        $pendingLeaders = Member::where('role', 'หัวหน้าชมรม')
+            ->where('status', 'pending_leader')->with('club')->get();
+        $pendingResign = Member::where('role', 'หัวหน้าชมรม')
+            ->where('status', 'pending_resign')->with('club')->get();
 
-        $pendingResign = Member::with('account','club')
-            ->where('role','หัวหน้าชมรม')
-            ->where('status','pending_resign')->get();
-
-        $user = Account::where('std_id', Session::get('std_id'))->first();
-
-        return view('admin_requests', compact('pendingClubs','pendingLeaders','pendingResign','user'));
+        return view('admin_requests', compact('pendingClubs', 'pendingLeaders', 'pendingResign', 'user'));
     }
 
-    // ✅ อนุมัติ/ปฏิเสธการสร้างชมรม
-    public function approveClub($club_id)
+    public function approveClub($id)
     {
-        $club = Club::findOrFail($club_id);
-        $club->status = 'approved';
-        $club->save();
+        $club = Club::findOrFail($id);
+        $club->update(['status' => 'approved']);
+        Member::where('club_id', $club->id)->update(['status' => 'approved']);
 
-        // สมาชิกที่สร้าง → approved ด้วย
-        Member::where('club_id',$club->id)->update(['status'=>'approved']);
-
-        return back()->with('success','✅ อนุมัติสร้างชมรมแล้ว');
+        return back()->with('success', '✅ อนุมัติชมรมเรียบร้อย');
     }
 
-    public function rejectClub($club_id)
+    public function rejectClub($id)
     {
-        $club = Club::findOrFail($club_id);
+        $club = Club::findOrFail($id);
         $club->delete();
-        return back()->with('success','❌ ปฏิเสธคำขอสร้างชมรมแล้ว');
+        return back()->with('success', '❌ ปฏิเสธคำขอสร้างชมรมแล้ว');
     }
 
-    // ✅ อนุมัติ/ปฏิเสธการขอเป็นหัวหน้า
-    public function approveLeader($member_id)
+    public function updatePassword(Request $request, $std_id)
     {
-        $member = Member::findOrFail($member_id);
-        $has = Member::where('club_id',$member->club_id)
-            ->where('role','หัวหน้าชมรม')
-            ->where('status','approved')->exists();
-
-        if($has){
-            return back()->withErrors(['msg'=>'⚠ มีหัวหน้าชมรมอยู่แล้ว']);
-        }
-
-        $member->status = 'approved';
-        $member->save();
-        return back()->with('success','✅ อนุมัติหัวหน้าชมรมแล้ว');
+        $account = Account::where('std_id', $std_id)->firstOrFail();
+        $account->update(['password' => $request->new_password]);
+        return back()->with('success', 'อัปเดตรหัสผ่านเรียบร้อย');
     }
 
-    public function rejectLeader($member_id)
-    {
-        $member = Member::findOrFail($member_id);
-        $member->role = 'สมาชิก';
-        $member->status = 'approved';
-        $member->save();
-        return back()->with('success','❌ ปฏิเสธคำขอเป็นหัวหน้าแล้ว');
-    }
-
-    // ✅ อนุมัติคำขอลาออกของหัวหน้า → เปลี่ยนเป็นสมาชิก
-    public function approveResign($member_id)
-    {
-        $member = Member::findOrFail($member_id);
-        $member->role = 'สมาชิก';
-        $member->status = 'approved';
-        $member->save();
-        return back()->with('success','✅ อนุมัติการลาออกของหัวหน้าแล้ว');
-    }
-
-    // แสดงฟอร์มแก้ไขชมรม
     public function editClub($id)
     {
         $club = Club::with(['members.account'])->findOrFail($id);
         return view('admin_edit_club', compact('club'));
     }
 
-    public function editMember($member_id)
+    public function updateClub(Request $request, $id)
     {
-        $member = Member::with('account')->findOrFail($member_id);
-        return view('admin_edit_member', compact('member'));
-    }
-
-    public function updateMember(Request $request, $member_id)
-    {
-        $member = Member::findOrFail($member_id);
-        $member->role = $request->input('role');
-        $member->status = $request->input('status');
-        $member->save();
-
-        return redirect()->back()->with('success', 'อัปเดตข้อมูลสมาชิกเรียบร้อยแล้ว');
-    }
-
-    // อัปเดตข้อมูลชมรม
-    public function updateClub(Request $request, $club_id)
-    {
-        $club = Club::findOrFail($club_id);
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+        $club = Club::findOrFail($id);
+        $club->update([
+            'name' => $request->name,
+            'description' => $request->description,
         ]);
 
-        $club->name = $request->name;
-        $club->description = $request->description;
-        $club->save();
-
-        return redirect()->route('admin.dashboard')->with('success', 'แก้ไขชมรมเรียบร้อยแล้ว');
+        return redirect()->route('admin.dashboard')->with('success', 'อัปเดตชมรมแล้ว');
     }
+    public function destroyClub($id)
+{
+    $club = \App\Models\Club::findOrFail($id);
+
+    // ลบสมาชิกในชมรมนี้ทั้งหมดก่อน เพื่อไม่ให้ foreign key error
+    \App\Models\Member::where('club_id', $id)->delete();
+
+    // ลบชมรม
+    $club->delete();
+
+    return redirect()->route('admin.dashboard')->with('success', 'ลบชมรมเรียบร้อยแล้ว');
+}
+public function editMembers($id)
+{
+    $club = \App\Models\Club::with('members')->findOrFail($id);
+    return view('admin_edit_member', compact('club'));
+}
+public function editSingleMember($club_id, $member_id)
+{
+    $club = \App\Models\Club::findOrFail($club_id);
+    $member = \App\Models\Member::findOrFail($member_id);
+
+    return view('admin_edit_member', compact('club', 'member'));
+}
+
 }

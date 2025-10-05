@@ -153,8 +153,10 @@
 @section('body')
     <main>
             <div class="box-select">
-                <a href="{{ route('backtoHome', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
-                <a href="{{ route('requestToleader',['from' => 'club', 'id_club' => $leaderclub->id ]) }}" class="request">คำร้องขอ | <span class="showtotal">{{$pendingCount}}</span></a>
+                <a href="{{ route('backtoHome', ['id_club' => $leaderclub->id]) }}" class="back">⬅ กลับไป</a>
+               <a href="{{ route('requestToleader', ['from' => 'club', 'id_club' => $leaderclub->id]) }}" class="request">
+    คำร้องขอ | <span>{{$pendingCount}}</span>
+</a>
             </div>
             <div class="box-member_edit">
                 <a href="{{ route('requestToleader',['from' => 'club', 'id_club' => $leaderclub->id ]) }}">สมาชิกทั้งหมด</a>

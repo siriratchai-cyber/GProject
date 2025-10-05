@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title')</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <title>@yield('title') - CP Club</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: "Arial", sans-serif;
             margin: 0;
-            background: #d9e7f3;
+            background-color: #d9e7f3;
+            font-family: "Arial", sans-serif;
         }
 
         header {
@@ -21,20 +20,24 @@
             justify-content: space-between;
             padding: 10px 30px;
         }
-        header .logo {
+
+        .logo {
             font-size: 32px;
             font-weight: bold;
             font-family: "Georgia", cursive;
         }
-        header .nav {
+
+        .nav {
             display: flex;
             gap: 20px;
         }
-        header .nav a {
+
+        .nav a {
             color: white;
             text-decoration: none;
             font-weight: bold;
         }
+
         .username-box {
             background: #1a3552;
             padding: 5px 15px;
@@ -43,20 +46,27 @@
             margin-right: 15px;
             display: inline-block;
         }
+
+        main {
+            padding: 20px;
+        }
+
+        @yield('style')
     </style>
-    @section('style')
-    @show
 </head>
+
 <body>
-    <header>
-        <div class="username-box">@yield('username')</div>
-        <div class="logo">@yield('club_name')</div>
-        <div class="nav">
-            <a href="/clubs">Club</a>
-            <a href="/logout">Logout</a>
-        </div>
-    </header>
-    @section('body')
-    @show
+<header>
+    <div class="username-box">@yield('username')</div>
+    <div class="logo">@yield('club_name', 'CP Club')</div>
+    <div class="nav">
+        <a href="{{ route('clubs.index') }}">Club</a>
+        <a href="{{ route('logout') }}">Logout</a>
+    </div>
+</header>
+
+<main>
+    @yield('body')
+</main>
 </body>
 </html>

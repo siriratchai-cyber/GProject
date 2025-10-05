@@ -1,272 +1,101 @@
 @extends('layouts.headclub')
-@section('title', 'Activity')
+@section('title', 'กิจกรรมชมรม')
 @section('club_name', $leaderclub->name)
 @section('username', $user->std_id)
 
-
 @section('style')
 <style>
-    main {
-        display: flex;
-        flex-direction: column;
-        margin: 3% 10%; 
-        gap: 20px;
-    }
-    p{
-        font-size: 18px;
-    }
-    div .box-activity{
-        width: 100%;
-        height: auto;
-        background: #f9f6f2;
-        border-radius: 30px; 
-        padding: 10px;
-        display: flex;
-        padding: 10px 20px;
-        display: flex;
-        word-wrap: break-word;  
-        overflow-wrap: break-word;
-        gap: 10px;
-    }
-    
-    div .back{
-        background: #d9e7f3;
-        border-radius: 30px;
-        border: 1px solid black;
-        width: 10%;
-        height: 10%;
-        padding: 5px 20px;
-        margin-left: -8%;
-        display: flex; 
-        align-items: center;
-        justify-content: flex-start;
-    }
-    a{
-        color: black;
-        text-decoration: none;
-    }
+    main { display:flex; flex-direction:column; margin:3% 10%; gap:20px; }
+    p{ font-size:18px; }
+    .box-activity{ background:#f9f6f2; border-radius:30px; padding:20px; display:flex; flex-direction:column; gap:8px;}
+    .back{ background:#d9e7f3; border:1px solid black; border-radius:30px; width:fit-content; padding:6px 20px;}
+    .back:hover{background:#5E5F68; color:white;}
+    a{ text-decoration:none; color:black; }
 
-    .box-activity form {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        gap: 5px;
-        margin: 3% 20%;
-    }
+    input,textarea{ width:80%; border:1px solid #ccc; border-radius:10px; padding:6px 10px; font-size:14px; }
+    textarea{ min-height:60px; }
 
-    .box-activity label {
-        font-weight: bold;
-        font-size: 14px;
-    }
+    .btn-save{ background:#5E5F68; color:white; border:none; border-radius:20px; padding:8px 20px; margin-top:10px; cursor:pointer;}
+    .btn-save:hover{ background:#A9CF88; color:#303032; }
+    .btn-delete{ background:#F69191; border:none; border-radius:20px; padding:6px 25px; color:black; cursor:pointer;}
+    .btn-delete:hover{ background:red; color:white;}
+    .btn-cancel{ border:1px solid black; background:#f9f6f2; border-radius:20px; padding:6px 25px;}
+    .btn-cancel:hover{ background:red; color:white;}
 
-    .box-activity input,
-    .box-activity textarea {
-        width: 80%;
-        padding: 6px 10px;
-        border-radius: 10px;
-        border: 1px solid #ccc;
-        font-size: 14px;
-    }
-
-    .box-activity textarea {
-        min-height: 60px;
-    }
-
-    .btn-save {
-        background-color: #5E5F68;
-        color: white;
-        border: none;
-        border-radius: 20px;
-        color: white;
-        padding: 8px 15px;
-        cursor: pointer;
-        font-size: 14px;
-        width: fit-content;
-        margin-left: 70%;
-    }
-    .back:hover{
-        background-color: #5E5F68;
-        color: white;
-    }
-    .btn-save:hover{
-        color: #303032ff;
-        background-color: #A9CF88;
-    }
-
-    .showactivity{
-        border-collapse: collapse;
-        font-size: 16px;
-        min-width: 400px;
-        width: 100%;
-        border-radius: 10px 10px 5px 5px;
-        overflow: hidden;
-        box-shadow: 0 0 20px rgba(0, 0, 0,0.15);
-        background-color: #f9f6f2;
-        margin-bottom: 30px;
-    }
-    .showactivity thead tr{
-        background-color: #5E5F68;
-        color: white;
-        text-align: center;
-        font-weight: bold;
-    }
-    .showactivity th, .showactivity td{
-        padding: 10px 55px;
-    }
-    .showactivity tr{
-        border-bottom: 1px solid #5E5F68;
-    }
-    .box-showactivity{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-    p{
-        text-align: left;
-        margin-bottom: 0px;
-    }
-    .btn-delete{
-        border-style: none;
-        color: black;
-        background-color: #F69191;
-        font-size: 14px;
-        cursor: pointer;
-        padding: 10px 40px;
-        border-radius: 20px;
-        margin-left: 40px;
-    }
-    .btn-delete:hover{
-        background-color: red;
-        color: white;
-    }
-    a.btn-edit{
-        border: 1px solid black;
-        padding: 10px 20px;
-        border-radius: 30px;
-    }
-    a.btn-edit:hover{
-        color: white;
-        background-color: #5E5F68;
-    }
-    span{
-        margin: 0% 45%;
-    }
-    .action-btns {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        justify-content: flex-end;
-    }
-    .btn-save_cancel{
-        display: flex;
-    }
-    .btn-cancel{
-        border: 1px solid black;
-        color: black;
-        background-color: #f9f6f2;
-        font-size: 14px;
-        cursor: pointer;
-        padding: 10px 20px;
-        border-radius: 20px;
-        margin-left: 10px;
-        cursor: pointer;
-    }
-    .btn-cancel:hover{
-        color: white;
-        background-color: red;
-    }
-
+    table{ width:100%; border-collapse:collapse; background:#f9f6f2; box-shadow:0 0 8px rgba(0,0,0,.1);}
+    th{ background:#5E5F68; color:white; padding:10px; text-align:center;}
+    td{ padding:10px; text-align:center;}
 </style>
 @endsection
 
 @section('body')
-    <main>
-        <div>
-            <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
-        </div>
-        <p class="text-show">กิจกรรมที่กำลังดำเนินการอยู่</p>
-        <div class="box-showactivity">
-            <table class="showactivity">
-                <thead>
-                    <th>วัน</th><th>ชื่อกิจกรรม</th><th></th>
-                </thead>
-                <tbody>
-                    @if($activities->isEmpty())
-                        <tr><td colspan="3"><span>ยังไม่มีกิจกรรม</span></td></tr>
-                    @else
-                    @foreach($activities as $a)
-                    <tr>
-                        <td>{{ $a->date }}</td>
-                        <td>{{ $a->activity_name }}</td>
-                        <td>
-                            <div class="action-btns">
-                                <form action="{{ route('deleteActivity', ['id_club' => $leaderclub->id, 'id_activity' => $a->id ]) }}" method="post">
-                                    @csrf
-                                    <input type="submit" value="ลบ" class="btn-delete">
-                                </form>
-                                <a href="{{ route('editActivity', ['id_club' => $leaderclub->id, 'id_activity' => $a->id ]) }}" class="btn-edit">แก้ไข</a>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                    @endif
-                </tbody>
-            </table>
-        </div>
-        @if( $activity == null )
+<main>
+    <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id]) }}" class="back">⬅ กลับไป</a>
+
+    <p>กิจกรรมที่กำลังดำเนินการอยู่</p>
+    <table>
+        <thead><tr><th>วันที่</th><th>ชื่อกิจกรรม</th><th>การจัดการ</th></tr></thead>
+        <tbody>
+            @forelse($activities as $a)
+                <tr>
+                    <td>{{ $a->date }}</td>
+                    <td>{{ $a->activity_name }}</td>
+                    <td>
+                        <form action="{{ route('deleteActivity',['id'=>$leaderclub->id,'activity_id'=>$a->id]) }}" method="POST" style="display:inline">
+
+                            @csrf
+                            <button class="btn-delete">ลบ</button>
+                        </form>
+                        <a href="{{ route('editActivity',['id'=>$leaderclub->id,'activity_id'=>$a->id]) }}" class="btn-cancel">แก้ไข</a>
+
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="3">ยังไม่มีกิจกรรม</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <hr>
+
+    @if(!isset($activity) || !$activity)
         <p>เพิ่มกิจกรรมใหม่</p>
-        <div>
-            <div class="box-activity">
-               <form action="{{ route('addActivity', ['id_club' => $leaderclub->id ]) }}" method="post">
+        <div class="box-activity">
+            <form method="POST" action="{{ route('addActivity',['id'=>$leaderclub->id]) }}">
+
                 @csrf
-                <label>ชื่อกิจกรรม: </label>
-                <input type="text" name="name" required><br>
-
-                <label>รายละเอียดกิจกรรม:</label>
-                <textarea name="description" required></textarea><br>
-
-                <label>วันที่: </label>
+                <label>ชื่อกิจกรรม</label>
+                <input type="text" name="name" required>
+                <label>รายละเอียดกิจกรรม</label>
+                <textarea name="description" required></textarea>
+                <label>วันที่</label>
                 <input type="date" name="date" required>
-
-                <label>เวลา: </label>
-                <input type="time" name="time" required><br>
-
-                <label>สถานที่: </label>
-                <input type="text" name="location" required><br><br>
-
+                <label>เวลา</label>
+                <input type="time" name="time" required>
+                <label>สถานที่</label>
+                <input type="text" name="location" required>
                 <button type="submit" class="btn-save">บันทึกข้อมูล</button>
             </form>
-            </div>
         </div>
-        @elseif($activity != null)
-        <p>แก้ไขรายละเอียดกิจกรรม</p>
-        <div>
-            <div class="box-activity">
-               <form action="{{ route('updateActivity', ['id_club' => $leaderclub->id, 'id_activity' => $activity->id ]) }}" method="post">
+    @else
+        <p>แก้ไขกิจกรรม</p>
+        <div class="box-activity">
+            <form method="POST" action="{{ route('updateActivity',['id_club'=>$leaderclub->id,'id_activity'=>$activity->id]) }}">
                 @csrf
-                <label>ชื่อกิจกรรม: </label>
-                <input type="text" name="name" value="{{ $activity->activity_name }}" required><br>
-
-                <label>รายละเอียดกิจกรรม:</label>
-                <textarea name="description">{{ $activity->description }}</textarea><br>
-
-                <label>วันที่: </label>
+                <label>ชื่อกิจกรรม</label>
+                <input type="text" name="name" value="{{ $activity->activity_name }}" required>
+                <label>รายละเอียด</label>
+                <textarea name="description">{{ $activity->description }}</textarea>
+                <label>วันที่</label>
                 <input type="date" name="date" value="{{ $activity->date }}" required>
-
-                <label>เวลา: </label>
-                <input type="time" name="time" value="{{ $activity->time }}" required><br>
-
-                <label>สถานที่: </label>
-                <input type="text" name="location" value="{{ $activity->location }}" required><br><br>
-
-                <div class="btn-save_cancel">
-                    <button type="submit" class="btn-save">บันทึกข้อมูล</button>
-                    <a href="{{ route('showActivity', ['id_club' => $leaderclub->id ]) }}" class="btn-cancel">ยกเลิก</a>
-                </div>
+                <label>เวลา</label>
+                <input type="time" name="time" value="{{ $activity->time }}" required>
+                <label>สถานที่</label>
+                <input type="text" name="location" value="{{ $activity->location }}" required>
+                <button type="submit" class="btn-save">บันทึก</button>
+                <a href="{{ route('showActivity',['id_club'=>$leaderclub->id]) }}" class="btn-cancel">ยกเลิก</a>
             </form>
-            </div>
         </div>
-        @endif
-    </main>
+    @endif
+</main>
 @endsection

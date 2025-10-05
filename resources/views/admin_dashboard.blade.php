@@ -2,115 +2,47 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Dashboard - CP club</title>
+  <title>Admin Dashboard - CP Club</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { font-family: "Arial", sans-serif; margin: 0; background:#d9e7f3; }
-    header {
-      background: #2d3e50;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 30px;
-    }
-    header .logo {
-      font-size: 32px;
-      font-weight: bold;
-      font-family: "Georgia", cursive;
-    }
-    header .nav {
-      display: flex;
-      gap: 20px;
-    }
-    header .nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .username-box {
-      background: #1a3552;
-      padding: 5px 15px;
-      color: white;
-      border-radius: 5px;
-      margin-right: 15px;
-      display: inline-block;
-    }
-
-    /* ปุ่มคำร้องขอเหมือนปุ่มสร้างชมรม */
-    .create-btn {
-      display: flex;
-      justify-content: flex-end;
-      padding: 20px 30px 0 30px;
-    }
-    .create-btn a {
-      background: white;
-      border: 1px solid #bbb;
-      border-radius: 20px;
-      padding: 8px 15px;
-      cursor: pointer;
-      font-size: 14px;
-      text-decoration: none;
-      color: #000;
-    }
-
-    .clubs { margin:30px; background:#f9f6f2; padding:20px; border-radius:20px; }
-    .club-list { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
-    .club-card { background:white; padding:15px; border-radius:15px; display:flex; justify-content:space-between; align-items:center; }
-    .btn { padding:6px 12px; border:none; border-radius:12px; cursor:pointer; font-size:14px; }
-    .edit { background:#f7e58d; }
-    .delete { background:#f69191; }
-
-    .welcome {
-      text-align: center;
-      margin: 20px 0;
-    }
-    .welcome span {
-      background: #f5f5f5ff;
-      padding: 10px 30px;
-      border-radius: 20px;
-      font-weight: bold;
-    }
+    body{font-family:'Sarabun',sans-serif;background:#d9e7f3;}
+    header{background:#2d3e50;color:white;display:flex;justify-content:space-between;align-items:center;padding:12px 30px;}
+    .club-title{font-weight:800;font-size:1.8rem;}
+    .request-btn{background:white;border-radius:20px;padding:6px 16px;border:1px solid #ccc;text-decoration:none;color:black;}
+    .request-btn:hover{background:#f0f0f0;}
+    .card{background:#f9f6f2;border-radius:15px;padding:20px;margin:15px;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+    .btn-edit{background:#fff8c6;border:1px solid #ccc;border-radius:20px;padding:4px 10px;}
+    .btn-delete{background:#f69191;color:white;border:none;border-radius:20px;padding:4px 10px;}
   </style>
 </head>
 <body>
-
 <header>
-  <div class="username-box">{{ $user->std_id }}</div>
-  <div class="logo">CP club</div>
-  <div class="nav">
-    <a href="{{ route('admin.dashboard') }}">Dashboard</a>
-    <a href="{{ route('logout') }}">Logout</a>
+  <div class="club-title">CP Club</div>
+  <div>
+    <a href="{{ route('admin.requests') }}" class="request-btn">คำร้องขอ</a>
+    <a href="{{ route('logout') }}" style="color:white;text-decoration:none;font-weight:bold;">Logout</a>
   </div>
 </header>
 
- <div class="welcome">
-    <span>Welcome {{ $user->std_name }}</span>
-  </div>
-
-<div class="create-btn">
-  <a href="{{ route('admin.requests') }}">คำร้องขอ</a>
-</div>
-
-<div class="clubs">
+<div class="container mt-4">
   <h3>ชมรมทั้งหมด</h3>
-  <div class="club-list">
+  <div class="row">
     @forelse($clubs as $club)
-      <div class="club-card">
-        <span>{{ $club->name }}</span>
-        <div>
-
-         <a href="{{ route('admin.clubs.edit', $club->id) }}" class="btn edit">EDIT</a>
-
-            @csrf
-            <button class="btn delete" type="submit">DELETE</button>
-          </form>
-        </div>
+    <div class="col-md-4">
+      <div class="card">
+        <h5>{{ $club->name }}</h5>
+        <p>{{ $club->description }}</p>
+        <a href="{{ route('admin.clubs.edit',$club->id) }}" class="btn-edit">EDIT</a>
+        <form action="{{ route('admin.clubs.destroy',$club->id) }}" method="POST" style="display:inline;">
+          @csrf @method('DELETE')
+          <button class="btn-delete" onclick="return confirm('ลบชมรมนี้หรือไม่?')">DELETE</button>
+        </form>
       </div>
+    </div>
     @empty
-      <p>- ไม่มีชมรม -</p>
+    <p class="text-center">ยังไม่มีชมรมในระบบ</p>
     @endforelse
   </div>
 </div>
-
 </body>
 </html>
