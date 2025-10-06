@@ -71,29 +71,130 @@ class AdminController extends Controller
 
         return redirect()->route('admin.dashboard')->with('success', 'อัปเดตชมรมแล้ว');
     }
+
     public function destroyClub($id)
-{
-    $club = \App\Models\Club::findOrFail($id);
+    {
+        $club = Club::findOrFail($id);
 
-    // ลบสมาชิกในชมรมนี้ทั้งหมดก่อน เพื่อไม่ให้ foreign key error
-    \App\Models\Member::where('club_id', $id)->delete();
+        // ลบสมาชิกในชมรมนี้ทั้งหมดก่อน เพื่อไม่ให้ foreign key error
+        Member::where('club_id', $id)->delete();
 
-    // ลบชมรม
-    $club->delete();
+        // ลบชมรม
+        $club->delete();
 
-    return redirect()->route('admin.dashboard')->with('success', 'ลบชมรมเรียบร้อยแล้ว');
-}
+        return redirect()->route('admin.dashboard')->with('success', 'ลบชมรมเรียบร้อยแล้ว');
+    }
+
+       
 public function editMembers($id)
 {
     $club = \App\Models\Club::with('members')->findOrFail($id);
-    return view('admin_edit_member', compact('club'));
+    return view('admin_members_list', compact('club'));
 }
+
 public function editSingleMember($club_id, $member_id)
 {
-    $club = \App\Models\Club::findOrFail($club_id);
-    $member = \App\Models\Member::findOrFail($member_id);
+    $club = Club::findOrFail($club_id);
 
-    return view('admin_edit_member', compact('club', 'member'));
+    $member = Member::where('club_id', $club_id)
+        ->where('id', $member_id)
+        ->firstOrFail();
+
+    // ถ้าไม่มี account ให้สร้างใหม่อัตโนมัติ (ใช้ข้อมูลจาก member)
+    $account = Account::firstOrCreate(
+        ['std_id' => $member->student_id],
+        [
+            'std_name' => $member->name,
+            'email' => strtolower($member->name) . '@gmail.com',
+            'password' => '12345678', // ✅ รหัสผ่านข้อความธรรมดา
+            'major' => 'CS',
+            'year' => 1,
+            'role' => 'นักศึกษา',
+        ]
+    );
+
+    return view('admin_edit_member', compact('club', 'member', 'account'));
+}
+
+
+
+
+
+    public function updateMember(Request $request, $club_id, $member_id)
+{
+    // ✅ ตรวจสอบข้อมูลจากฟอร์ม
+    $data = $request->validate([
+        'std_name' => 'nullable|string|max:255',
+        'std_id' => 'nullable|string|max:20',
+        'email' => 'nullable|email',
+        'password' => 'nullable|string|max:255',
+        'major' => 'nullable|string|max:50',
+        'year' => 'nullable|integer',
+        'role' => 'nullable|string',
+        'status' => 'nullable|string',
+    ]);
+
+    // ✅ ดึงข้อมูล member ในชมรมนี้
+    $member = Member::where('club_id', $club_id)
+        ->where('id', $member_id)
+        ->firstOrFail();
+
+    // ✅ อัปเดต role / status ของ member (ค่ามาจาก hidden input)
+    $member->role = $data['role'] ?? $member->role;
+    $member->status = $data['status'] ?? $member->status;
+    $member->save();
+
+    // ✅ อัปเดตข้อมูลในตาราง accounts
+    $account = Account::where('std_id', $member->student_id)->first();
+    if ($account) {
+        $account->update([
+            'std_name' => $data['std_name'] ?? $account->std_name,
+            'email' => $data['email'] ?? $account->email,
+            'password' => $data['password'] ?? $account->password,
+            'major' => $data['major'] ?? $account->major,
+            'year' => $data['year'] ?? $account->year,
+        ]);
+    }
+
+    return redirect()->route('admin.members.edit', $club_id)
+        ->with('success', '✅ อัปเดตข้อมูลสมาชิกเรียบร้อยแล้ว');
+}
+
+    public function addMember(Request $request, $club_id)
+{
+    $request->validate([
+        'student_id' => 'required|string',
+        'name' => 'required|string|max:255',
+        'role' => 'required|string',
+        'status' => 'required|string',
+        'major' => 'nullable|string',
+        'year' => 'nullable|string'
+    ]);
+
+    // 🔹 ถ้ายังไม่มี account ให้สร้างอัตโนมัติ
+    $account = Account::firstOrCreate(
+        ['std_id' => $request->student_id],
+        [
+            'std_name' => $request->name,
+            'email' => strtolower(str_replace(' ', '', $request->name)) . '@gmail.com',
+            'password' =>'12345678',
+            'major' => $request->major ?? '',
+            'year' => $request->year ?? '',
+            'role' => 'นักศึกษา'
+        ]
+    );
+
+    // 🔹 เพิ่มข้อมูลในตาราง members
+    Member::create([
+        'club_id' => $club_id,
+        'name' => $request->name,
+        'student_id' => $request->student_id,
+        'role' => $request->role,
+        'status' => $request->status
+    ]);
+
+    return redirect()->route('admin.members.edit', $club_id)
+        ->with('success', 'เพิ่มสมาชิกใหม่และสร้างบัญชีให้อัตโนมัติแล้ว');
 }
 
 }
