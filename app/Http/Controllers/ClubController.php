@@ -19,10 +19,11 @@ class ClubController extends Controller
         return view('cpclub', compact('clubs', 'user'));
     }
     public function show($id)
-{
-    $club = Club::with('members', 'activities')->findOrFail($id);
-    return view('club_detail', compact('club'));
-}
+    {
+        $club = Club::with('members', 'activities')->findOrFail($id);
+        $activities = $club->activities;
+        return view('club_detail', compact('club', 'activities'));
+    }
 
 
     /** -------------------- หน้า Create Club -------------------- */

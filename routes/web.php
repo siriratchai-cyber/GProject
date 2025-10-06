@@ -11,6 +11,9 @@ use App\Http\Controllers\ActivityController;
 | Web Routes
 |--------------------------------------------------------------------------
 */
+// 🔹 หน้า forgot password
+Route::get('/forgot-password', function () {return view('Forgot_password');})->name('forgotpassword.form');
+Route::post('/forgot-password', [UserController::class, 'resetPassword'])->name('forgotpassword.reset');
 
 // 🔹 หน้า Login & Register
 Route::get('/login', [UserController::class, 'login'])->name('login'); // ✅ GET - แสดงหน้า login

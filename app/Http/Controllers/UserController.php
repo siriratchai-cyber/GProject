@@ -126,4 +126,24 @@ class UserController extends Controller
         Session::flush();
         return redirect('login')->with('success', 'ออกจากระบบแล้ว');
     }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string',
+            'new_password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $account = Account::where('email', $request->email)->first();
+
+        if (!$account) {
+            return back()->with('error', '❌ ไม่พบรหัสนักศึกษานี้ในระบบ');
+        }
+
+        $account->password = $request->new_password;
+        $account->save();
+
+        return redirect('/login')->with('success', '✅ เปลี่ยนรหัสผ่านสำเร็จ');
+    }
+
 }

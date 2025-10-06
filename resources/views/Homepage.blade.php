@@ -64,10 +64,8 @@
       @else
         @foreach($myClubs as $club)
           <div class="club-item">
-            <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('default.jpg') }}">
-            <a href="{{ route('clubs.show', ['id' => $club->id]) }}">{{ $club->name }}</a>
-
-
+            <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('default.jpg') }}" style="width:60px;height:60px;border-radius:50%;">
+            <a href="{{ route('clubs.show', ['id' => $club->id]) }}" style="font-weight:bold;text-decoration:none;color:#000;" >{{ $club->name }}</a>
           </div>
         @endforeach
       @endif
@@ -81,7 +79,7 @@
       @else
         @foreach($upcomingActivities as $act)
           <div class="activity-item">
-            <img src="{{ $act->club->image ? asset('storage/'.$act->club->image) : asset('default.jpg') }}" alt="club">
+            <img src="{{ $act->club->image ? asset('storage/'.$act->club->image) : asset('default.jpg') }}" alt="club" style="width:40px;height:40px;border-radius:50%;">
             <div>
               <b>{{ $act->club->name }}</b><br>
               วันที่ {{ \Carbon\Carbon::parse($act->date)->format('d F Y') }}<br>
