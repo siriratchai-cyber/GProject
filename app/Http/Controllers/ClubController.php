@@ -47,7 +47,6 @@ class ClubController extends Controller
     $request->validate([
         'name' => 'required|string|max:255',
         'description' => 'required|string',
-        'major' => 'required|string', // สาขาที่เลือก
     ]);
 
     // ตรวจชื่อชมรมซ้ำในระบบ
