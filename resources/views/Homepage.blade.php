@@ -65,7 +65,9 @@
         @foreach($myClubs as $club)
           <div class="club-item">
             <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('default.jpg') }}">
-            <a href="#">{{ $club->name }}</a>
+            <a href="{{ route('clubs.show', ['id' => $club->id]) }}">{{ $club->name }}</a>
+
+
           </div>
         @endforeach
       @endif

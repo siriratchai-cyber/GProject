@@ -87,13 +87,15 @@ Swal.fire({ icon:'error', title:'ไม่สำเร็จ!', text:"{{ implode
 
 <!-- Buttons -->
 <div class="actions">
-  @if(!$hasLeader)
-  <form action="{{ route('clubs.requestLeader',$club->id) }}" method="POST">
+  @if(empty($hasLeader) || !$hasLeader)
+  <form action="{{ route('requestToleader', ['id_club' => $club->id, 'from' => 'clubdetail']) }}" method="GET">
     @csrf
     <button type="submit" class="btn">ขอเป็นหัวหน้าชมรม</button>
   </form>
-  @endif
-  <form id="leaveForm" action="{{ route('clubs.leave',$club->id) }}" method="POST">
+@endif
+
+  <form id="leaveForm" action="{{ route('clubs.cancel', $club->id) }}" method="POST">
+
     @csrf
     <button type="button" class="btn" onclick="confirmLeave()">ออกจากชมรม</button>
   </form>
@@ -178,23 +180,24 @@ Swal.fire({ icon:'error', title:'ไม่สำเร็จ!', text:"{{ implode
     showActivities(today);
   });
 
-  function confirmLeave() {
-    Swal.fire({
-      title: 'ยืนยันการออกจากชมรม?',
-      text: "คุณแน่ใจหรือไม่ว่าต้องการออกจากชมรมนี้",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ใช่, ออกจากชมรม',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        document.getElementById('leaveForm').submit();
-      }
-    })
-  }
+function confirmLeave() {
+  Swal.fire({
+    title: 'ยืนยันการออกจากชมรม?',
+    text: "คุณแน่ใจหรือไม่ว่าต้องการออกจากชมรมนี้",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'ใช่, ออกจากชมรม',
+    cancelButtonText: 'ยกเลิก'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('leaveForm').submit();
+    }
+  });
+}
 </script>
+
 
 </body>
 </html>
