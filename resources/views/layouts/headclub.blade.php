@@ -50,9 +50,8 @@
         main {
             padding: 20px;
         }
-
-        @yield('style')
     </style>
+    @yield('style')
 </head>
 
 <body>
@@ -60,7 +59,7 @@
     <div class="username-box">@yield('username')</div>
     <div class="logo">@yield('club_name', 'CP Club')</div>
     <div class="nav">
-        <a href="{{ route('clubs.index') }}">Club</a>
+
         <a href="{{ route('logout') }}">Logout</a>
     </div>
 </header>

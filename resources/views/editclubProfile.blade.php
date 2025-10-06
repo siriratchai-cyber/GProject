@@ -1,42 +1,44 @@
 @extends('layouts.headclub')
-@section('title', 'Edit Club Profile')
+@section('title', 'Activity')
 @section('club_name', $leaderclub->name)
 @section('username', $user->std_id)
 
 @section('style')
 <style>
     main {
+        width: 95%;
+        margin: 2% auto;
         display: flex;
         flex-direction: column;
-        margin: 3% 10%; 
-        gap: 20px;
+        gap: 5px;
     }
     .btn-save {
         background-color: #5E5F68;
         color: white;
         border: none;
         border-radius: 20px;
+        color: white;
         padding: 8px 15px;
         cursor: pointer;
         font-size: 14px;
         width: fit-content;
         margin-left: 65%;
-        transition: 0.3s;
     }
-    .btn-save:hover{
-        color: #303032ff;
-        background-color: #A9CF88;
-    }
-    .back {
-        background: #d9e7f3;
-        border-radius: 30px;
-        border: 1px solid black;
-        width: 10%;
-        padding: 5px 20px;
-        text-align: center;
-        text-decoration: none;
+    .back{
+        position: absolute;
+        left: 5%;
+        top: 12%;
+        background: none;
+        border: 1px solid #000;
+        border-radius: 20px;
+        padding: 6px 20px;
+        font-size: 15px;
         color: black;
-        transition: 0.3s;
+        text-decoration: none;
+    }
+    a{
+        color: black;
+        text-decoration: none;
     }
     .back:hover{
         background-color: #5E5F68;
@@ -44,29 +46,42 @@
     }
     .box-showDetail{
         width: 95%;
+        height: 500px;
         background: #f9f6f2;
         border-radius: 30px;
         display: flex;
         padding: 20px;
-        flex-wrap: wrap;
-        justify-content: center;
+    }
+    div img{
+        width: 300px;
+        height: 200px;
+        margin: 0px 50% ;
+        border-radius: 30px;
+        margin-top: 30px;
     }
     .activityform{
         width: 50%;
-        min-width: 350px;
-        margin-top: 30px;
+        margin: 30px 0px 0px 20%;
     }
     .activityform form {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 3px;
+        max-width: 100%;
     }
     .activityform input, .activityform textarea{
-        width: 100%;
-        padding: 10px;
+        width: 80%;
+        padding: 10px 10px;
         border-radius: 10px;
         border: 1px solid #ccc;
         font-size: 14px;
+    }
+    .activityform label{
+        margin: 5px 0px 0px 0px;
+    }
+    .btn-save:hover{
+        color: #303032ff;
+        background-color: #A9CF88;
     }
 </style>
 @endsection
@@ -74,38 +89,22 @@
 @section('body')
     <main>
         <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
-        <div class="box-showDetail">
-            <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" 
-                 alt="Club Image" style="width:300px;height:200px;border-radius:20px;object-fit:cover;">
-            <div class="activityform">
-               <form action="{{ route('updateProfile', ['id_club' => $leaderclub->id, 'from' => 'homepage']) }}" method="POST">
-    @csrf
-    <label>ชื่อชมรม:</label>
-    <input type="text" name="name" value="{{ $leaderclub->name }}" required>
+            <div class="box-showDetail">
+                <div>
+                    <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="Club Image">
+                </div>
+                <div class="activityform">
+                    <form action="{{ route('updateProfile', ['id_club' => $leaderclub->id ])}}" method="POST">
+                        @csrf
+                        <label>ชื่อชมรม: </label>
+                        <input type="text" name="name_club" required value="{{$leaderclub->name}}"><br>
 
-    <label>คำอธิบาย:</label>
-    <textarea name="description" required>{{ $leaderclub->description }}</textarea>
+                        <label>รายละเอียดชมรม:</label>
+                        <textarea name="club_detail" rows="7" >{{$leaderclub->description}}</textarea><br>
 
-    <button type="submit" class="btn btn-success">บันทึกการแก้ไข</button>
-</form>
-
-            </div>
-        </div>    
-
-        @if(session('success'))
-        <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'สำเร็จ!',
-            text: "{{ session('success') }}",
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'ตกลง'
-        });
-        </script>
-        @endif
-h
-    </tbody>
-</table>
-
+                        <button type="submit" class="btn-save">บันทึกข้อมูล</button>
+                    </form>
+                </div>
+            </div>    
     </main>
 @endsection

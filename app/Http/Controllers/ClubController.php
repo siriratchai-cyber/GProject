@@ -124,15 +124,15 @@ public function clubHomepage($id_club)
 
         return back()->with('success', 'ยกเลิกคำร้องเรียบร้อย');
     }
-    public function backtoHomepage($id_club)
-{
+
+    public function backtoHomepage($id_club){
+
     $user = session('user');
     if (!$user) {
         return redirect('/login');
     }
 
     $account = Account::where('std_id', $user->std_id)->first();
-
     if ($account->role === 'admin') {
         return redirect()->route('admin.dashboard');
     }
@@ -142,42 +142,22 @@ public function clubHomepage($id_club)
 }
 
 
-/** -------------------- Request Resign (หัวหน้าชมรมขอลาออก) -------------------- */
-public function requestResign($id_club)
-{
-    $user = session('user');
-    if (!$user) {
-        return redirect('/login');
-    }
-
-    $member = Member::where('club_id', $id_club)
-        ->where('student_id', $user->std_id)
-        ->where('role', 'หัวหน้าชมรม')
-        ->first();
-
-    if (!$member) {
-        return back()->with('error', 'ไม่พบข้อมูลหัวหน้าชมรมของคุณ');
-    }
-
-    // เปลี่ยนสถานะเป็นรอลาออก
-    $member->update(['status' => 'resign_pending']);
-
-    return back()->with('success', 'ส่งคำร้องลาออกเรียบร้อย รอการอนุมัติจากผู้ดูแลระบบ');
-}
 
 /** -------------------- หน้าแก้ไขโปรไฟล์ -------------------- */
-public function editProfile($id_club, $from)
+public function editProfile($id_club)
 {
     $user = session('user');
     $leaderclub = Club::findOrFail($id_club);
-    return view('editClubProfile', compact('user', 'leaderclub', 'from'));
+    return view('editClubProfile', compact('user', 'leaderclub'));
 }
 
 /** -------------------- อัปเดตโปรไฟล์ชมรม -------------------- */
-public function updateProfile(Request $request, $id_club, $from)
+public function updateProfile(Request $request, $id_club)
 {
-    $club = Club::findOrFail($id_club);
-    $club->update($request->only('name', 'description'));
+    $leaderclub = Club::findOrFail($id_club);
+    $leaderclub->name = $request->name_club;
+    $leaderclub->description = $request->club_detail;
+    $leaderclub->save();
     return redirect()->route('clubHomepage', ['id_club' => $id_club])
         ->with('success', 'อัปเดตโปรไฟล์ชมรมเรียบร้อย');
 }
@@ -187,15 +167,12 @@ public function requestToLeader($id_club, $from)
 {
     $user = session('user');
 
-    $leaderclub = \App\Models\Club::findOrFail($id_club);
-
-    // โหลดความสัมพันธ์ account ไว้ด้วย เพราะใน Blade เรียก $member->account->major/year
-    $member_pending = \App\Models\Member::with('account')
+    $leaderclub = Club::findOrFail($id_club);
+    $member_pending = Member::with('account')
         ->where('club_id', $id_club)
         ->where('status', 'pending')
         ->get();
-
-    $member_approved = \App\Models\Member::with('account')
+    $member_approved = Member::with('account')
         ->where('club_id', $id_club)
         ->where('status', 'approved')
         ->get();
@@ -205,56 +182,22 @@ public function requestToLeader($id_club, $from)
 /** -------------------- อนุมัติคำร้อง / ปฏิเสธคำร้อง -------------------- */
 public function approved($id_club, $id_member, $from)
 {
-    $member = \App\Models\Member::findOrFail($id_member);
+    $member = Member::findOrFail($id_member);
     $member->status = 'approved';
     $member->save();
-
-    // เมื่ออนุมัติแล้ว กลับไปหน้าเดิม
     return redirect()->route('requestToleader', ['from' => $from, 'id_club' => $id_club])
         ->with('success', '✅ อนุมัติคำร้องเรียบร้อยแล้ว');
 }
 
 public function rejected($id_club, $id_member, $from)
 {
-    $member = \App\Models\Member::findOrFail($id_member);
-    $member->status = 'rejected';
-    $member->save();
-
-    // เมื่อปฏิเสธแล้ว กลับไปหน้าเดิม
+    $member = Member::findOrFail($id_member);
+    $member->delete();
     return redirect()->route('requestToleader', ['from' => $from, 'id_club' => $id_club])
         ->with('success', '❌ ปฏิเสธคำร้องเรียบร้อยแล้ว');
 }
-public function updateMember(Request $request, $id_club, $id_member)
-{
-    $member = Member::findOrFail($id_member);
 
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'role' => 'required|string|max:255',
-        'status' => 'required|string|max:255',
-    ]);
 
-    $member->update([
-        'name' => $request->name,
-        'role' => $request->role,
-        'status' => $request->status,
-    ]);
-
-    return redirect()->back()->with('success', '✅ อัปเดตข้อมูลสมาชิกเรียบร้อยแล้ว');
-}
-// ✅ เพิ่มสมาชิกใหม่ (สร้างช่องว่างให้กรอกในภายหลัง)
-public function addMember($id_club)
-{
-    Member::create([
-        'club_id' => $id_club,
-        'student_id' => '',
-        'name' => 'สมาชิกใหม่',
-        'role' => 'สมาชิก',
-        'status' => 'pending',
-    ]);
-
-    return redirect()->back()->with('success', 'เพิ่มสมาชิกใหม่เรียบร้อยแล้ว');
-}
 
 
 }

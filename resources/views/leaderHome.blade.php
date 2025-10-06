@@ -13,15 +13,16 @@
     }
 
     main {
-        width: 85%;
+        width: 95%;
         margin: 2% auto;
         display: flex;
         flex-direction: column;
         gap: 25px;
     }
-
     .welcome {
         text-align: center;
+        margin-top: -5%;
+        margin-bottom: 30px;
     }
     .welcome span {
         background: #f9f6f2;
@@ -34,14 +35,14 @@
 
     .request-btn {
         position: absolute;
-        right: 70px;
-        top: 120px;
+        right: 8%;
+        top: 15%;
         background: #f9f6f2;
         border: 1px solid #000;
         border-radius: 20px;
         padding: 6px 20px;
         color: black;
-        font-weight: bold;
+        font-size: 14px;
         text-decoration: none;
     }
 
@@ -55,7 +56,6 @@
         font-weight: bold;
     }
 
-    /* กล่องโปรไฟล์ชมรม */
     .club-header {
         background: #f9f6f2;
         border-radius: 25px;
@@ -105,14 +105,13 @@
         background-color: #323339;
     }
 
-    /* กล่องกิจกรรม */
     .activity-section {
         display: flex;
         justify-content: center;
     }
 
     .activity-box {
-        width: 60%;
+        width: 100%;
         background: #f9f6f2;
         border-radius: 25px;
         box-shadow: 0 3px 8px rgba(0,0,0,0.1);
@@ -153,41 +152,40 @@
         <span>👋 Welcome Club Leader</span>
     </div>
 
-    <!-- ปุ่มคำร้องขอ -->
     <a href="{{ route('requestToleader', ['from' => 'homepage', 'id_club' => $leaderclub->id]) }}" class="request-btn">
         คำร้องขอ | <span>{{ $pendingCount }}</span>
     </a>
 
-    <!-- โปรไฟล์ชมรม -->
     <div class="club-header">
         <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="Club Image">
         <div class="club-info">
             <h3>{{ $leaderclub->name }}</h3>
-            <p>{{ $leaderclub->description ?? 'ไม่มีคำอธิบายชมรม' }}</p>
+            <p>{{ $leaderclub->description }}</p>
         </div>
-        <a href="{{ route('editProfile', ['from' => 'homepage', 'id_club' => $leaderclub->id]) }}" class="edit-btn">แก้ไขโปรไฟล์ชมรม</a>
+        <a href="{{ route('clubHomepage', ['from' => 'homepage', 'id_club' => $leaderclub->id]) }}" class="edit-btn">จัดการชมรม</a>
     </div>
 
-    <!-- กิจกรรม -->
     <div class="activity-section">
         <div class="activity-box">
             <h4>
                 กิจกรรมทั้งหมดของชมรม
-                <a href="{{ route('showActivity', ['id_club' => $leaderclub->id]) }}" class="edit-btn">แก้ไขกิจกรรม</a>
-
-
             </h4>
 
             @if($activities->isEmpty())
                 <p class="no-data">ยังไม่มีกิจกรรม</p>
             @else
+            <ul>
                 @foreach($activities as $activity)
+                <li>
                     <div class="activity-item">
                         <strong>{{ $activity->activity_name }}</strong>
-                        <p>{{ $activity->description }}</p>
+                        <p>รายละเอียด : {{ $activity->description }}</p>
                         <p>📅 {{ $activity->date }} | 🕒 {{ $activity->time }} | 📍 {{ $activity->location }}</p>
+                        <hr>
                     </div>
+                </li>
                 @endforeach
+            </ul>
             @endif
         </div>
     </div>

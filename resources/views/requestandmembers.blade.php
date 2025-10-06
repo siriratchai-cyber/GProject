@@ -9,22 +9,23 @@
     box-sizing: border-box;
     }
     main {
+        width: 95%;
+        margin: 2% auto;
         display: flex;
         flex-direction: column;
-        margin: 3% 10%; 
-        gap: 20px;
+        gap: 25px;
     }
     div .back{
-        background: #d9e7f3;
-        border-radius: 30px;
-        border: 1px solid black;
-        width: 10%;
-        height: 10%;
-        padding: 5px 20px;
-        margin-left: -8%;
-        display: flex; 
-        align-items: center;
-        justify-content: flex-start;
+        position: absolute;
+        left: 5%;
+        top: 15%;
+        background: none;
+        border: 1px solid #000;
+        border-radius: 20px;
+        padding: 6px 20px;
+        font-size: 15px;
+        color: black;
+        text-decoration: none;
     }
     .back:hover{
         background-color: #5E5F68;
@@ -131,8 +132,8 @@
                         <tr>
                             <td>{{$member->name}}</td>
                             <td>{{$member->student_id}}</td>
-                            <td>{{ $member->account->major ?? '-' }}</td>
-                            <td>{{ $member->account->year ?? '-' }}</td>
+                            <td>{{ $member->account->major}}</td>
+                            <td>{{ $member->account->year}}</td>
 
                             <td>
                                 <div class="btn-a_r">
@@ -163,8 +164,8 @@
                     <tr>
                         <td>{{$member->name}}</td>
                         <td>{{$member->student_id}}</td>
-                        <td>{{ optional($member->account)->major ?? '-' }}</td>
-                        <td>{{ optional($member->account)->year ?? '-' }}</td>
+                        <td>{{ optional($member->account)->major }}</td>
+                        <td>{{ optional($member->account)->year }}</td>
 
                         <td>{{$member->role}}</td>
                     </tr>

@@ -41,12 +41,9 @@ Route::get('/club/{id_club}/home', [ClubController::class, 'clubHomepage'])->nam
 // ✅ ปุ่มกลับไปโฮมเพจ (จากหน้าชมรม)
 Route::get('/club/{id_club}/backtoHome', [ClubController::class, 'backtoHomepage'])->name('backtoHome');
 
-// ✅ คำร้องลาออกจากตำแหน่งหัวหน้าชมรม
-Route::post('/club/{id_club}/requestResign', [ClubController::class, 'requestResign'])->name('requestResign');
-
 // ✅ หน้าแก้ไขโปรไฟล์ชมรม
-Route::get('/club/{id_club}/edit-profile/{from}', [ClubController::class, 'editProfile'])->name('editProfile');
-Route::post('/club/{id_club}/update-profile/{from}', [ClubController::class, 'updateProfile'])->name('updateProfile');
+Route::get('/club/{id_club}/edit-profile', [ClubController::class, 'editProfile'])->name('editProfile');
+Route::post('/club/{id_club}/update-profile', [ClubController::class, 'updateProfile'])->name('updateProfile');
 
 // ✅ หน้า request สมาชิก (คำร้องเข้าชมรม)
 Route::get('/club/{id_club}/requests/{from}', [ClubController::class, 'requestToLeader'])->name('requestToleader');
@@ -60,12 +57,6 @@ Route::post('/club/{id_club}/activities/{id_activity}/delete', [ActivityControll
 Route::get('/club/{id_club}/activities/{id_activity}/edit', [ActivityController::class, 'editActivity'])->name('editActivity');
 Route::post('/club/{id_club}/activities/{id_activity}/update', [ActivityController::class, 'updateActivity'])->name('updateActivity');
 
-// ✅ อัปเดตและลบสมาชิกในชมรม
-Route::post('/club/{id_club}/member/{id_member}/update', [ClubController::class, 'updateMember'])->name('updateMember');
-Route::post('/club/{id_club}/member/{id_member}/delete', [ClubController::class, 'deleteMember'])->name('deleteMember');
-
-// ✅ เพิ่มสมาชิกใหม่
-Route::post('/club/{id_club}/add-member', [ClubController::class, 'addMember'])->name('addMember');
 
 // ===================== ADMIN =====================
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
