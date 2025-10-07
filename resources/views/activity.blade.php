@@ -193,26 +193,41 @@
     <h4 class="text-show1">กิจกรรมที่กำลังดำเนินการอยู่</h4>
     <div class="box-showActivities">
         <table class="showactivity">
-                <thead>
-                    <th>วัน</th><th>ชื่อกิจกรรม</th><th></th>
-                </thead>
-                <tbody>
-                    @if($activities->isEmpty())
-                        <tr><td colspan="3"><span>ยังไม่มีกิจกรรม</span></td></tr>
-                    @else
-                    @foreach($activities as $a)
+            <thead>
+                <th>วัน</th><th>ชื่อกิจกรรม</th><th></th>
+            </thead>
+            <tbody>
+                @if($activities->isEmpty())
+                    <tr><td colspan="3"><span>ยังไม่มีกิจกรรม</span></td></tr>
+                @else
+                 @foreach($activities as $a)
                     <tr>
-                        <td>{{ $a->date }}</td>
-                        <td>{{ $a->activity_name }}</td>
-                        <td>
-                            <div class="action-btns">
-                                <form action="{{ route('deleteActivity', ['id_club' => $leaderclub->id, 'id_activity' => $a->id ]) }}" method="post">
-                                    @csrf
-                                    <button class="btn-delete">ลบ</button>
-                                </form>
-                                <a href="{{ route('editActivity', ['id_club' => $leaderclub->id, 'id_activity' => $a->id ]) }}" class="btn-edit" >แก้ไข</a>
-                            </div>
-                        </td>
+                    <td>{{ $a->date }}</td>
+                    <td>{{ $a->activity_name }}</td>
+                    <td>
+                    <div class="action-btns">
+                            <button type="button" class="btn-delete" data-bs-toggle="modal" data-bs-target="#deleteActivityModal{{ $a->id }}">
+                                ลบ
+                                </button>
+                                <div class="modal fade" id="deleteActivityModal{{ $a->id }}" tabindex="-1" aria-labelledby="deleteActivityLabel{{ $a->id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content" style="border-radius: 20px;">
+                                    <div class="modal-body text-center">
+                                        <p class="fs-5 fw-bold">คุณต้องการที่จะลบกิจกรรม <br>ใช่หรือไม่</p>
+                                        <div class="d-flex justify-content-center gap-3 mt-3">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                                        <form action="{{ route('deleteActivity', ['id_club' => $leaderclub->id, 'id_activity' => $a->id ]) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-dark">ตกลง</button>
+                                        </form>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                </div>
+                            <a href="{{ route('editActivity', ['id_club' => $leaderclub->id, 'id_activity' => $a->id ]) }}" class="btn-edit" >แก้ไข</a>
+                    </div>
+                    </td>
                     </tr>
                     @endforeach
                     @endif

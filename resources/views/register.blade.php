@@ -131,16 +131,24 @@
           <option value="GIS">GIS</option>
         </select>
         <select name="year" class="Select-Box" required>
-          <option selected>--- Select Year ---</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="erc">etc.</option>
+          @for($i = 1; $i <= 8; $i++)
+            <option value="{{ $i }}">{{ $i }}</option>
+          @endfor
         </select>
         <button type="submit">Sign up</button>
       </form>
     </div>
+    @if (session('success'))
+      <script>
+        alert("{{ session('success') }}");
+      </script>
+    @endif
+
+    @if (session('error'))
+      <script>
+        alert("{{ session('error') }}");
+      </script>
+    @endif
   </div>
 </body>
 </html>

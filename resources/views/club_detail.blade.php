@@ -37,13 +37,14 @@
 <body>
 
 <header>
-  <div class="logo">CP Club</div>
-  <div class="nav">
-    <a href="{{ route('clubs.index') }}">All Clubs</a>
-    <a href="{{ route('homepage.index') }}">Dashboard</a>
-    <a href="{{ route('logout') }}">Logout</a>
-  </div>
-</header>
+    <div class="username-box">{{ $std_id }}</div>
+    <div class="logo">CP Club</div>
+    <div class="nav">
+      <a href="{{ route('clubs.index') }}">All Clubs</a>
+      <a href="{{ route('homepage.index') }}">Dashboard</a>
+      <a href="{{ route('logout') }}">Logout</a>
+    </div>
+  </header>
 
 <!-- Flash Message -->
 @if(session('success'))
@@ -82,8 +83,7 @@ Swal.fire({ icon:'error', title:'ไม่สำเร็จ!', text:"{{ implode
             <li>
               <div class="activity-item">
                 <strong>{{ $activity->activity_name }}</strong>
-                <p>รายละเอียด : {{ $activity->description }}</p>
-                <p>📅 {{ $activity->date }} | 🕒 {{ $activity->time }} | 📍 {{ $activity->location }}</p>
+                <📅>รายละเอียด : {{ $activity->description }} | 📅 {{ $activity->date }} | 🕒 {{ $activity->time }} | 📍 {{ $activity->location }}</📅>
                 <hr>
               </div>
             </li>
