@@ -73,7 +73,7 @@ class UserController extends Controller
     $account = Account::where('std_id', $user->std_id)->first();
 
     // 🧩 1. ถ้าเป็นแอดมิน
-    if ($account->role === 'admin') {
+    if ($account->role === 'แอดมิน') {
         return redirect()->route('admin.dashboard');
     }
     
