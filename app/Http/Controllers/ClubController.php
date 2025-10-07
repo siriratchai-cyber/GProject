@@ -19,6 +19,13 @@ class ClubController extends Controller
         $clubs = Club::where('status', 'approved')->get();
         return view('cpclub', compact('clubs', 'user'));
     }
+    public function show($id)
+    {
+        $club = Club::with('members', 'activities')->findOrFail($id);
+        $activities = $club->activities;
+        return view('club_detail', compact('club', 'activities'));
+    }
+
 
     /** -------------------- หน้า Create Club -------------------- */
     public function create()
@@ -41,7 +48,6 @@ class ClubController extends Controller
     $request->validate([
         'name' => 'required|string|max:255',
         'description' => 'required|string',
-        'major' => 'required|string', // สาขาที่เลือก
     ]);
 
     // ตรวจชื่อชมรมซ้ำในระบบ

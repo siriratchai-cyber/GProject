@@ -11,10 +11,13 @@ use App\Http\Controllers\ActivityController;
 | Web Routes
 |--------------------------------------------------------------------------
 */
+// 🔹 หน้า forgot password
+Route::get('/forgot-password', function () {return view('Forgot_password');})->name('forgotpassword.form');
+Route::post('/forgot-password', [UserController::class, 'resetPassword'])->name('forgotpassword.reset');
 
 // 🔹 หน้า Login & Register
-Route::get('/login', [UserController::class, 'login'])->name('login'); // ✅ GET - แสดงหน้า login
-Route::post('/login', [UserController::class, 'checklogin']); // ✅ POST - ตรวจสอบข้อมูล login
+Route::get('/login', [UserController::class, 'login'])->name('login'); 
+Route::post('/login', [UserController::class, 'checklogin']);
 Route::get('/register', [UserController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [UserController::class, 'register'])->name('register.submit');
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
@@ -22,23 +25,22 @@ Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 // 🔹 หน้า Homepage (แยกตาม role)
 Route::get('/homepage', [UserController::class, 'homepage'])->name('homepage.index');
 
-
 // ===================== STUDENT =====================
 Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
 Route::get('/clubs/create', [ClubController::class, 'create'])->name('clubs.create');
 Route::post('/clubs/store', [ClubController::class, 'store'])->name('clubs.store');
+Route::get('/club/{id}', [ClubController::class, 'show'])->name('clubs.show');
 
 // สมัคร/ยกเลิกชมรม
 Route::post('/clubs/{club}/join', [ClubController::class, 'join'])->name('clubs.join');
 Route::post('/clubs/{club}/cancel', [ClubController::class, 'cancelJoin'])->name('clubs.cancel');
 
 // ===================== LEADER =====================
-// ===================== LEADER =====================
 
 // ✅ หน้าโฮมของหัวหน้าชมรม
 Route::get('/club/{id_club}/home', [ClubController::class, 'clubHomepage'])->name('clubHomepage');
 
-// ✅ ปุ่มกลับไปโฮมเพจ (จากหน้าชมรม)
+// ✅ ปุ่มกลับไปโฮมเพจ
 Route::get('/club/{id_club}/backtoHome', [ClubController::class, 'backtoHomepage'])->name('backtoHome');
 
 // ✅ หน้าแก้ไขโปรไฟล์ชมรม
@@ -59,27 +61,39 @@ Route::post('/club/{id_club}/activities/{id_activity}/update', [ActivityControll
 
 
 // ===================== ADMIN =====================
+
+// ✅ Dashboard
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+
+// ✅ หน้า request รออนุมัติชมรม
 Route::get('/admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
 
+// ✅ อนุมัติ/ปฏิเสธชมรม
 Route::post('/admin/club/{id}/approve', [AdminController::class, 'approveClub'])->name('admin.clubs.approve');
 Route::post('/admin/club/{id}/reject', [AdminController::class, 'rejectClub'])->name('admin.clubs.reject');
 
+// ✅ แก้ไขข้อมูลชมรม
 Route::get('/admin/club/{id}/edit', [AdminController::class, 'editClub'])->name('admin.clubs.edit');
 Route::post('/admin/club/{id}/update', [AdminController::class, 'updateClub'])->name('admin.clubs.update');
 
-// ✅ Password update (admin)
-Route::post('/admin/password/{std_id}', [AdminController::class, 'updatePassword'])->name('admin.updatePassword');
-
+// ✅ ลบชมรม
 Route::delete('/admin/club/{id}', [AdminController::class, 'destroyClub'])->name('admin.clubs.destroy');
 
-// ✅ หน้าจัดการสมาชิกในชมรม (แอดมิน)
+// ✅ อัปเดตรหัสผ่านของบัญชี
+Route::post('/admin/password/{std_id}', [AdminController::class, 'updatePassword'])->name('admin.updatePassword');
+
+// รายชื่อสมาชิกทั้งหมด
 Route::get('/admin/club/{id}/members', [AdminController::class, 'editMembers'])->name('admin.members.edit');
 
-// ✅ หน้าแก้ไขสมาชิกเดี่ยว (Admin)
+// แก้ไขสมาชิกเดี่ยว
 Route::get('/admin/club/{club_id}/member/{member_id}/edit', [AdminController::class, 'editSingleMember'])
     ->name('admin.member.edit');
 
-// ✅ บันทึกข้อมูลสมาชิก
-Route::post('/admin/club/{club_id}/member/{member_id}/update', [AdminController::class, 'updateMember'])
+// อัปเดตข้อมูลสมาชิก
+Route::put('/admin/club/{club_id}/member/{member_id}/update', [AdminController::class, 'updateMember'])
     ->name('admin.members.update');
+
+
+    Route::post('/admin/club/{club_id}/add-member', [AdminController::class, 'addMember'])
+    ->name('admin.members.add');
+
