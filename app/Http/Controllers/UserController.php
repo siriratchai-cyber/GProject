@@ -91,9 +91,8 @@ class UserController extends Controller
             ->count();
 
         $activities = Activity::where('club_id', $club->id)
-            ->where('date', '>=', now())
-            ->orderBy('date', 'asc')
-            ->get();
+            ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
+            ->orderBy('date', 'asc')->get();
 
         // 👉 หน้าเฉพาะของหัวหน้าชมรม
         return view('leaderHome', [

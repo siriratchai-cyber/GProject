@@ -12,8 +12,9 @@ class ActivityController extends Controller
     public function showActivity($id_club){
         $leaderclub = Club::findOrFail($id_club);
         $user = session('user');
-        $activities = $leaderclub->activities()->where('date', '>=', now())
-        ->orderBy('date', 'asc')->get();
+        $activities = $leaderclub->activities()
+            ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
+            ->orderBy('date', 'asc')->get();
         return view('activity', compact('leaderclub', 'activities', 'user'));
     }
 
@@ -48,8 +49,9 @@ class ActivityController extends Controller
         if (!$user) return redirect('/login');
         $leaderclub = Club::findOrFail($id_club);
         $activity = Activity::findOrFail($id_activity);
-        $activities = $leaderclub->activities()->where('date', '>=', now())
-        ->orderBy('date', 'asc')->get();
+        $activities = $leaderclub->activities()
+            ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
+            ->orderBy('date', 'asc')->get();
         return view('activity', compact('activity', 'activities', 'leaderclub', 'user'));
     }
 

@@ -87,8 +87,9 @@ public function clubHomepage($id_club)
     if (!$user) return redirect('/login');
 
     $leaderclub = Club::findOrFail($id_club);
-    $activities = $leaderclub->activities()->where('date', '>=', now())
-        ->orderBy('date', 'asc')->get();
+    $activities = $leaderclub->activities()
+            ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
+            ->orderBy('date', 'asc')->get();
     $pendingCount = Member::where('club_id', $id_club)->where('status', 'pending')->count();
 
     return view('clubmain', compact('activities', 'leaderclub', 'pendingCount', 'user'));

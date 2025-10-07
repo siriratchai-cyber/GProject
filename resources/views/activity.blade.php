@@ -208,7 +208,7 @@
                             <div class="action-btns">
                                 <form action="{{ route('deleteActivity', ['id_club' => $leaderclub->id, 'id_activity' => $a->id ]) }}" method="post">
                                     @csrf
-                                    <input type="submit" value="ลบ" class="btn-delete">
+                                    <button class="btn-delete">ลบ</button>
                                 </form>
                                 <a href="{{ route('editActivity', ['id_club' => $leaderclub->id, 'id_activity' => $a->id ]) }}" class="btn-edit" >แก้ไข</a>
                             </div>

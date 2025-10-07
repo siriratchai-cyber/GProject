@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - CP Club</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             margin: 0;
@@ -59,7 +60,6 @@
     <div class="username-box">@yield('username')</div>
     <div class="logo">@yield('club_name', 'CP Club')</div>
     <div class="nav">
-
         <a href="{{ route('logout') }}">Logout</a>
     </div>
 </header>

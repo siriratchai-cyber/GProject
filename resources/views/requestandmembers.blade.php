@@ -143,7 +143,7 @@
                                 </form>
                                 <form action="{{ route('rejected',['from' => $from, 'id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
                                     @csrf
-                                    <input type="submit" value="ไม่อนุมัติ" class="btn-reject">
+                                    <button class="btn-reject">ไม่อนุมัติ</button>
                                 </form> 
                                 </div>    
                             </td>
