@@ -174,7 +174,7 @@ public function updateProfile(Request $request, $id_club)
 }
 
 /** -------------------- Request สมาชิก -------------------- */
-public function requestToLeader($from, $id_club)
+public function requestToLeader($id_club, $from)
 {
     $user = session('user');
 
@@ -191,7 +191,7 @@ public function requestToLeader($from, $id_club)
     return view('requestandmembers', compact('user', 'leaderclub', 'from', 'member_pending', 'member_approved'));
 }
 /** -------------------- อนุมัติคำร้อง / ปฏิเสธคำร้อง -------------------- */
-public function approved($from, $id_club, $id_member)
+public function approved($id_club, $id_member, $from)
 {
     $member = Member::findOrFail($id_member);
     $member->status = 'approved';
@@ -200,7 +200,7 @@ public function approved($from, $id_club, $id_member)
         ->with('success', 'อนุมัติคำร้องเรียบร้อยแล้ว');
 }
 
-public function rejected($from, $id_club, $id_member)
+public function rejected($id_club, $id_member, $from)
 {
     $member = Member::findOrFail($id_member);
     $member->delete();
