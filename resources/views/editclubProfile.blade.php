@@ -122,4 +122,22 @@
         </form>
     </div>
 </main>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const input = document.querySelector('input[name="image"]')
+  const preview = document.querySelector('.club-img')
+
+  input.addEventListener('change', (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        preview.src = event.target.result
+      };
+      reader.readAsDataURL(file)
+    }
+  });
+});
+</script>
 @endsection
