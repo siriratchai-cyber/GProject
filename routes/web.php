@@ -48,9 +48,9 @@ Route::get('/club/{id_club}/edit-profile', [ClubController::class, 'editProfile'
 Route::post('/club/{id_club}/update-profile', [ClubController::class, 'updateProfile'])->name('updateProfile');
 
 // ✅ หน้า request สมาชิก (คำร้องเข้าชมรม)
-Route::get('/club/{id_club}/requests/{from}', [ClubController::class, 'requestToLeader'])->name('requestToleader');
-Route::post('/club/{id_club}/approve/{id_member}/{from}', [ClubController::class, 'approved'])->name('approved');
-Route::post('/club/{id_club}/reject/{id_member}/{from}', [ClubController::class, 'rejected'])->name('rejected');
+Route::get('/{from}/{id_club}/requests', [ClubController::class, 'requestToLeader'])->name('requestToleader');
+Route::post('/{from}/{id_club}/approve/{id_member}', [ClubController::class, 'approved'])->name('approved');
+Route::post('/{from}/{id_club}/reject/{id_member}', [ClubController::class, 'rejected'])->name('rejected');
 
 // ✅ หน้า activity (เพิ่ม/แก้ไข/ลบกิจกรรม)
 Route::get('/club/{id_club}/activities', [ActivityController::class, 'showActivity'])->name('showActivity');
