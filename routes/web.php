@@ -29,7 +29,7 @@ Route::get('/homepage', [UserController::class, 'homepage'])->name('homepage.ind
 Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
 Route::get('/clubs/create', [ClubController::class, 'create'])->name('clubs.create');
 Route::post('/clubs/store', [ClubController::class, 'store'])->name('clubs.store');
-Route::get('/club/{id}/{std_id}', [ClubController::class, 'show'])->name('clubs.show');
+Route::get('/club/{id}', [ClubController::class, 'show'])->name('clubs.show');
 
 // สมัคร/ยกเลิกชมรม
 Route::post('/clubs/{club}/join', [ClubController::class, 'join'])->name('clubs.join');

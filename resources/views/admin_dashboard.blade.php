@@ -5,7 +5,7 @@
   <title>Admin Dashboard - CP Club</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body{font-family:'Arial',sans-serif;background:#d9e7f3;}
+    body{font-family:'Sarabun',sans-serif;background:#d9e7f3;}
     header{background:#2d3e50;color:white;display:flex;justify-content:space-between;align-items:center;padding:12px 30px;}
     .club-title{font-weight:800;font-size:1.8rem;}
     .request-btn{background:white;border-radius:20px;padding:6px 16px;border:1px solid #ccc;text-decoration:none;color:black;}
