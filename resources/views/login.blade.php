@@ -115,6 +115,17 @@
         <button type="submit">LOG IN</button>
       </form>
     </div>
+    @if (session('success'))
+      <script>
+        alert("{{ session('success') }}");
+      </script>
+    @endif
+
+    @if (session('error'))
+      <script>
+        alert("{{ session('error') }}");
+      </script>
+    @endif
   </div>
 </body>
 </html>

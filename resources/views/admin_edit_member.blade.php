@@ -10,7 +10,7 @@
     /* ===== โทนรวม & ฟอนต์ ===== */
     body.form-page {
       background-color: #cfe2f3;
-      font-family: "Sarabun", sans-serif;
+      font-family: "Arial", sans-serif;
       margin: 0;
     }
 
