@@ -191,7 +191,7 @@ public function approved($id_club, $id_member, $from)
     $member->status = 'approved';
     $member->save();
     return redirect()->route('requestToleader', ['from' => $from, 'id_club' => $id_club])
-        ->with('success', '✅ อนุมัติคำร้องเรียบร้อยแล้ว');
+        ->with('success', 'อนุมัติคำร้องเรียบร้อยแล้ว');
 }
 
 public function rejected($id_club, $id_member, $from)
@@ -199,7 +199,7 @@ public function rejected($id_club, $id_member, $from)
     $member = Member::findOrFail($id_member);
     $member->delete();
     return redirect()->route('requestToleader', ['from' => $from, 'id_club' => $id_club])
-        ->with('success', '❌ ปฏิเสธคำร้องเรียบร้อยแล้ว');
+        ->with('success', 'ปฏิเสธคำร้องเรียบร้อยแล้ว');
 }
 
 
