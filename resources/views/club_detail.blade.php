@@ -32,27 +32,6 @@
     /* Activity list */
     #activityList .activity-card { background:white; border-radius:15px; padding:15px; margin-bottom:15px; }
     #activityList strong { display:block; margin-bottom:5px; }
-
-    /* Event dot (สีแดง) */
-    .fc-daygrid-event-dot {
-      border-color: red !important;
-      background-color: red !important;
-    }
-
-    /* ✅ วันนี้ (วงกลมฟ้าอ่อน) */
-    .fc-day-today .fc-daygrid-day-number {
-      background: #87CEFA;
-      color: black;
-      border-radius: 50%;
-      padding: 5px 9px;
-      font-weight: bold;
-    }
-
-    /* ✅ วันที่เลือก (กรอบเขียว) */
-    .fc-daygrid-day.selected {
-      border: 2px solid green !important;
-      border-radius: 10px;
-    }
   </style>
 </head>
 <body>
@@ -86,15 +65,7 @@ Swal.fire({ icon:'error', title:'ไม่สำเร็จ!', text:"{{ implode
 
 <!-- Buttons -->
 <div class="actions">
-  @if(empty($hasLeader) || !$hasLeader)
-  <form action="{{ route('requestToleader', ['id_club' => $club->id, 'from' => 'clubdetail']) }}" method="GET">
-    @csrf
-    <button type="submit" class="btn">ขอเป็นหัวหน้าชมรม</button>
-  </form>
-@endif
-
   <form id="leaveForm" action="{{ route('clubs.cancel', $club->id) }}" method="POST">
-
     @csrf
     <button type="button" class="btn" onclick="confirmLeave()">ออกจากชมรม</button>
   </form>
