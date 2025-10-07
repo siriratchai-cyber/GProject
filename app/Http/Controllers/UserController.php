@@ -65,7 +65,7 @@ class UserController extends Controller
     }
 
     /** ✅ หน้าหลัก (ระบบตรวจ role อัตโนมัติ) */
-  public function homepage()
+ public function homepage()
 {
     $user = session('user');
     if (!$user) return redirect('/login');
@@ -76,15 +76,17 @@ class UserController extends Controller
     if ($account->role === 'admin') {
         return redirect()->route('admin.dashboard');
     }
-    
 
-    // 🧩 2. ถ้าเป็นหัวหน้าชมรม
+    // 🧩 2. ถ้าเป็นหัวหน้าชมรม (เฉพาะชมรมที่ได้รับอนุมัติแล้วเท่านั้น)
     $leaderclub = Member::where('student_id', $account->std_id)
         ->where('role', 'หัวหน้าชมรม')
+        ->whereHas('club', function ($q) {
+            $q->where('status', 'approved'); // ✅ ต้องเป็นชมรมที่อนุมัติแล้วเท่านั้น
+        })
         ->with('club')
         ->first();
 
-    if ($leaderclub) {
+    if ($leaderclub && $leaderclub->club) {
         $club = $leaderclub->club;
         $pendingCount = Member::where('club_id', $club->id)
             ->where('status', 'pending')
@@ -92,7 +94,8 @@ class UserController extends Controller
 
         $activities = Activity::where('club_id', $club->id)
             ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
-            ->orderBy('date', 'asc')->get();
+            ->orderBy('date', 'asc')
+            ->get();
 
         // 👉 หน้าเฉพาะของหัวหน้าชมรม
         return view('leaderHome', [
@@ -103,13 +106,19 @@ class UserController extends Controller
         ]);
     }
 
-    // 🧩 3. นักศึกษาทั่วไป
-    $myClubs = Member::with('club')
+    // 🧩 3. นักศึกษาทั่วไป (ชมรมที่ approved เท่านั้น)
+    $myClubs = Member::with(['club' => function ($q) {
+            $q->where('status', 'approved');
+        }])
         ->where('student_id', $account->std_id)
         ->where('status', 'approved')
         ->get()
+        ->filter(function ($member) {
+            return $member->club !== null;
+        })
         ->pluck('club');
 
+    // ✅ ดึงเฉพาะกิจกรรมของชมรมที่ approved เท่านั้น
     $upcomingActivities = Activity::whereIn('club_id', $myClubs->pluck('id'))
         ->where('date', '>=', now())
         ->orderBy('date', 'asc')
@@ -117,7 +126,6 @@ class UserController extends Controller
 
     return view('homepage', compact('account', 'myClubs', 'upcomingActivities'));
 }
-
 
 
     /** ✅ ออกจากระบบ */

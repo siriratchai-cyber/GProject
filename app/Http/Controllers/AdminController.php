@@ -61,16 +61,31 @@ class AdminController extends Controller
         return view('admin_edit_club', compact('club'));
     }
 
-    public function updateClub(Request $request, $id)
-    {
-        $club = Club::findOrFail($id);
-        $club->update([
-            'name' => $request->name,
-            'description' => $request->description,
-        ]);
+   public function updateClub(Request $request, $id)
+{
+    $club = Club::findOrFail($id);
 
-        return redirect()->route('admin.dashboard')->with('success', 'อัปเดตชมรมแล้ว');
+    // ✅ ตรวจสอบและอัปโหลดรูปใหม่ (ถ้ามี)
+    if ($request->hasFile('image')) {
+        // 🔹 ลบรูปเก่าออกจาก storage ถ้ามี
+        if ($club->image && \Storage::disk('public')->exists($club->image)) {
+            \Storage::disk('public')->delete($club->image);
+        }
+
+        // 🔹 บันทึกรูปใหม่เข้า storage
+        $path = $request->file('image')->store('clubs', 'public');
+        $club->image = $path;
     }
+
+    // ✅ อัปเดตชื่อและรายละเอียด
+    $club->name = $request->name;
+    $club->description = $request->description;
+    $club->save();
+
+    return redirect()->route('admin.dashboard')
+        ->with('success', '✅ อัปเดตข้อมูลชมรมเรียบร้อยแล้ว');
+}
+
 
     public function destroyClub($id)
     {

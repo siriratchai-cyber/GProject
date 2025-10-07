@@ -37,49 +37,127 @@ class ClubController extends Controller
     }
 
     /** -------------------- Store Club -------------------- */
-    public function store(Request $request)
+  public function store(Request $request)
 {
     $user = session('user');
     if (!$user) return redirect('/login');
 
-    $std_id = $user->std_id;
-
-    // ตรวจข้อมูลพื้นฐาน
     $request->validate([
-        'name' => 'required|string|max:255',
+        'name' => 'required|string|max:255|unique:clubs,name',
         'description' => 'required|string',
+        'creator_role' => 'required|in:หัวหน้าชมรม,สมาชิก',
+        'members' => 'required|array|min:4', // รวมผู้สร้าง = 5
     ]);
 
-    // ตรวจชื่อชมรมซ้ำในระบบ
-    if (Club::where('name', $request->name)->exists()) {
-        return back()->with('error', 'ชื่อชมรมซ้ำกับที่มีอยู่แล้ว')->withInput();
+    // -------------------------
+    // ✅ ตรวจชื่อ/รหัสซ้ำทั้งหมดแบบละเอียด
+    // -------------------------
+    $duplicateMessages = [];
+    $members = $request->members;
+    $creatorName = trim(mb_strtolower($user->std_name));
+    $creatorID = trim($user->std_id);
+
+    // ตรวจสมาชิกกับสมาชิก
+    for ($i = 0; $i < count($members); $i++) {
+        $m1Name = trim(mb_strtolower($members[$i]['student_name']));
+        $m1ID = trim($members[$i]['student_id']);
+
+        for ($j = $i + 1; $j < count($members); $j++) {
+            $m2Name = trim(mb_strtolower($members[$j]['student_name']));
+            $m2ID = trim($members[$j]['student_id']);
+
+            // ชื่อซ้ำ
+            if ($m1Name === $m2Name) {
+                $duplicateMessages[] = "ชื่อซ้ำระหว่าง สมาชิกคนที่ " . ($i + 1) . " และ " . ($j + 1);
+            }
+
+            // รหัสซ้ำ
+            if ($m1ID === $m2ID) {
+                $duplicateMessages[] = "รหัสนักศึกษาซ้ำระหว่าง สมาชิกคนที่ " . ($i + 1) . " และ " . ($j + 1);
+            }
+        }
     }
 
-    // ตรวจว่าไม่มีหัวหน้าชมรมในระบบเลย (อันนี้อาจไม่จำเป็นตอนสร้าง แต่ถ้าคุณหมายถึง “เมื่อสร้าง” ก็ตรวจได้)
-    // แต่ทั่วไปตอนสร้างยังไม่มีสมาชิกเลย — มักจะให้ผู้สร้างเป็นหัวหน้า
-    // ดังนั้นอาจไม่ต้องตรวจตรงนี้
+    // ตรวจสมาชิกกับผู้กรอกฟอร์ม
+    foreach ($members as $i => $m) {
+        $name = trim(mb_strtolower($m['student_name']));
+        $id = trim($m['student_id']);
 
-    // สร้างชมรม
-    $club = Club::create([
-        'name' => $request->name,
-        'description' => $request->description,
-        'status' => 'pending',
-    ]);
+        if ($name === $creatorName) {
+            $duplicateMessages[] = "ชื่อซ้ำระหว่าง สมาชิกคนที่ " . ($i + 1) . " กับผู้กรอกฟอร์ม";
+        }
+        if ($id === $creatorID) {
+            $duplicateMessages[] = "รหัสนักศึกษาซ้ำระหว่าง สมาชิกคนที่ " . ($i + 1) . " กับผู้กรอกฟอร์ม";
+        }
+    }
 
-    // สร้างผู้เป็นหัวหน้าชมรม พร้อมข้อมูล major ที่เลือก
+    // ถ้ามีข้อมูลซ้ำ แสดง SweetAlert
+    if (!empty($duplicateMessages)) {
+        $errorMessage = "⚠️ ตรวจพบข้อมูลซ้ำ:\n" . implode("\n", array_unique($duplicateMessages));
+        return back()
+            ->with('error', nl2br(e($errorMessage))) // ✅ แสดงบรรทัดใหม่ถูกต้อง
+            ->withInput();
+    }
+
+    // ✅ ตรวจจำนวนสมาชิก (รวมผู้สร้าง)
+    if (count($members) + 1 < 5) {
+        return back()
+            ->with('error', nl2br(e('❌ ต้องมีสมาชิกอย่างน้อย 5 คนรวมผู้สร้างชมรม')))
+            ->withInput();
+    }
+
+    // ✅ ตรวจหัวหน้าชมรมต้องมี 1 คนเท่านั้น
+    $leaders = ($request->creator_role === 'หัวหน้าชมรม') ? 1 : 0;
+    foreach ($members as $m) {
+        if ($m['position'] === 'หัวหน้าชมรม') $leaders++;
+    }
+    if ($leaders !== 1) {
+        return back()
+            ->with('error', nl2br(e('❌ ต้องมีหัวหน้าชมรมเพียง 1 คน')))
+            ->withInput();
+    }
+
+    // ✅ สร้างชมรม
+    $club = new Club();
+    $club->name = $request->name;
+    $club->description = $request->description;
+    $club->status = 'pending';
+
+    if ($request->hasFile('image')) {
+        $club->image = $request->file('image')->store('clubs', 'public');
+    }
+
+    $club->save();
+
+    // ✅ เพิ่มผู้สร้าง
     Member::create([
         'club_id' => $club->id,
-        'student_id' => $std_id,
+        'student_id' => $user->std_id,
         'name' => $user->std_name,
-        'role' => 'หัวหน้าชมรม',
+        'role' => $request->creator_role,
         'status' => 'approved',
-        'major' => $request->major,  // ถ้าคุณเพิ่มคอลัมน์ major
     ]);
 
-    return redirect()->route('clubs.index')->with('success', '✅ สร้างชมรมใหม่เรียบร้อย');
+    // ✅ เพิ่มสมาชิกในฟอร์ม
+    foreach ($members as $m) {
+        Member::create([
+            'club_id' => $club->id,
+            'student_id' => $m['student_id'],
+            'name' => $m['student_name'],
+            'major' => $m['branch'] ?? null,
+            'year_level' => $m['year_level'] ?? null,
+            'role' => $m['position'],
+            'status' => 'pending',
+        ]);
+    }
+
+    return redirect()->route('clubs.index')
+        ->with('success', '✅ สร้างชมรมใหม่เรียบร้อย รอการอนุมัติจากผู้ดูแลระบบ');
 }
 
     /** -------------------- Club Homepage -------------------- */
+
+
 
 public function clubHomepage($id_club)
 {
