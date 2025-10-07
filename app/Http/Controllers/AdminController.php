@@ -12,17 +12,20 @@ class AdminController extends Controller
     public function dashboard()
     {
         $user = session('user');
-        if (!$user) return redirect('/login');
+        if (!$user) {
+            return redirect('/login');
+        }
 
-        $clubs = Club::withCount('members')->where('status', 'approved')->get();
+        $clubs = Club::withCount('members')
+            ->where('status', 'approved')
+            ->get();
+
         return view('admin_dashboard', compact('clubs', 'user'));
     }
 
     public function requests()
     {
         $user = session('user');
-        if (!$user) return redirect('/login');
-
         $pendingClubs = Club::where('status', 'pending')->get();
         $pendingLeaders = Member::where('role', 'หัวหน้าชมรม')
             ->where('status', 'pending_leader')->with('club')->get();
@@ -75,11 +78,7 @@ class AdminController extends Controller
     public function destroyClub($id)
     {
         $club = Club::findOrFail($id);
-
-        // ลบสมาชิกในชมรมนี้ทั้งหมดก่อน เพื่อไม่ให้ foreign key error
         Member::where('club_id', $id)->delete();
-
-        // ลบชมรม
         $club->delete();
 
         return redirect()->route('admin.dashboard')->with('success', 'ลบชมรมเรียบร้อยแล้ว');
@@ -92,6 +91,7 @@ public function editMembers($id)
     return view('admin_members_list', compact('club'));
 }
 
+<<<<<<< Updated upstream
 public function editSingleMember($club_id, $member_id)
 {
     $club = Club::findOrFail($club_id);
@@ -99,6 +99,19 @@ public function editSingleMember($club_id, $member_id)
     $member = Member::where('club_id', $club_id)
         ->where('id', $member_id)
         ->firstOrFail();
+=======
+    public function editMembers($id)
+    {
+        $user = session('user');
+        $club = Club::with('members')->findOrFail($id);
+        return view('admin_members_list', compact('club', 'user'));
+    }
+
+    public function editSingleMember($club_id, $member_id)
+    {
+        $user = session('user');
+        $club = Club::findOrFail($club_id);
+>>>>>>> Stashed changes
 
     // ถ้าไม่มี account ให้สร้างใหม่อัตโนมัติ (ใช้ข้อมูลจาก member)
     $account = Account::firstOrCreate(
@@ -113,14 +126,29 @@ public function editSingleMember($club_id, $member_id)
         ]
     );
 
+<<<<<<< Updated upstream
     return view('admin_edit_member', compact('club', 'member', 'account'));
 }
+=======
+        $account = Account::firstOrCreate(
+            ['std_id' => $member->student_id],
+            [
+                'std_name' => $member->name,
+                'email' => strtolower($member->name) . '@gmail.com',
+                'password' => '12345678',
+                'major' => 'CS',
+                'year' => 1,
+                'role' => 'นักศึกษา',
+            ]
+        );
 
-
-
+        return view('admin_edit_member', compact('club', 'member', 'account' , 'user'));
+    }
+>>>>>>> Stashed changes
 
 
     public function updateMember(Request $request, $club_id, $member_id)
+<<<<<<< Updated upstream
 {
     // ✅ ตรวจสอบข้อมูลจากฟอร์ม
     $data = $request->validate([
@@ -154,6 +182,40 @@ public function editSingleMember($club_id, $member_id)
             'major' => $data['major'] ?? $account->major,
             'year' => $data['year'] ?? $account->year,
         ]);
+=======
+    {
+        $user = session('user');
+        $data = $request->validate([
+            'std_name' => 'nullable|string|max:255',
+            'std_id' => 'nullable|string|max:20',
+            'email' => 'nullable|email',
+            'password' => 'nullable|string|max:255',
+            'major' => 'nullable|string|max:50',
+            'year' => 'nullable|integer',
+            'role' => 'nullable|string',
+            'status' => 'nullable|string',
+        ]);
+
+        $member = Member::where('club_id', $club_id)
+            ->where('id', $member_id)
+            ->firstOrFail();
+        $member->role = $data['role'] ?? $member->role;
+        $member->status = $data['status'] ?? $member->status;
+        $member->save();
+        $account = Account::where('std_id', $member->student_id)->first();
+        if ($account) {
+            $account->update([
+                'std_name' => $data['std_name'] ?? $account->std_name,
+                'email' => $data['email'] ?? $account->email,
+                'password' => $data['password'] ?? $account->password,
+                'major' => $data['major'] ?? $account->major,
+                'year' => $data['year'] ?? $account->year,
+            ]);
+        }
+
+        return redirect()->route('admin.members.edit', $club_id)
+            ->with('success', '✅ อัปเดตข้อมูลสมาชิกเรียบร้อยแล้ว');
+>>>>>>> Stashed changes
     }
 
     return redirect()->route('admin.members.edit', $club_id)
@@ -161,6 +223,7 @@ public function editSingleMember($club_id, $member_id)
 }
 
     public function addMember(Request $request, $club_id)
+<<<<<<< Updated upstream
 {
     $request->validate([
         'student_id' => 'required|string',
@@ -170,6 +233,18 @@ public function editSingleMember($club_id, $member_id)
         'major' => 'nullable|string',
         'year' => 'nullable|string'
     ]);
+=======
+    {
+        $user = session('user');
+        $request->validate([
+            'student_id' => 'required|string',
+            'name' => 'required|string|max:255',
+            'role' => 'required|string',
+            'status' => 'required|string',
+            'major' => 'nullable|string',
+            'year' => 'nullable|string'
+        ]);
+>>>>>>> Stashed changes
 
     // 🔹 ถ้ายังไม่มี account ให้สร้างอัตโนมัติ
     $account = Account::firstOrCreate(
