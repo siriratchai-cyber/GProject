@@ -5,7 +5,7 @@
   <title>จัดการคำร้องทั้งหมด</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body{background:#d9e7f3;font-family:'Sarabun',sans-serif;}
+    body{background:#d9e7f3;font-family:'Arial',sans-serif;}
     .container{background:#f9f6f2;border-radius:15px;padding:30px;margin-top:20px;}
     table{background:white;border-radius:10px;overflow:hidden;}
     th{background:#5E5F68;color:white;}

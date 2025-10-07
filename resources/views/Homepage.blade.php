@@ -49,7 +49,7 @@
     </div>
   </header>
 
-  <div class="welcome-section text-center mt-4">
+  <div class="welcome-section d-flex justify-content-center mt-4">
     <div class="welcome-box bg-light px-4 py-2 rounded-pill fw-bold shadow">
       👋 Welcome {{ $account->std_name }}
     </div>
@@ -65,7 +65,7 @@
         @foreach($myClubs as $club)
           <div class="club-item">
             <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('default.jpg') }}" style="width:60px;height:60px;border-radius:50%;">
-            <a href="{{ route('clubs.show', ['id' => $club->id]) }}" style="font-weight:bold;text-decoration:none;color:#000;" >{{ $club->name }}</a>
+            <a href="{{ route('clubs.show', ['id' => $club->id , 'std_id' => $account->std_id] ) }}" style="font-weight:bold;text-decoration:none;color:#000;" >{{ $club->name }}</a>
           </div>
         @endforeach
       @endif
