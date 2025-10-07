@@ -141,10 +141,26 @@
                                     @csrf
                                     <input type="submit" value="อนุมัติ" class="btn-approve">
                                 </form>
-                                <form action="{{ route('rejected',['from' => $from, 'id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="post">
-                                    @csrf
-                                    <button class="btn-reject">ไม่อนุมัติ</button>
-                                </form> 
+                                <button type="button" class="btn-reject" data-bs-toggle="modal" data-bs-target="#deleteActivityModal{{ $member->id }}">
+                                    ไม่อนุมัติ
+                                </button>
+                                <div class="modal fade" id="deleteActivityModal{{ $member->id }}" tabindex="-1" 
+                                    aria-labelledby="deleteActivityLabel{{ $member->id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content" style="border-radius: 20px;">
+                                    <div class="modal-body text-center">
+                                        <p class="fs-5 fw-bold">ต้องการดำเนินการต่อหรือไม่</p>
+                                        <div class="d-flex justify-content-center gap-3 mt-3">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                                        <form action="{{ route('rejected',['from' => $from, 'id_club' => $member->club_id, 'id_member' => $member->id]) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-dark">ตกลง</button>
+                                        </form>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                </div> 
                                 </div>    
                             </td>
                         </tr>
