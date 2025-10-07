@@ -1,30 +1,19 @@
 @extends('layouts.headclub')
-@section('title', 'Activity')
+@section('title', 'Edit Club Profile')
 @section('club_name', $leaderclub->name)
 @section('username', $user->std_id)
 
 @section('style')
 <style>
     main {
-        width: 95%;
-        margin: 2% auto;
+        width: 100%;
+        min-height: 100vh;
         display: flex;
-        flex-direction: column;
-        gap: 5px;
+        justify-content: center; 
+        align-items: center;     
     }
-    .btn-save {
-        background-color: #5E5F68;
-        color: white;
-        border: none;
-        border-radius: 20px;
-        color: white;
-        padding: 8px 15px;
-        cursor: pointer;
-        font-size: 14px;
-        width: fit-content;
-        margin-left: 65%;
-    }
-    .back{
+
+    .back {
         position: absolute;
         left: 5%;
         top: 12%;
@@ -36,75 +25,101 @@
         color: black;
         text-decoration: none;
     }
-    a{
-        color: black;
-        text-decoration: none;
-    }
-    .back:hover{
+
+    .back:hover {
         background-color: #5E5F68;
         color: white;
     }
-    .box-showDetail{
-        width: 95%;
-        height: 500px;
+
+    .box-showDetail {
+        width: 100%;
+        max-width: 800px;
         background: #f9f6f2;
         border-radius: 30px;
         display: flex;
-        padding: 20px;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    div img{
+
+    .club-img {
         width: 300px;
         height: 200px;
-        margin: 0px 50% ;
-        border-radius: 30px;
-        margin-top: 30px;
+        border-radius: 20px;
+        margin-bottom: 15px;
     }
-    .activityform{
-        width: 50%;
-        margin: 30px 0px 0px 20%;
-    }
-    .activityform form {
+
+    .activityform {
+        width: 100%;
+        max-width: 600px;
         display: flex;
         flex-direction: column;
-        gap: 3px;
-        max-width: 100%;
+        align-items: center;
+        gap: 15px;
     }
-    .activityform input, .activityform textarea{
-        width: 80%;
-        padding: 10px 10px;
+
+    .activityform label {
+        align-self: flex-start;
+        font-weight: bold;
+    }
+
+    .activityform input,
+    .activityform textarea {
+        width: 100%;
+        padding: 10px;
         border-radius: 10px;
         border: 1px solid #ccc;
-        font-size: 14px;
+        font-size: 15px;
+        background: white;
     }
-    .activityform label{
-        margin: 5px 0px 0px 0px;
+
+    .activityform input {
+        width: 100%;
+        margin-bottom: 10px;
     }
-    .btn-save:hover{
-        color: #303032ff;
+
+    .btn-save {
+        background-color: #5E5F68;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 25px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+        transition: 0.3s;
+    }
+
+    .btn-save:hover {
         background-color: #A9CF88;
+        color: #303032;
     }
+
 </style>
 @endsection
 
 @section('body')
-    <main>
-        <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
-            <div class="box-showDetail">
-                <div>
-                    <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="Club Image">
-                </div>
-                <div class="activityform">
-                    <form action="{{ route('updateProfile', ['id_club' => $leaderclub->id ])}}" method="POST">
-                        @csrf
-                        <label>ชื่อชมรม: </label>
-                        <input type="text" name="name_club" required value="{{$leaderclub->name}}"><br>
+<main>
+    <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
 
-                        <label>รายละเอียดชมรม:</label>
-                        <textarea name="club_detail" rows="7" >{{$leaderclub->description}}</textarea><br>
+    <div class="box-showDetail">
+        <h4>แก้ไขโปรไฟล์ชมรม</h4><br>
+        <img src="{{ asset('storage/'.$leaderclub->image) }}" alt="Club Image" class="club-img">
+        
+        <form action="{{ route('updateProfile', ['id_club' => $leaderclub->id ])}}" method="POST" enctype="multipart/form-data" class="activityform">
+            @csrf
+            <label>เลือกรูปโปรไฟล์:</label>
+            <input type="file" name="image" class="form-control">
 
-                        <button type="submit" class="btn-save">บันทึกข้อมูล</button>
-                    </form>
-                </div>
-            </div>    
-    </main>
+            <label>ชื่อชมรม:</label>
+            <input type="text" name="name_club" required value="{{ $leaderclub->name }}">
+
+            <label>รายละเอียดชมรม:</label>
+            <textarea name="club_detail" rows="6">{{ $leaderclub->description }}</textarea>
+
+            <button type="submit" class="btn-save">บันทึกข้อมูล</button>
+        </form>
+    </div>
+</main>
 @endsection

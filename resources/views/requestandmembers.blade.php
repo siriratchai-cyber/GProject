@@ -18,7 +18,7 @@
     div .back{
         position: absolute;
         left: 5%;
-        top: 15%;
+        top: 12%;
         background: none;
         border: 1px solid #000;
         border-radius: 20px;
@@ -61,7 +61,7 @@
     }
     .text{
         font-size: 20px;
-        margin:  10px 5px 0px 0px;
+        margin:  -15px 5px 0px 0px;
     }
     .btn-approve{
         border-style: none;

@@ -162,7 +162,7 @@
             <h3>{{ $leaderclub->name }}</h3>
             <p>{{ $leaderclub->description }}</p>
         </div>
-        <a href="{{ route('clubHomepage', ['from' => 'homepage', 'id_club' => $leaderclub->id]) }}" class="edit-btn">จัดการชมรม</a>
+        <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id]) }}" class="edit-btn">จัดการชมรม</a>
     </div>
 
     <div class="activity-section">

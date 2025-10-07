@@ -169,6 +169,21 @@
         justify-content: space-between;
         align-items: center;
     }
+    .club-info {
+        flex: 1;
+        margin-left: 40px;
+    }
+
+    .club-info h3 {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .club-info p {
+        margin: 0;
+        color: #444;
+    }
 </style>
 @endsection
 
@@ -187,8 +202,10 @@
             <div class="box-showclub">
                 <p>
                    <img src="{{ $leaderclub->image ? asset('storage/'.$leaderclub->image) : asset('default.jpg') }}" alt="club Image">
-                    <p>{{$leaderclub->description}}
-                    </p>
+                    <div class="club-info">
+                        <h3>{{ $leaderclub->name }}</h3>
+                        <p>{{ $leaderclub->description }}</p>
+                    </div>
                 </p>
             </div>
             <div class="activity">

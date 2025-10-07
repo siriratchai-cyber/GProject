@@ -91,6 +91,7 @@ class UserController extends Controller
             ->count();
 
         $activities = Activity::where('club_id', $club->id)
+            ->where('date', '>=', now())
             ->orderBy('date', 'asc')
             ->get();
 

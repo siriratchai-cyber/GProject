@@ -6,6 +6,7 @@ use App\Models\Club;
 use App\Models\Member;
 use App\Models\Account;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ClubController extends Controller
 {
@@ -80,7 +81,8 @@ public function clubHomepage($id_club)
     if (!$user) return redirect('/login');
 
     $leaderclub = Club::findOrFail($id_club);
-    $activities = $leaderclub->activities()->orderBy('date', 'asc')->get();
+    $activities = $leaderclub->activities()->where('date', '>=', now())
+        ->orderBy('date', 'asc')->get();
     $pendingCount = Member::where('club_id', $id_club)->where('status', 'pending')->count();
 
     return view('clubmain', compact('activities', 'leaderclub', 'pendingCount', 'user'));
@@ -155,6 +157,9 @@ public function editProfile($id_club)
 public function updateProfile(Request $request, $id_club)
 {
     $leaderclub = Club::findOrFail($id_club);
+    if ($request->hasFile('image')) {
+        $leaderclub->image = $request->file('image')->store('clubs', 'public');
+    }
     $leaderclub->name = $request->name_club;
     $leaderclub->description = $request->club_detail;
     $leaderclub->save();
@@ -196,7 +201,6 @@ public function rejected($id_club, $id_member, $from)
     return redirect()->route('requestToleader', ['from' => $from, 'id_club' => $id_club])
         ->with('success', '❌ ปฏิเสธคำร้องเรียบร้อยแล้ว');
 }
-
 
 
 

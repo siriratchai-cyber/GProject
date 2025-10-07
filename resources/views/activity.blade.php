@@ -26,6 +26,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
     }
     .box-activity form {
         display: flex;
@@ -162,15 +163,34 @@
         gap: 20px;
         justify-content: flex-end;
     }
-
+    span{
+        margin: 0px 45%;
+    }
 </style>
+
+<script>
+    function checkTime() {
+        const Input_date = document.getElementById('activity_date');
+        const Input_time = document.getElementById('activity_time');
+        const date = Input_date.value;
+        const time = Input_time.value;
+
+        const selectedDateTime = new Date(`${date}T${time}`);
+        const now = new Date();
+
+        if (selectedDateTime < now) {
+            alert("❌ วันหรือเวลาน้อยกว่าปัจจุบัน");
+            Input_time.value = ""
+        }
+    }
+</script>
 @endsection
 
 @section('body')
 <main>
     <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id]) }}" class="back">⬅ กลับไป</a>
 
-    <p class="text-show1">กิจกรรมที่กำลังดำเนินการอยู่</p>
+    <h4 class="text-show1">กิจกรรมที่กำลังดำเนินการอยู่</h4>
     <div class="box-showActivities">
         <table class="showactivity">
                 <thead>
@@ -190,7 +210,7 @@
                                     @csrf
                                     <input type="submit" value="ลบ" class="btn-delete">
                                 </form>
-                                <a href="{{ route('editActivity', ['id_club' => $leaderclub->id, 'id_activity' => $a->id ]) }}" class="btn-edit">แก้ไข</a>
+                                <a href="{{ route('editActivity', ['id_club' => $leaderclub->id, 'id_activity' => $a->id ]) }}" class="btn-edit" >แก้ไข</a>
                             </div>
                         </td>
                     </tr>
@@ -202,38 +222,38 @@
     
     <hr>
     @if(!isset($activity))
-        <p class="text-show2">เพิ่มกิจกรรมใหม่</p>
+        <h4 class="text-show2">เพิ่มกิจกรรมใหม่</h4>
         <div class="box-activity">
             <form method="POST" action="{{ route('addActivity',['id_club'=>$leaderclub->id]) }}">
 
                 @csrf
-                <label>ชื่อกิจกรรม</label>
+                <label>ชื่อกิจกรรม:</label>
                 <input type="text" name="name" required>
-                <label>รายละเอียดกิจกรรม</label>
+                <label>รายละเอียดกิจกรรม:</label>
                 <textarea name="description" required></textarea>
-                <label>วันที่</label>
-                <input type="date" name="date" required>
-                <label>เวลา</label>
-                <input type="time" name="time" required>
-                <label>สถานที่</label>
+                <label>วันที่:</label>
+                <input type="date" name="date" min="{{ date('Y-m-d') }}" id="activity_date" onchange="checkTime()" required>
+                <label>เวลา:</label>
+                <input type="time" name="time" id="activity_time" onchange="checkTime()" required>
+                <label>สถานที่:</label>
                 <input type="text" name="location" required>
                 <button type="submit" class="btn-save">บันทึกข้อมูล</button>
             </form>
         </div>
     @else
-        <p class="text-show2">แก้ไขกิจกรรม</p>
+        <h4 class="text-show2">แก้ไขกิจกรรม</h4>
         <div class="box-activity">
             <form method="POST" action="{{ route('updateActivity',['id_club'=>$leaderclub->id,'id_activity'=>$activity->id]) }}">
                 @csrf
-                <label>ชื่อกิจกรรม</label>
+                <label>ชื่อกิจกรรม:</label>
                 <input type="text" name="name" value="{{ $activity->activity_name }}" required>
-                <label>รายละเอียด</label>
+                <label>รายละเอียด:</label>
                 <textarea name="description">{{ $activity->description }}</textarea>
-                <label>วันที่</label>
-                <input type="date" name="date" value="{{ $activity->date }}" required>
-                <label>เวลา</label>
-                <input type="time" name="time" value="{{ $activity->time }}" required>
-                <label>สถานที่</label>
+                <label>วันที่:</label>
+                <input type="date" name="date" value="{{ $activity->date }}" min="{{ date('Y-m-d') }}" id="activity_date" onchange="checkTime()" required>
+                <label>เวลา:</label>
+                <input type="time" name="time" value="{{ $activity->time }}" id="activity_time" onchange="checkTime()" required>
+                <label>สถานที่:</label>
                 <input type="text" name="location" value="{{ $activity->location }}" required>
                 <div class="btn-save_cancel">
                     <button type="submit" class="btn-save">บันทึกข้อมูล</button>
