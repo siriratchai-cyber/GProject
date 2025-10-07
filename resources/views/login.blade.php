@@ -111,7 +111,6 @@
         @csrf
         <input name="std_id" type="text" placeholder="รหัสนักศึกษา" required>
         <input name="password" type="password" placeholder="รหัสผ่าน" required>
-        <a href="{{ route( 'forgotpassword.form' ) }}"> Forgot Password</a>
         <button type="submit">LOG IN</button>
       </form>
     </div>

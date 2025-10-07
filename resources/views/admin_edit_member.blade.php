@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
   <meta charset="UTF-8">
-  <title>{{ isset($member) ? 'แก้ไขสมาชิก' : 'เพิ่มสมาชิกใหม่' }}</title>
+  <title>แก้ไขข้อมูลสมาชิก</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
   <style>
+<<<<<<< HEAD
     /* ===== โทนรวม & ฟอนต์ ===== */
     body.form-page {
       background-color: #cfe2f3;
@@ -130,94 +129,35 @@
       text-decoration: none;
       display: inline-block;
     }
+=======
+    body{background:#d9e7f3;font-family:'Sarabun',sans-serif;}
+    .container{background:#f9f6f2;border-radius:15px;padding:30px;margin-top:30px;width:600px;}
+    .btn-save{background:#5E5F68;color:white;border:none;border-radius:10px;padding:8px 18px;}
+>>>>>>> parent of cc8f0e0 (Merge branch 'feature-activity-update' into updateLeader)
   </style>
 </head>
-
-<body class="form-page">
-
-  <header class="app-header">
-    <div class="username-box">username</div>
-    <div class="club-title">CP club</div>
-    <div class="nav-links">
-      <a href="{{ route('admin.dashboard') }}">Dashboard</a>
-      <a href="{{ route('logout') }}">Logout</a>
-    </div>
-  </header>
-
-  <div class="back-wrap">
-    <a class="back-btn" href="{{ route('admin.members.edit', $club->id) }}">←</a>
-
-  </div>
-
-  <div class="form-card">
-    <h4 class="form-title">
-      {{ isset($member) ? 'แก้ไขสมาชิก' : 'เพิ่มสมาชิกใหม่' }} ใน {{ $club->name }}
-    </h4>
-
-    @if($errors->any())
-      <div class="alert alert-danger mb-3">
-        <ul class="mb-0">@foreach($errors->all() as $e)<li>{{ $e }}</li>
-        @endforeach
-        </ul>
-      </div>
-    @endif
-
-    <form method="POST" action="{{ isset($member)
-  ? route('admin.members.update', [$club->id, $member->id])
-  : route('admin.members.store', $club->id) }}">
+<body>
+  <div class="container">
+    <h3>แก้ไขข้อมูลสมาชิก</h3>
+    <form method="POST" action="{{ route('admin.members.update',[$club->id,$member->id]) }}">
       @csrf
-      @if(isset($member)) @method('PUT') @endif
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">ชื่อ-นามสกุล</label>
-          <input type="text" name="std_name" class="form-control"
-            value="{{ old('std_name', optional($account)->std_name) }}">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">รหัสนักศึกษา</label>
-          <input type="text" name="std_id" class="form-control" value="{{ old('std_id', optional($account)->std_id) }}">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">อีเมล</label>
-          <input type="email" name="email" class="form-control" value="{{ old('email', optional($account)->email) }}">
-        </div>
-
-       <div class="form-group">
-  <label class="form-label">รหัสผ่าน</label>
-  <input type="text" name="password" class="form-control"
-         value="{{ old('password', optional($account)->password) }}">
-</div>
-
-
-        <div class="form-group">
-          <label class="form-label">ชั้นปี</label>
-          <input type="number" name="year" class="form-control" value="{{ old('year', optional($account)->year) }}">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">สาขา</label>
-          <select name="major" class="form-select">
-            <option value="">-- เลือก --</option>
-            @foreach(['CY', 'GIS', 'CS', 'IT'] as $mem)
-              <option value="{{ $mem }}" @selected(old('major', $account->major ?? '') === $mem)>{{ $mem }}</option>
-            @endforeach
-          </select>
-        </div>
-      </div>
-
-      <input type="hidden" name="role" value="{{ $member->role ?? 'สมาชิก' }}">
-<input type="hidden" name="status" value="{{ $member->status ?? 'approved' }}">
-
-
-      <div class="mt-4">
-        <button class="btn-save" type="submit">{{ isset($member) ? 'บันทึกการแก้ไข' : 'เพิ่มสมาชิก' }}</button>
-      </div>
+      <label>ชื่อ</label>
+      <input class="form-control" name="name" value="{{ $member->name }}">
+      <label class="mt-3">รหัสนักศึกษา</label>
+      <input class="form-control" value="{{ $member->student_id }}" readonly>
+      <label class="mt-3">ตำแหน่ง</label>
+      <select class="form-select" name="role">
+        <option value="สมาชิก" {{ $member->role=='สมาชิก'?'selected':'' }}>สมาชิก</option>
+        <option value="หัวหน้าชมรม" {{ $member->role=='หัวหน้าชมรม'?'selected':'' }}>หัวหน้าชมรม</option>
+      </select>
+      <label class="mt-3">สถานะ</label>
+      <select class="form-select" name="status">
+        <option value="approved" {{ $member->status=='approved'?'selected':'' }}>approved</option>
+        <option value="pending" {{ $member->status=='pending'?'selected':'' }}>pending</option>
+        <option value="rejected" {{ $member->status=='rejected'?'selected':'' }}>rejected</option>
+      </select>
+      <button class="btn-save mt-4" type="submit">บันทึก</button>
     </form>
   </div>
-
 </body>
-
 </html>

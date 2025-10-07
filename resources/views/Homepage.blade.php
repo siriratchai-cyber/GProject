@@ -64,8 +64,13 @@
       @else
         @foreach($myClubs as $club)
           <div class="club-item">
+<<<<<<< HEAD
             <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('default.jpg') }}" style="width:60px;height:60px;border-radius:50%;">
             <a href="{{ route('clubs.show', ['id' => $club->id , 'std_id' => $account->std_id] ) }}" style="font-weight:bold;text-decoration:none;color:#000;" >{{ $club->name }}</a>
+=======
+            <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('default.jpg') }}">
+            <a href="#">{{ $club->name }}</a>
+>>>>>>> parent of cc8f0e0 (Merge branch 'feature-activity-update' into updateLeader)
           </div>
         @endforeach
       @endif
@@ -79,7 +84,7 @@
       @else
         @foreach($upcomingActivities as $act)
           <div class="activity-item">
-            <img src="{{ $act->club->image ? asset('storage/'.$act->club->image) : asset('default.jpg') }}" alt="club" style="width:40px;height:40px;border-radius:50%;">
+            <img src="{{ $act->club->image ? asset('storage/'.$act->club->image) : asset('default.jpg') }}" alt="club">
             <div>
               <b>{{ $act->club->name }}</b><br>
               วันที่ {{ \Carbon\Carbon::parse($act->date)->format('d F Y') }}<br>

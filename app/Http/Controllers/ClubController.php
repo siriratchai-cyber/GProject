@@ -19,6 +19,7 @@ class ClubController extends Controller
         $clubs = Club::where('status', 'approved')->get();
         return view('cpclub', compact('clubs', 'user'));
     }
+<<<<<<< HEAD
     public function show($id,$std_id)
     {
         $club = Club::with('members', 'activities')->findOrFail($id);
@@ -26,6 +27,8 @@ class ClubController extends Controller
         return view('club_detail', compact('club', 'activities','std_id'));
     }
 
+=======
+>>>>>>> parent of cc8f0e0 (Merge branch 'feature-activity-update' into updateLeader)
 
     /** -------------------- หน้า Create Club -------------------- */
     public function create()
@@ -48,6 +51,7 @@ class ClubController extends Controller
     $request->validate([
         'name' => 'required|string|max:255',
         'description' => 'required|string',
+        'major' => 'required|string', // สาขาที่เลือก
     ]);
 
     // ตรวจชื่อชมรมซ้ำในระบบ
