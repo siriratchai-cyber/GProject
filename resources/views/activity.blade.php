@@ -28,7 +28,7 @@
 
 @section('body')
 <main>
-    <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id]) }}" class="back">⬅ กลับไป</a>
+    <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id]) }}" class="back">⬅ กลับ</a>
 
     <h4 class="text-show1">กิจกรรมที่กำลังดำเนินการอยู่</h4>
     <div class="box-showActivities">

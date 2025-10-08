@@ -11,7 +11,7 @@
 
 @section('body')
 <main>
-    <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับไป</a>
+    <a href="{{ route('clubHomepage', ['id_club' => $leaderclub->id ]) }}" class="back">⬅ กลับ</a>
 
     <div class="box-showDetail">
         <h4>แก้ไขโปรไฟล์ชมรม</h4><br>
