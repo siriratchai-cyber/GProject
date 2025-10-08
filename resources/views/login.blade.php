@@ -111,9 +111,21 @@
         @csrf
         <input name="std_id" type="text" placeholder="รหัสนักศึกษา" required>
         <input name="password" type="password" placeholder="รหัสผ่าน" required>
+        <a href="{{ route( 'forgotpassword.form' ) }}"> Forgot Password</a>
         <button type="submit">LOG IN</button>
       </form>
     </div>
+    @if (session('success'))
+      <script>
+        alert("{{ session('success') }}");
+      </script>
+    @endif
+
+    @if (session('error'))
+      <script>
+        alert("{{ session('error') }}");
+      </script>
+    @endif
   </div>
 </body>
 </html>

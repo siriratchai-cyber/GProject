@@ -1,116 +1,153 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-  <meta charset="UTF-8">
-  <title>Admin Dashboard - CP club</title>
-  <style>
-    body { font-family: "Arial", sans-serif; margin: 0; background:#d9e7f3; }
-    header {
-      background: #2d3e50;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 30px;
-    }
-    header .logo {
-      font-size: 32px;
-      font-weight: bold;
-      font-family: "Georgia", cursive;
-    }
-    header .nav {
-      display: flex;
-      gap: 20px;
-    }
-    header .nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .username-box {
-      background: #1a3552;
-      padding: 5px 15px;
-      color: white;
-      border-radius: 5px;
-      margin-right: 15px;
-      display: inline-block;
-    }
+@extends('layouts.headadmin')
+@section('title', 'หน้าหลักแอดมิน')
 
-    /* ปุ่มคำร้องขอเหมือนปุ่มสร้างชมรม */
-    .create-btn {
-      display: flex;
-      justify-content: flex-end;
-      padding: 20px 30px 0 30px;
-    }
-    .create-btn a {
-      background: white;
-      border: 1px solid #bbb;
-      border-radius: 20px;
-      padding: 8px 15px;
-      cursor: pointer;
-      font-size: 14px;
-      text-decoration: none;
-      color: #000;
-    }
+@section('username')
+  {{ $user->std_id }}
+@endsection
 
-    .clubs { margin:30px; background:#f9f6f2; padding:20px; border-radius:20px; }
-    .club-list { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
-    .club-card { background:white; padding:15px; border-radius:15px; display:flex; justify-content:space-between; align-items:center; }
-    .btn { padding:6px 12px; border:none; border-radius:12px; cursor:pointer; font-size:14px; }
-    .edit { background:#f7e58d; }
-    .delete { background:#f69191; }
+@section('body')
+<style>
+  body.page-dashboard {
+    background: #cfe2f3;
+    font-family: "Ariel", sans-serif;
+  }
 
-    .welcome {
-      text-align: center;
-      margin: 20px 0;
-    }
-    .welcome span {
-      background: #f5f5f5ff;
-      padding: 10px 30px;
-      border-radius: 20px;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
+  .dashboard-container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+  }
 
-<header>
-  <div class="username-box">{{ $user->std_id }}</div>
-  <div class="logo">CP club</div>
-  <div class="nav">
-    <a href="{{ route('admin.dashboard') }}">Dashboard</a>
-    <a href="{{ route('logout') }}">Logout</a>
-  </div>
-</header>
+  .dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+    gap: 10px;
+  }
 
- <div class="welcome">
-    <span>Welcome {{ $user->std_name }}</span>
-  </div>
+  .welcome-box {
+    background: #eff5fb;
+    color: #2d3e50;
+    font-weight: 700;
+    padding: 8px 18px; 
+    border-radius: 25px;
+    text-align: center;
+    min-width: 220px;
+    font-size: 0.95rem; 
+    margin: auto;
+    margin-right: 225px;
+  }
 
-<div class="create-btn">
-  <a href="{{ route('admin.requests') }}">คำร้องขอ</a>
-</div>
+  .request-btn a {
+    background: #2d3e50;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 6px 14px; 
+    border-radius: 25px;
+    font-size: 0.9rem;
+    margin-right: 50px;
+  }
 
-<div class="clubs">
-  <h3>ชมรมทั้งหมด</h3>
-  <div class="club-list">
-    @forelse($clubs as $club)
-      <div class="club-card">
-        <span>{{ $club->name }}</span>
-        <div>
 
-         <a href="{{ route('admin.clubs.edit', $club->id) }}" class="btn edit">EDIT</a>
+  .clubs-panel {
+    background: #fcf7f2;
+    border: 1px solid #cfd7e1;
+    border-radius: 25px;
+    padding: 25px 25px 32px;
+  }
 
-            @csrf
-            <button class="btn delete" type="submit">DELETE</button>
-          </form>
-        </div>
+  .clubs-title {
+    font-weight: 800;
+    color: #2b2b2b;
+    margin-bottom: 18px;
+    font-size: 1.2rem;
+    padding-left: 10px;
+  }
+
+  .club-row {
+    row-gap: 18px;
+  }
+
+  .club-card {
+    background: #F1EEEE;
+    border: 1.5px solid #b1bccfff;
+    border-radius: 18px;
+    padding: 14px 18px; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .club-name {
+    font-weight: 800;
+    margin: 0;
+    font-size: 1rem;
+    color: #2b2b2b;
+  }
+
+  .club-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    border: none;
+    padding: 5px 12px;
+    font-weight: 700;
+    border-radius: 999px;
+    text-decoration: none;
+    color: #2d2d2d;
+    line-height: 1;
+    font-size: 0.9rem;
+  }
+
+  .btn-edit {
+    background: #fff3b0;
+  }
+
+  .btn-delete {
+    background: #ffb0b0;
+  }
+</style>
+
+
+
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <div class="welcome-box">Welcome admin {{ $user->std_name ?? 'admin' }}</div>
+      <div class="request-btn">
+        <a href="{{ route('admin.requests') }}">คำร้องขอ | <span>{{ $pendingCount }}</a>
       </div>
-    @empty
-      <p>- ไม่มีชมรม -</p>
-    @endforelse
-  </div>
-</div>
+    </div>
 
-</body>
-</html>
+    <div class="clubs-panel">
+      <div class="clubs-title">ชมรมทั้งหมด</div>
+
+      <div class="row club-row">
+        @forelse($clubs as $club)
+          <div class="col-md-6">
+            <div class="club-card">
+              <div>
+                <p class="club-name">{{ $club->name }}</p>
+              </div>
+
+              <div class="club-buttons">
+                <a href="{{ route('admin.clubs.edit', $club->id) }}" class="btn-edit">EDIT</a>
+                <form action="{{ route('admin.clubs.destroy', $club->id) }}" method="POST"
+                  onsubmit="return confirm('ลบชมรมนี้หรือไม่?')">
+                  @csrf @method('DELETE')
+                  <button type="submit" class="btn-delete">DELETE</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        @empty
+        @endforelse
+      </div>
+    </div>
+  </div>
+@endsection

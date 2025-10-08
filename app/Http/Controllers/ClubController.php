@@ -2,264 +2,288 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
 use App\Models\Club;
 use App\Models\Member;
+use App\Models\Account;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class ClubController extends Controller
 {
-    // ✅ แสดงหน้า All Clubs
+
     public function index()
     {
-        $clubs = Club::with('members')
-            ->where('status', 'approved') // ✅ เอาเฉพาะที่แอดมินอนุมัติแล้ว
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $user = session('user');
+        if (!$user) return redirect('/login');
 
-        $std_id = Session::get('std_id');
-        $user = Account::where('std_id', $std_id)->first();
-
+        $clubs = Club::where('status', 'approved')->get();
         return view('cpclub', compact('clubs', 'user'));
     }
 
-    // ✅ ฟอร์มสร้างชมรม
-    public function create()
+    public function show($id)
     {
-        return view('create_club');
+        $club = Club::with('members', 'activities')->findOrFail($id);
+        $activities = $club->activities;
+        return view('club_detail', compact('club', 'activities'));
     }
 
-    // ✅ บันทึกชมรมใหม่ (รออนุมัติจากแอดมิน)
+    public function showactivity($id, $std_id)
+    {
+        $club = Club::with('members', 'activities')->findOrFail($id);
+        $activities = $club->activities;
+        return view('club_detail', compact('club', 'activities', 'std_id'));
+    }
+
+
+    public function create()
+    {
+        $user = session('user');
+        if (!$user) return redirect('/login');
+
+        return view('create_club', compact('user'));
+    }
+
+
     public function store(Request $request)
     {
+        $user = session('user');
+        if (!$user) return redirect('/login');
+
         $request->validate([
-            'name' => 'required|string|max:255|unique:clubs',
+            'name' => 'required|string|max:255|unique:clubs,name',
             'description' => 'required|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'members' => 'required|array|min:5',
-            'members.*.student_name' => 'required|string|max:255',
-            'members.*.student_id' => 'required|string|regex:/^\d{6,9}-\d$/',
-            'members.*.position' => 'required|string',
+            'creator_role' => 'required|in:หัวหน้าชมรม,สมาชิก',
+            'members' => 'required|array|min:4', 
         ]);
 
-        $studentIds = [];
-        $leaderCount = 0;
+        $duplicateMessages = [];
+        $members = $request->members;
+        $creatorName = trim(mb_strtolower($user->std_name));
+        $creatorID = trim($user->std_id);
 
-        foreach ($request->members as $index => $member) {
-            if (in_array($member['student_id'], $studentIds)) {
-                return back()->withErrors(["members.$index.student_id" => "รหัส {$member['student_id']} ซ้ำ"])->withInput();
+        for ($i = 0; $i < count($members); $i++) {
+            $m1Name = trim(mb_strtolower($members[$i]['student_name']));
+            $m1ID = trim($members[$i]['student_id']);
+
+            for ($j = $i + 1; $j < count($members); $j++) {
+                $m2Name = trim(mb_strtolower($members[$j]['student_name']));
+                $m2ID = trim($members[$j]['student_id']);
+
+                if ($m1Name === $m2Name) {
+                    $duplicateMessages[] = "ชื่อซ้ำระหว่าง สมาชิกคนที่ " . ($i + 1) . " และ " . ($j + 1);
+                }
+
+                if ($m1ID === $m2ID) {
+                    $duplicateMessages[] = "รหัสนักศึกษาซ้ำระหว่าง สมาชิกคนที่ " . ($i + 1) . " และ " . ($j + 1);
+                }
             }
-            $studentIds[] = $member['student_id'];
-            if ($member['position'] === 'หัวหน้าชมรม') $leaderCount++;
         }
 
-        if ($leaderCount !== 1) {
-            return back()->withErrors(['members' => "ต้องมีหัวหน้าชมรม 1 คนพอดี (ตอนนี้มี $leaderCount คน)"])->withInput();
+        // ตรวจสมาชิกกับผู้สร้าง
+        foreach ($members as $i => $m) {
+            $name = trim(mb_strtolower($m['student_name']));
+            $id = trim($m['student_id']);
+
+            if ($name === $creatorName) {
+                $duplicateMessages[] = "ชื่อซ้ำระหว่าง สมาชิกคนที่ " . ($i + 1) . " กับผู้กรอกฟอร์ม";
+            }
+            if ($id === $creatorID) {
+                $duplicateMessages[] = "รหัสนักศึกษาซ้ำระหว่าง สมาชิกคนที่ " . ($i + 1) . " กับผู้กรอกฟอร์ม";
+            }
         }
 
-        $imagePath = $request->hasFile('image') 
-            ? $request->file('image')->store('clubs', 'public') 
-            : null;
+        if (!empty($duplicateMessages)) {
+            $errorMessage = "⚠️ ตรวจพบข้อมูลซ้ำ:\n" . implode("\n", array_unique($duplicateMessages));
+            return back()
+                ->with('error', nl2br(e($errorMessage)))
+                ->withInput();
+        }
 
-        // ✅ Club ใหม่รอแอดมินอนุมัติ
-        $club = Club::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'image' => $imagePath,
-            'status' => 'pending',
+        // ตรวจจำนวนสมาชิก (รวมผู้สร้าง)
+        if (count($members) + 1 < 5) {
+            return back()
+                ->with('error', nl2br(e('❌ ต้องมีสมาชิกอย่างน้อย 5 คนรวมผู้สร้างชมรม')))
+                ->withInput();
+        }
+
+        // ตรวจหัวหน้าชมรมต้องมี 1 คนเท่านั้น
+        $leaders = ($request->creator_role === 'หัวหน้าชมรม') ? 1 : 0;
+        foreach ($members as $m) {
+            if ($m['position'] === 'หัวหน้าชมรม') $leaders++;
+        }
+        if ($leaders !== 1) {
+            return back()
+                ->with('error', nl2br(e('❌ ต้องมีหัวหน้าชมรมเพียง 1 คน')))
+                ->withInput();
+        }
+
+        // สร้างชมรม
+        $club = new Club();
+        $club->name = $request->name;
+        $club->description = $request->description;
+        $club->status = 'pending';
+
+        if ($request->hasFile('image')) {
+            $club->image = $request->file('image')->store('clubs', 'public');
+        }
+
+        $club->save();
+
+        // เพิ่มผู้สร้างชมรม
+        Member::create([
+            'club_id' => $club->id,
+            'student_id' => $user->std_id,
+            'name' => $user->std_name,
+            'role' => $request->creator_role,
+            'status' => 'approved',
         ]);
 
-        // ✅ เพิ่มสมาชิกทั้งหมด (รออนุมัติพร้อมชมรม)
-        foreach ($request->members as $member) {
+        // เพิ่มสมาชิกในฟอร์ม
+        foreach ($members as $m) {
             Member::create([
                 'club_id' => $club->id,
-                'name' => $member['student_name'],
-                'student_id' => $member['student_id'],
-                'role' => $member['position'],
+                'student_id' => $m['student_id'],
+                'name' => $m['student_name'],
+                'major' => $m['branch'] ?? null,
+                'year_level' => $m['year_level'] ?? null,
+                'role' => $m['position'],
                 'status' => 'pending',
             ]);
         }
 
-        return redirect()->route('clubs.index')->with('success', '✅ ส่งคำขอสร้างชมรมแล้ว รอแอดมินอนุมัติ');
+        return redirect()->route('clubs.index')
+            ->with('success', '✅ สร้างชมรมใหม่เรียบร้อย รอการอนุมัติจากผู้ดูแลระบบ');
     }
 
-    // ✅ ดูคำขอเข้าชมรม
-    public function requestMembers($from, $id_club)
+    /** -------------------- Club Homepage -------------------- */
+    public function clubHomepage($id_club)
+    {
+        $user = session('user');
+        if (!$user) return redirect('/login');
+
+        $leaderclub = Club::findOrFail($id_club);
+        $activities = $leaderclub->activities()
+            ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
+            ->orderBy('date', 'asc')->get();
+        $pendingCount = Member::where('club_id', $id_club)->where('status', 'pending')->count();
+
+        return view('clubmain', compact('activities', 'leaderclub', 'pendingCount', 'user'));
+    }
+
+
+    /** -------------------- Join Club -------------------- */
+    public function join($club_id)
+    {
+        $user = session('user');
+        if (!$user) return redirect('/login');
+
+        $already = Member::where('club_id', $club_id)
+            ->where('student_id', $user->std_id)
+            ->exists();
+
+        if ($already) {
+            return back()->with('error', 'คุณได้สมัครชมรมนี้ไปแล้ว');
+        }
+
+        Member::create([
+            'club_id' => $club_id,
+            'student_id' => $user->std_id,
+            'name' => $user->std_name,
+            'role' => 'สมาชิก',
+            'status' => 'pending',
+        ]);
+
+        return back()->with('success', 'ส่งคำร้องสมัครชมรมเรียบร้อย');
+    }
+
+    /** -------------------- Cancel Join -------------------- */
+    public function cancelJoin($club_id)
+    {
+        $user = session('user');
+        if (!$user) return redirect('/login');
+
+        Member::where('club_id', $club_id)
+            ->where('student_id', $user->std_id)
+            ->delete();
+
+        return redirect()->route('homepage.index')
+        ->with('success', 'ออกจากชมรมเรียบร้อย');
+    }
+
+    public function backtoHomepage($id_club)
+    {
+        $user = session('user');
+        if (!$user) {
+            return redirect('/login');
+        }
+
+        $account = Account::where('std_id', $user->std_id)->first();
+        if ($account->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('homepage.index');
+    }
+
+
+    /** -------------------- หน้าแก้ไขโปรไฟล์ชมรม -------------------- */
+    public function editProfile($id_club)
+    {
+        $user = session('user');
+        $leaderclub = Club::findOrFail($id_club);
+        return view('editClubProfile', compact('user', 'leaderclub'));
+    }
+
+    /** -------------------- อัปเดตโปรไฟล์ชมรม -------------------- */
+    public function updateProfile(Request $request, $id_club)
     {
         $leaderclub = Club::findOrFail($id_club);
-        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
-        $user = $leader?->account;
-
-        $member_pending = Member::where('club_id', $id_club)->where('status', 'pending')->get();
-        $member_approved = Member::where('club_id', $id_club)->where('status', 'approved')->get();
-
-        return view('requestandmembers', compact('member_pending', 'member_approved', 'leaderclub', 'user', 'from'));
-    }
-
-    // ✅ อนุมัติสมาชิก
-    public function approvedMembers($from, $id_club, $id_member)
-    {
-        $member = Member::findOrFail($id_member);
-        $member->status = "approved";
-        $member->save();
-
-        return redirect()->route('requestToleader', ['from' => $from, 'id_club' => $id_club])->with('success', '✅ อนุมัติสมาชิกแล้ว');
-    }
-
-    // ✅ ไม่อนุมัติสมาชิก
-    public function rejectedMember($from, $id_club, $id_member)
-    {
-        $member = Member::findOrFail($id_member);
-        $member->delete();
-
-        return redirect()->route('requestToleader', ['from' => $from, 'id_club' => $id_club])->with('success', '❌ ไม่อนุมัติสำเร็จ');
-    }
-
-    // ✅ ฟอร์มแก้ไขโปรไฟล์ชมรม (หัวหน้า)
-    public function editedProfileForleader($from, $id_club)
-    {
-        $leaderclub = Club::findOrFail($id_club);
-        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->with('account')->first();
-        $user = $leader?->account;
-
-        return view('editclubProfile', compact('leaderclub', 'user', 'from'));
-    }
-
-    // ✅ อัปเดตโปรไฟล์ชมรม
-    public function updateProfileForleader(Request $request, $from, $id_club)
-    {
-        $leaderclub = Club::findOrFail($id_club);
+        if ($request->hasFile('image')) {
+            $leaderclub->image = $request->file('image')->store('clubs', 'public');
+        }
         $leaderclub->name = $request->name_club;
         $leaderclub->description = $request->club_detail;
         $leaderclub->save();
 
-        return redirect()->route('editProfile', ['from' => $from, 'id_club' => $id_club])->with('success', 'แก้ไขโปรไฟล์สำเร็จ');
+        return redirect()->route('clubHomepage', ['id_club' => $id_club])
+            ->with('success', 'อัปเดตโปรไฟล์ชมรมเรียบร้อย');
     }
 
-    // ✅ กลับไปหน้า Home ของหัวหน้า
-    public function backtoHomepage($id_club)
+    /** -------------------- Request สมาชิก -------------------- */
+    public function requestToLeader($from, $id_club)
     {
+        $user = session('user');
+
         $leaderclub = Club::findOrFail($id_club);
-        $std_id = Session::get('std_id');
-        $user = Account::where('std_id', $std_id)->first();
+        $member_pending = Member::with('account')
+            ->where('club_id', $id_club)
+            ->where('status', 'pending')
+            ->get();
+        $member_approved = Member::with('account')
+            ->where('club_id', $id_club)
+            ->where('status', 'approved')
+            ->get();
 
-        $pendingCount = Member::where('club_id', $leaderclub->id)->where('status', 'pending')->count();
-        $activities = $leaderclub->activities()
-            ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
-            ->orderBy('date', 'asc')->get();
-
-        return view('leaderHome', compact('activities', 'leaderclub', 'pendingCount', 'user'));
+        return view('requestandmembers', compact('user', 'leaderclub', 'from', 'member_pending', 'member_approved'));
     }
 
-    // ✅ หน้า Club homepage
-    public function clubHomepage($id_club)
+    /** -------------------- อนุมัติคำร้อง / ปฏิเสธคำร้อง -------------------- */
+    public function approved($from, $id_club, $id_member)
     {
-        $leaderclub = Club::findOrFail($id_club);
-        $std_id = Session::get('std_id');
-        $user = Account::where('std_id', $std_id)->first();
+        $member = Member::findOrFail($id_member);
+        $member->status = 'approved';
+        $member->save();
 
-        $pendingCount = Member::where('club_id', $leaderclub->id)->where('status', 'pending')->count();
-        $activities = $leaderclub->activities()
-            ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
-            ->orderBy('date', 'asc')->get();
-
-        return view('clubmain', compact('activities', 'user', 'leaderclub', 'pendingCount'));
+        return redirect()->route('requestToleader', ['from' => $from, 'id_club' => $id_club])
+            ->with('success', 'อนุมัติคำร้องเรียบร้อยแล้ว');
     }
 
-    // ✅ นักศึกษาสมัครเข้าชมรม
-    public function join($club_id)
+    public function rejected($from, $id_club, $id_member)
     {
-        $std_id = Session::get('std_id');
-        $account = Account::where('std_id', $std_id)->firstOrFail();
+        $member = Member::findOrFail($id_member);
+        $member->delete();
 
-        $exists = Member::where('club_id', $club_id)->where('student_id', $std_id)->exists();
-
-        if (!$exists) {
-            Member::create([
-                'club_id' => $club_id,
-                'name' => $account->std_name,
-                'student_id' => $std_id,
-                'role' => 'สมาชิก',
-                'status' => 'pending',
-            ]);
-        }
-        return back()->with('success', '✅ ส่งคำขอสมัครแล้ว');
+        return redirect()->route('requestToleader', ['from' => $from, 'id_club' => $id_club])
+            ->with('success', 'ปฏิเสธคำร้องเรียบร้อยแล้ว');
     }
-
-    // ✅ ยกเลิกคำขอสมัคร
-    public function cancelJoin($club_id)
-    {
-        $std_id = Session::get('std_id');
-        Member::where('club_id', $club_id)->where('student_id', $std_id)->where('status', 'pending')->delete();
-
-        return back()->with('success', '❌ ยกเลิกคำขอแล้ว');
-    }
-
-    // ✅ ขอเป็นหัวหน้าชมรม
-    // ClubController.php
-
-// ขอเป็นหัวหน้า
-public function requestLeader($club_id)
-{
-    $std_id = Session::get('std_id');
-    $member = Member::where('club_id',$club_id)->where('student_id',$std_id)->firstOrFail();
-
-    $hasLeader = Member::where('club_id',$club_id)
-        ->where('role','หัวหน้าชมรม')
-        ->where('status','approved')
-        ->exists();
-
-    if($hasLeader){
-        return back()->withErrors(['msg'=>'ขณะนี้มีหัวหน้าชมรมอยู่แล้ว']);
-    }
-
-    $member->role = 'หัวหน้าชมรม';
-    $member->status = 'pending_leader';
-    $member->save();
-
-    // ✅ flash message
-    return back()->with('success','ได้ส่งคำร้องขอการเป็นหัวหน้าชมรมเรียบร้อยแล้ว รอรับการอนุมัติ');
-}
-
-// ออกจากชมรม
-public function leaveClub($club_id)
-{
-    $std_id = Session::get('std_id');
-    Member::where('club_id',$club_id)->where('student_id',$std_id)->where('role','สมาชิก')->delete();
-
-    return back()->with('success','ออกจากชมรมแล้ว');
-}
-
-    // ✅ หัวหน้าขอลาออก (รอแอดมินอนุมัติ)
-    public function requestResign($id_club)
-    {
-        $leader = Member::where('club_id', $id_club)->where('role', 'หัวหน้าชมรม')->first();
-        if ($leader) {
-            $leader->status = $leader->status === "approved" ? "pending_resign" : "approved";
-            $leader->save();
-        }
-        return redirect()->route('clubHomepage', ['id_club' => $id_club]);
-    }
-
-  
-public function show($id)
-{
-    // ดึงชมรม + ข้อมูลสมาชิก + กิจกรรม
-    $club = Club::with(['members','activities'])->findOrFail($id);
-
-    // ดึง user ปัจจุบัน
-    $std_id = Session::get('std_id');
-    $user = Account::where('std_id', $std_id)->first();
-
-    // นับว่ามีหัวหน้าชมรมหรือยัง
-    $hasLeader = $club->members()
-        ->where('role','หัวหน้าชมรม')
-        ->where('status','approved')
-        ->exists();
-
-    return view('club_detail', compact('club','user','hasLeader'));
-}
-
-
 }

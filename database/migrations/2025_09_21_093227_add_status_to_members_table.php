@@ -6,23 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('members', function (Blueprint $table) {
-            $table->string("status")->after("role");
+            if (Schema::hasColumn('members', 'status')) {
+                $table->dropColumn('status');
+            }
+
+            $table->enum('status', [
+                'pending',          
+                'approved',                   
+            ])->default('pending')
+              ->after('role')
+              ->comment('สถานะสมาชิกในชมรม');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('members', function (Blueprint $table) {
-            $table->dropColumn("status");
+            $table->dropColumn('status');
         });
     }
 };

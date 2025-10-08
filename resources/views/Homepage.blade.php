@@ -2,167 +2,90 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>Home Page - CP club</title>
+  <title>Student Homepage - CP Club</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 0;
+      font-family: "Arial", sans-serif;
       background: #d9e7f3;
+      margin: 0;
     }
-
     header {
       background: #2d3e50;
       color: white;
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
       padding: 10px 30px;
     }
-
     .logo {
-      font-size: 22px;
+      font-size: 32px;
       font-weight: bold;
-    }
-
-    .nav a {
-      color: white;
-      margin-left: 20px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    /* Welcome Box */
-    .welcome {
+      font-family: "Arial", cursive;
       text-align: center;
-      margin: 20px 0;
+      flex: 1;
     }
-    .welcome span {
-      background: #f5f5f5;
-      padding: 10px 30px;
-      border-radius: 20px;
-      font-weight: bold;
+    .username-box {
+      background: #1a3552;
+      padding: 5px 15px;
+      border-radius: 5px;
     }
-
-   .section {
-  background: #f9f6f2;
-  margin: 20px auto;       
-  padding: 20px;
-  border-radius: 20px;
-  max-width: 900px;       
-  width: 90%;             
-}
-
-
-    .section h3 {
-      margin-bottom: 15px;
-    }
-
-    /* Club list */
-    .club-list {
-     display: flex;
-    flex-direction: column;  
-    gap: 15px;               /* ระยะห่างระหว่างการ์ด */
-}
-
-
-    .club-card {
-      display: flex;
-      align-items: center;
-      background: #fff;
-      padding: 12px 18px;
-      border-radius: 12px;
-      justify-content: space-between; /* ✅ ดันปุ่มไปขวาสุด */
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      gap: 10px;
-    }
-
-    .club-logo {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 10px;
-    }
-
-    .club-card p {
-      flex: 1;                  /* ✅ ขยายเต็มพื้นที่ที่เหลือ */
-      font-weight: bold;
-      font-size: 16px;
-      margin: 0;
-      text-align: left;
-      white-space: nowrap;       /* ✅ บรรทัดเดียวเท่านั้น */
-      overflow: hidden;          /* ✅ ถ้ายาวเกินให้ตัด */
-      text-overflow: ellipsis;   /* ✅ ใส่ ... ต่อท้าย */
-    }
-
-    .btn-detail {
-      background: #5E5F68;
-      color: #fff;
-      padding: 6px 12px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-size: 14px;
-      flex-shrink: 0;            /* ✅ ปุ่มไม่หด */
-    }
-
-    /* Activity card */
-    .activity-card {
-      background: #fff;
-      padding: 10px 15px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-
+    .nav { display: flex; gap: 20px; }
+    .nav a { color: white; text-decoration: none; font-weight: bold; }
+    .club-container { width: 80%; margin: 40px auto; display: flex; flex-direction: column; gap: 20px; }
+    .section-box { background: #f9f6f2; border-radius: 20px; padding: 25px 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .club-item, .activity-item { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+    .no-data { color: #777; text-align: center; font-style: italic; }
   </style>
 </head>
 <body>
-
-<header>
-  <div class="logo">CP club</div>
-  <div class="nav">
-    <a href="{{ route('clubs.index') }}">All Clubs</a>
-    <a href="{{ route('homepage.index') }}">Dashboard</a>
-    <a href="{{ route('logout') }}">Logout</a>
-  </div>
-</header>
-
-{{-- ✅ Welcome Message --}}
-<div class="welcome">
-  <span>Welcome {{ $user->std_name }}</span>
-</div>
-
-{{-- ✅ Clubs --}}
-<div class="section">
-  <h3>ชมรมที่คุณอยู่</h3>
-  @if($myClubs->isEmpty())
-    <p>- ยังไม่มีชมรม -</p>
-  @else
-    <div class="club-list">
-      @foreach($myClubs as $club)
-        <div class="club-card">
-          <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('images/default.png') }}" 
-               alt="club logo" class="club-logo">
-          <p>{{ $club->name }}</p>
-          <a href="{{ route('clubs.show',$club->id) }}" class="btn-detail">รายละเอียด</a>
-        </div>
-      @endforeach
+  <header>
+    <div class="username-box">{{ $account->std_id }}</div>
+    <div class="logo">CP Club</div>
+    <div class="nav">
+      <a href="{{ route('clubs.index') }}">All Clubs</a>
+      <a href="{{ route('logout') }}">Logout</a>
     </div>
-  @endif
-</div>
+  </header>
 
-{{-- ✅ Activities --}}
-<div class="section">
-  <h3>กิจกรรมที่กำลังมาถึง</h3>
-  @if(empty($activities))
-    <p>- ยังไม่มีกิจกรรม -</p>
-  @else
-    @foreach($activities as $act)
-      <div class="activity-card">
-        <p>{{ $act->title }} | {{ $act->date }} เวลา {{ $act->time }}</p>
-      </div>
-    @endforeach
-  @endif
-</div>
+  <div class="welcome-section d-flex justify-content-center mt-4">
+    <div class="welcome-box bg-light px-4 py-2 rounded-pill fw-bold shadow">
+      👋 Welcome {{ $account->std_name }}
+    </div>
+  </div>
 
+  <div class="club-container">
+    <div class="section-box">
+      <h4>ชมรมที่คุณเป็นสมาชิก</h4>
+      @if($myClubs->isEmpty())
+        <div class="no-data">คุณยังไม่ได้เข้าร่วมชมรมใด ๆ</div>
+      @else
+        @foreach($myClubs as $club)
+          <div class="club-item">
+            <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('default.jpg') }}" style="width:60px;height:60px;border-radius:50%;">
+            <a href="{{ route('clubsShowactivity', ['id' => $club->id , 'std_id' => $account->std_id]) }}" style="font-weight:bold;color:#000;" >{{ $club->name }}</a>
+          </div>
+        @endforeach
+      @endif
+    </div>
+
+    <div class="section-box">
+      <h4>กิจกรรมที่กำลังจะมาถึง</h4>
+      @if($upcomingActivities->isEmpty())
+        <div class="no-data">ยังไม่มีกิจกรรมในเร็ว ๆ นี้</div>
+      @else
+        @foreach($upcomingActivities as $act)
+          <div class="activity-item">
+            <img src="{{ $act->club->image ? asset('storage/'.$act->club->image) : asset('default.jpg') }}" alt="club" style="width:40px;height:40px;border-radius:50%;">
+            <div>
+              <b>{{ $act->club->name }}</b><br>
+              วันที่ {{ \Carbon\Carbon::parse($act->date)->format('d F Y') }}<br>
+              เวลา {{ $act->time }} | {{ $act->location }}
+            </div>
+          </div>
+        @endforeach
+      @endif
+    </div>
+  </div>
 </body>
 </html>

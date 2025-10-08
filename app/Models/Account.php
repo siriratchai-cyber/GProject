@@ -12,18 +12,32 @@ class Account extends Model
     protected $table = 'accounts';
 
     protected $fillable = [
-        'std_name', 'std_id' , 'email', 'password', 'major', 'role', 'year'
+        'std_name',
+        'std_id',
+        'email',
+        'password',
+        'major',
+        'role',
+        'year'
     ];
 
-    // ซ่อนรหัสผ่านเวลา serialize
-    protected $hidden = ['password'];
+    protected $hidden = [];
 
-    public function clubs() {
-        return $this->belongsToMany(Club::class, 'members', 'student_id', 'club_id', 'std_id', 'id')
-            ->withPivot('role', 'status', 'student_id');
+    public function clubs()
+    {
+        return $this->belongsToMany(
+            Club::class,
+            'members',
+            'student_id', 
+            'club_id',    
+            'std_id',     
+            'id'          
+        )->withPivot(['role', 'status'])
+         ->withTimestamps();
     }
 
-    public function members(){
+    public function members()
+    {
         return $this->hasMany(Member::class, 'student_id', 'std_id');
     }
 }

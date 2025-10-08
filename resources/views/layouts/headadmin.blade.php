@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') - CP Club</title>
+    <title>@yield('title', 'CP Club')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body {
             margin: 0;
@@ -26,7 +26,8 @@
         .logo {
             font-size: 32px;
             font-weight: bold;
-            font-family: "Arial", cursive;
+            font-family: "Georgia", cursive;
+            margin-right: 65px;
         }
 
         .nav {
@@ -45,28 +46,29 @@
             padding: 5px 15px;
             color: white;
             border-radius: 5px;
-            margin-right: 15px;
             display: inline-block;
         }
 
         main {
-            padding: 20px;
+            padding: 25px;
         }
+
+        @yield('style')
     </style>
-    @yield('style')
 </head>
 
 <body>
-<header>
-    <div class="username-box">@yield('username')</div>
-    <div class="logo">@yield('club_name', 'CP Club')</div>
-    <div class="nav">
-        <a href="{{ route('logout') }}">Logout</a>
-    </div>
-</header>
+    <header>
+        <div class="username-box">@yield('username')</div>
+        <div class="logo">@yield('club_name', 'CP Club')</div>
+        <div class="nav">
+            <a href="{{ route('logout') }}">Logout</a>
+        </div>
+    </header>
 
-<main>
-    @yield('body')
-</main>
+    <main>
+        @yield('body')
+    </main>
 </body>
+
 </html>

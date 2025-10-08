@@ -1,53 +1,145 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-  <meta charset="UTF-8">
-  <title>แก้ไขสมาชิก</title>
+@extends('layouts.headadmin')
+@section('title', 'แก้ไขสมาชิก')
+
+@section('username')
+  {{ $user->std_id }}
+@endsection
+
+@section('body')
   <style>
-    body { font-family: Arial, sans-serif; background:#d9e7f3; margin:0; }
-    header { background:#2d3e50; color:white; padding:10px 30px; display:flex; justify-content:space-between; }
-    .form-box { background:#f9f6f2; margin:30px auto; padding:20px; border-radius:20px; width:500px; }
-    label { display:block; margin-top:15px; font-weight:bold; }
-    input, select { width:100%; padding:8px; margin-top:5px; border:1px solid #ccc; border-radius:8px; }
-    button { margin-top:20px; padding:10px 20px; background:#5E5F68; color:white; border:none; border-radius:12px; cursor:pointer; }
+    body.form-page {
+      background-color: #cfe2f3;
+      font-family: "Arial", sans-serif;
+    }
+
+    .form-card {
+      background: #fbf5ef;
+      border-radius: 22px;
+      width: min(1100px, 92%);
+      margin: 30px auto 60px;
+      padding: 30px 35px 40px;
+    }
+
+    .btn-back {
+      background: #5E5F68;
+      color: white;
+      border-radius: 20px;
+      padding: 6px 18px;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .form-title {
+      margin: -45px 0 30px 0;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: .2px;
+      text-align: center;
+      color: #2d3e50;
+
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 24px;
+    }
+
+    .form-group label {
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .form-control,
+    .form-select {
+      border: 1px solid #b8b8b8;
+      border-radius: 12px;
+      background: #fff;
+      padding: 8px 12px;
+      box-shadow: none;
+    }
+
+    .btn-save {
+      background: #ffffff;
+      border: 1px solid #bdbdbd;
+      border-radius: 10px;
+      font-weight: 800;
+      padding: 8px 14px;
+      color: #222;
+    }
   </style>
-</head>
-<body>
-<header>
-  <div>CP club</div>
-  <div>
-    <a href="{{ route('admin.dashboard') }}" style="color:white; margin-right:20px;">Dashboard</a>
-    <a href="{{ route('logout') }}" style="color:white;">Logout</a>
+
+  <div class="form-card form-page">
+
+    <a class="btn-back mb-3" href="{{ route('admin.members.edit', $club->id) }}">⬅ กลับ</a>
+
+    <h4 class="form-title">แก้ไขข้อมูลสมาชิกใน {{ $club->name }}</h4>
+
+    @if($errors->any())
+      <div class="alert alert-danger mb-3">
+        <ul class="mb-0">
+          @foreach($errors->all() as $e)
+            <li>{{ $e }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
+
+    <form method="POST" action="{{ route('admin.members.update', [$club->id, $member->id]) }}">
+      @csrf
+      @method('PUT')
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">ชื่อ-นามสกุล</label>
+          <input type="text" name="std_name" class="form-control"
+            value="{{ old('std_name', optional($account)->std_name) }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">รหัสนักศึกษา</label>
+          <input type="text" name="std_id" class="form-control"
+            value="{{ old('std_id', optional($account)->std_id) }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">อีเมล</label>
+          <input type="email" name="email" class="form-control"
+            value="{{ old('email', optional($account)->email) }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">รหัสผ่าน</label>
+          <input type="text" name="password" class="form-control"
+            value="{{ old('password', optional($account)->password) }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">ชั้นปี</label>
+          <input type="number" name="year" class="form-control"
+            value="{{ old('year', optional($account)->year) }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">สาขา</label>
+          <select name="major" class="form-select">
+            <option value="">-- เลือก --</option>
+            @foreach(['CY', 'GIS', 'CS', 'IT'] as $mem)
+              <option value="{{ $mem }}" @selected(old('major', $account->major ?? '') === $mem)>
+                {{ $mem }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+
+      <input type="hidden" name="role" value="{{ $member->role }}">
+      <input type="hidden" name="status" value="{{ $member->status }}">
+
+      <div class="mt-4 text-center">
+        <button class="btn-save" type="submit">บันทึกการแก้ไข</button>
+      </div>
+    </form>
   </div>
-</header>
-
-<div class="form-box">
-  <h2>แก้ไขข้อมูลสมาชิก</h2>
-  <form action="{{ route('admin.members.update',$member->id) }}" method="POST">
-    @csrf
-
-    <label>ชื่อ - นามสกุล</label>
-    <input type="text" name="name" value="{{ $member->name ?? '-' }}" readonly>
-
-
-    <label>รหัสนักศึกษา</label>
-    <input type="text" value="{{ $member->student_id }}" disabled>
-
-    <label>สถานะ (role)</label>
-    <select name="role">
-      <option value="สมาชิก" {{ $member->role=='สมาชิก'?'selected':'' }}>สมาชิก</option>
-      <option value="หัวหน้าชมรม" {{ $member->role=='หัวหน้าชมรม'?'selected':'' }}>หัวหน้าชมรม</option>
-    </select>
-
-    <label>สถานะการอนุมัติ</label>
-    <select name="status">
-      <option value="approved" {{ $member->status=='approved'?'selected':'' }}>approved</option>
-      <option value="pending" {{ $member->status=='pending'?'selected':'' }}>pending</option>
-      <option value="rejected" {{ $member->status=='rejected'?'selected':'' }}>rejected</option>
-    </select>
-
-    <button type="submit">บันทึก</button>
-  </form>
-</div>
-</body>
-</html>
+@endsection

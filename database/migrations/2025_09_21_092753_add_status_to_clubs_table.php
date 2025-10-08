@@ -6,23 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('clubs', function (Blueprint $table) {
-            $table->string("status")->after("image");
+            if (Schema::hasColumn('clubs', 'status')) {
+                $table->dropColumn('status');
+            }
+
+            $table->enum('status', ['pending', 'approved'])
+                  ->default('pending')
+                  ->after('image')
+                  ->comment('สถานะชมรม: pending = รออนุมัติ, approved = ผ่าน');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('clubs', function (Blueprint $table) {
-            $table->dropColumn("status");
+            $table->dropColumn('status');
         });
     }
 };

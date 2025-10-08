@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>CP Club</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body {
       font-family: "Arial", sans-serif;
@@ -20,7 +21,7 @@
     header .logo {
       font-size: 32px;
       font-weight: bold;
-      font-family: "Georgia", cursive;
+      font-family: "Arial", cursive;
     }
     header .nav {
       display: flex;
@@ -102,7 +103,7 @@
       font-size: 13px;
       color: #333;
     }
-    .club-card form button {
+    .club-card button {
       margin-top: 15px;
       background: #333;
       color: white;
@@ -113,88 +114,100 @@
       font-size: 14px;
       transition: 0.3s;
     }
-    .club-card form button.cancel {
+    .club-card button.cancel {
       background: red;
     }
-    .pending-text {
-      margin-top: 8px;
-      font-size: 12px;
-      color: orange;
-    }
-
-    .pending {
-  text-align: center;
-  font-weight: bold;
-  color: #555;
-  margin-top: 10px;
-}
-
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="username-box">{{ $user->std_id }}</div>
-    <div class="logo">CP club</div>
-    <div class="nav">
-      <a href="{{ route('clubs.index') }}">All Clubs</a>
-      <a href="{{ route('homepage.index') }}">Dashboard</a>
-      <a href="{{ route('logout') }}">Logout</a>
-    </div>
-  </header>
-
-
-  <div class="welcome">
-    <span>Welcome {{ $user->std_name }}</span>
+<header>
+  <div class="username-box">{{ $user->std_id }}</div>
+  <div class="logo">CP Club</div>
+  <div class="nav">
+    <a href="{{ route('homepage.index') }}">Dashboard</a>
+    <a href="/logout">Logout</a>
   </div>
+</header>
 
-  <div class="create-btn">
-    <a href="{{ route('clubs.create') }}">+ สร้างชมรม</a>
-  </div>
+<div class="welcome">
+  <span>Welcome {{ $user->std_name }}</span>
+</div>
 
-  <div class="club-container">
-    @foreach($clubs as $club)
-      <div class="club-card">
-        <h3>{{ $club->name }}</h3>
-        <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('default.jpg') }}" alt="club">
-        <p>{{ $club->description }}</p>
-        <div class="member">
-          สมาชิกในชมรม : {{ $club->members->where('status','approved')->count() }}
-        </div>
+<div class="create-btn">
+  <a href="{{ route('clubs.create') }}">+ สร้างชมรม</a>
+</div>
 
-        @php
-          $isMember = $club->members->where('student_id', $user->std_id)->first();
-        @endphp
-
-        @if($isMember && $isMember->status == 'pending')
-          {{-- กรณีรออนุมัติ --}}
-          <form action="{{ route('clubs.cancel',$club->id) }}" method="POST">
-            @csrf
-            <button type="submit" class="cancel">ยกเลิกคำขอ</button>
-          </form>
-          <div class="pending">
-           รอหัวหน้าชมรมอนุมัติ...
-          </div>
-
-
-        @elseif($isMember && $isMember->status == 'approved')
-          {{-- กรณีอนุมัติแล้ว --}}
-          <form action="{{ route('clubs.leave',$club->id) }}" method="POST">
-            @csrf
-            <button type="submit" class="cancel">ออกจากชมรม</button>
-          </form>
-
-        @else
-          {{-- ยังไม่ได้เป็นสมาชิก --}}
-          <form action="{{ route('clubs.join',$club->id) }}" method="POST">
-            @csrf
-            <button type="submit">สมัคร</button>
-          </form>
-        @endif
-
+<div class="club-container">
+  @foreach($clubs as $club)
+    <div class="club-card">
+      <h3>{{ $club->name }}</h3>
+      <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('default.jpg') }}" alt="club">
+      <p>{{ $club->description }}</p>
+      <div class="member">
+        สมาชิกในชมรม : {{ $club->members->count() }}
       </div>
-    @endforeach
-  </div>
+
+      @php
+        $joined = $club->members->contains('student_id', $user->std_id);
+      @endphp
+
+      @if(!$joined)
+      <form action="{{ route('clubs.join', $club->id) }}" method="POST" onsubmit="return confirmJoin(event)">
+        @csrf
+        <button type="submit">สมัคร</button>
+      </form>
+      @else
+      <form action="{{ route('clubs.cancel', $club->id) }}" method="POST" onsubmit="return confirmCancel(event)">
+        @csrf
+        <button type="submit" class="cancel">ยกเลิก</button>
+      </form>
+      @endif
+    </div>
+  @endforeach
+</div>
+
+@if(session('success'))
+<script>
+Swal.fire("✅ สำเร็จ!", "{{ session('success') }}", "success");
+</script>
+@endif
+
+@if(session('error'))
+<script>
+Swal.fire("⚠️ ข้อผิดพลาด", "{{ session('error') }}", "error");
+</script>
+@endif
+
+<script>
+function confirmJoin(e){
+  e.preventDefault();
+  Swal.fire({
+    title: 'ยืนยันการสมัคร?',
+    text: "คุณต้องการสมัครเข้าชมรมนี้หรือไม่",
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'ยืนยัน',
+    cancelButtonText: 'ยกเลิก'
+  }).then(result=>{
+    if(result.isConfirmed) e.target.submit();
+  });
+}
+
+function confirmCancel(e){
+  e.preventDefault();
+  Swal.fire({
+    title: 'ยืนยันการยกเลิก?',
+    text: "คุณต้องการยกเลิกการสมัครชมรมนี้หรือไม่",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'ยืนยัน',
+    cancelButtonText: 'ไม่'
+  }).then(result=>{
+    if(result.isConfirmed) e.target.submit();
+  });
+}
+</script>
 
 </body>
 </html>
