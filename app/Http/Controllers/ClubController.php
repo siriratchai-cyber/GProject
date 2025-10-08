@@ -210,18 +210,12 @@ class ClubController extends Controller
         ->with('success', 'ออกจากชมรมเรียบร้อย');
     }
 
-    public function backtoHomepage($id_club)
+    public function backtoHomepage()
     {
         $user = session('user');
         if (!$user) {
             return redirect('/login');
         }
-
-        $account = Account::where('std_id', $user->std_id)->first();
-        if ($account->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
         return redirect()->route('homepage.index');
     }
 

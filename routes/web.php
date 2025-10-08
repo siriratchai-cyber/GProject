@@ -41,7 +41,7 @@ Route::post('/clubs/{club}/cancel', [ClubController::class, 'cancelJoin'])->name
 Route::get('/club/{id_club}/home', [ClubController::class, 'clubHomepage'])->name('clubHomepage');
 
 // ปุ่มกลับไปโฮมเพจ
-Route::get('/club/{id_club}/backtoHome', [ClubController::class, 'backtoHomepage'])->name('backtoHome');
+Route::get('/club/backtoHome', [ClubController::class, 'backtoHomepage'])->name('backtoHome');
 
 // หน้าแก้ไขโปรไฟล์ชมรม
 Route::get('/club/{id_club}/edit-profile', [ClubController::class, 'editProfile'])->name('editProfile');
