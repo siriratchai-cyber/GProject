@@ -26,7 +26,7 @@
         .logo {
             font-size: 32px;
             font-weight: bold;
-            font-family: "Georgia", cursive;
+            font-family: "Arial", cursive;
         }
 
         .nav {
