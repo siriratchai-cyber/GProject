@@ -25,7 +25,7 @@ Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 // หน้า Homepage (แยกตาม role)
 Route::get('/homepage', [UserController::class, 'homepage'])->name('homepage.index');
 
-// ===================== STUDENT =====================
+// ===================== นักศึกษา =====================
 Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
 Route::get('/clubs/create', [ClubController::class, 'create'])->name('clubs.create');
 Route::post('/clubs/store', [ClubController::class, 'store'])->name('clubs.store');
@@ -35,7 +35,7 @@ Route::get('/club/{id}/{std_id}/ClubActivity', [ClubController::class, 'showacti
 Route::post('/clubs/{club}/join', [ClubController::class, 'join'])->name('clubs.join');
 Route::post('/clubs/{club}/cancel', [ClubController::class, 'cancelJoin'])->name('clubs.cancel');
 
-// ===================== LEADER =====================
+// ===================== หัวหน้าชมรม =====================
 
 // หน้าโฮมของหัวหน้าชมรม
 Route::get('/club/{id_club}/home', [ClubController::class, 'clubHomepage'])->name('clubHomepage');
@@ -60,7 +60,7 @@ Route::get('/club/{id_club}/activities/{id_activity}/edit', [ActivityController:
 Route::post('/club/{id_club}/activities/{id_activity}/update', [ActivityController::class, 'updateActivity'])->name('updateActivity');
 
 
-// ===================== ADMIN =====================
+// ===================== แอดมิน =====================
 
 //Dashboard
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
