@@ -10,18 +10,21 @@ use Illuminate\Http\Request;
 class AdminController extends Controller
 {
     public function dashboard()
-    {
-        $user = session('user');
-        if (!$user) {
-            return redirect('/login');
-        }
-
-        $clubs = Club::withCount('members')
-            ->where('status', 'approved')
-            ->get();
-
-        return view('admin_dashboard', compact('clubs', 'user'));
+{
+    $user = session('user');
+    if (!$user) {
+        return redirect('/login');
     }
+
+    $clubs = Club::withCount('members')
+        ->where('status', 'approved')
+        ->get();
+
+    $pendingCount = Club::where('status', 'pending')->count();
+
+    return view('admin_dashboard', compact('clubs', 'user', 'pendingCount'));
+}
+
 
     public function requests()
     {

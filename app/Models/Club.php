@@ -16,14 +16,14 @@ class Club extends Model
         'status',
     ];
 
-    // ✅ 1 ชมรมมีหลายสมาชิก
+
     public function members()
 {
     return $this->hasMany(Member::class, 'club_id');
 }
 
 
-    // ✅ 1 ชมรมมีหลายบัญชีผู้ใช้ (ผ่านตาราง members)
+
     public function accounts()
     {
         return $this->belongsToMany(
@@ -37,7 +37,7 @@ class Club extends Model
          ->withTimestamps();
     }
 
-    // ✅ 1 ชมรมมีหลายกิจกรรม
+
     public function activities()
     {
         return $this->hasMany(Activity::class);

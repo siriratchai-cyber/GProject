@@ -93,7 +93,7 @@
             background: #6aac59;
         }
 
-        /* ปุ่มย้อนกลับ */
+
         .form-box a {
             position: absolute;
             top: 15px;
@@ -115,7 +115,6 @@
 
     <div class="right">
         <div class="form-box">
-            <!-- ปุ่มย้อนกลับ -->
             <a href="{{ route('login') }}">&#8592; login</a>
 
             <h2>Forgot password</h2>

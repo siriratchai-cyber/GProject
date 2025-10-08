@@ -21,7 +21,7 @@
     header .logo {
       font-size: 32px;
       font-weight: bold;
-      font-family: "Georgia", cursive;
+      font-family: "Arial", cursive;
     }
     header .nav {
       display: flex;
@@ -153,13 +153,11 @@
       @endphp
 
       @if(!$joined)
-      <!-- ปุ่มสมัคร -->
       <form action="{{ route('clubs.join', $club->id) }}" method="POST" onsubmit="return confirmJoin(event)">
         @csrf
         <button type="submit">สมัคร</button>
       </form>
       @else
-      <!-- ปุ่มยกเลิก -->
       <form action="{{ route('clubs.cancel', $club->id) }}" method="POST" onsubmit="return confirmCancel(event)">
         @csrf
         <button type="submit" class="cancel">ยกเลิก</button>

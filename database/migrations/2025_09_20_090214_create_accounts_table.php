@@ -8,13 +8,13 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('std_id')->unique();             // รหัสนักศึกษา (Primary unique)
-            $table->string('std_name');                     // ชื่อ-นามสกุล
-            $table->string('email')->unique();              // อีเมล
-            $table->string('password');                     // ✅ รหัสผ่านแบบ string ไม่เข้ารหัส
-            $table->string('major');                        // สาขา
-            $table->string('role')->default('นักศึกษา');    // นักศึกษา / หัวหน้าชมรม / แอดมิน
-            $table->integer('year')->nullable();            // ชั้นปี
+            $table->string('std_id')->unique();             
+            $table->string('std_name');                     
+            $table->string('email')->unique();              
+            $table->string('password');                     
+            $table->string('major');                        
+            $table->string('role')->default('นักศึกษา');    
+            $table->integer('year')->nullable();            
             $table->timestamps();
         });
     }

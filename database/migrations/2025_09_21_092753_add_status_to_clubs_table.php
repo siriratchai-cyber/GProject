@@ -9,16 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('clubs', function (Blueprint $table) {
-            // ลบของเดิมถ้ามีอยู่แล้ว (ป้องกันซ้ำ)
             if (Schema::hasColumn('clubs', 'status')) {
                 $table->dropColumn('status');
             }
 
-            // เพิ่มคอลัมน์ใหม่ที่เป็น enum
-            $table->enum('status', ['pending', 'approved', 'rejected'])
+            $table->enum('status', ['pending', 'approved'])
                   ->default('pending')
                   ->after('image')
-                  ->comment('สถานะชมรม: pending = รออนุมัติ, approved = ผ่าน, rejected = ไม่อนุมัติ');
+                  ->comment('สถานะชมรม: pending = รออนุมัติ, approved = ผ่าน');
         });
     }
 

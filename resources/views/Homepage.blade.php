@@ -21,7 +21,7 @@
     .logo {
       font-size: 32px;
       font-weight: bold;
-      font-family: "Georgia", cursive;
+      font-family: "Arial", cursive;
       text-align: center;
       flex: 1;
     }
@@ -44,7 +44,6 @@
     <div class="logo">CP Club</div>
     <div class="nav">
       <a href="{{ route('clubs.index') }}">All Clubs</a>
-      <a href="{{ route('homepage.index') }}">Dashboard</a>
       <a href="{{ route('logout') }}">Logout</a>
     </div>
   </header>
@@ -56,7 +55,6 @@
   </div>
 
   <div class="club-container">
-    <!-- ชมรมที่เป็นสมาชิก -->
     <div class="section-box">
       <h4>ชมรมที่คุณเป็นสมาชิก</h4>
       @if($myClubs->isEmpty())
@@ -65,13 +63,12 @@
         @foreach($myClubs as $club)
           <div class="club-item">
             <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('default.jpg') }}" style="width:60px;height:60px;border-radius:50%;">
-            <a href="{{ route('clubsShowactivity', ['id' => $club->id , 'std_id' => $account->std_id]) }}" style="font-weight:bold;text-decoration:none;color:#000;" >{{ $club->name }}</a>
+            <a href="{{ route('clubsShowactivity', ['id' => $club->id , 'std_id' => $account->std_id]) }}" style="font-weight:bold;color:#000;" >{{ $club->name }}</a>
           </div>
         @endforeach
       @endif
     </div>
 
-    <!-- กิจกรรมที่จะมาถึง -->
     <div class="section-box">
       <h4>กิจกรรมที่กำลังจะมาถึง</h4>
       @if($upcomingActivities->isEmpty())

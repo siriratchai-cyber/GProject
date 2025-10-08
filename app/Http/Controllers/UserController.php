@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
-    /** ✅ แสดงฟอร์มสมัครสมาชิก */
+    /**แสดงฟอร์มสมัครสมาชิก */
     public function showRegisterForm()
     {
         return view('register');
     }
 
-    /** ✅ สมัครสมาชิกใหม่ */
+    /**สมัครสมาชิกใหม่ */
     public function register(Request $request)
     {
         $request->validate([
@@ -33,22 +33,22 @@ class UserController extends Controller
         $user->std_name = $request->std_name;
         $user->std_id   = $request->std_id;
         $user->email    = $request->email;
-        $user->password = $request->password; // ❗เก็บเป็น string
+        $user->password = $request->password; 
         $user->major    = $request->major;
         $user->year     = $request->year;
-        $user->role     = 'นักศึกษา'; // ค่าเริ่มต้น
+        $user->role     = 'นักศึกษา'; 
         $user->save();
 
         return redirect('login')->with('success', '✅ สมัครสมาชิกสำเร็จ');
     }
 
-    /** ✅ แสดงหน้า Login */
+    /**แสดงหน้า Login */
     public function login()
     {
         return view('login');
     }
 
-    /** ✅ ตรวจสอบการเข้าสู่ระบบ */
+    /**ตรวจสอบการเข้าสู่ระบบ */
     public function checklogin(Request $request)
     {
         $user = Account::where('std_id', $request->std_id)
@@ -59,12 +59,11 @@ class UserController extends Controller
             return redirect('/login')->with('error', '❌ รหัสนักศึกษาหรือรหัสผ่านไม่ถูกต้อง');
         }
 
-        // ✅ บันทึก session ผู้ใช้
         session(['user' => $user]);
         return redirect('/homepage');
     }
 
-    /** ✅ หน้าหลัก (ระบบตรวจ role อัตโนมัติ) */
+    /**หน้าหลัก (ระบบตรวจ role อัตโนมัติ) */
   public function homepage()
 {
     $user = session('user');
@@ -72,13 +71,11 @@ class UserController extends Controller
 
     $account = Account::where('std_id', $user->std_id)->first();
 
-    // 🧩 1. ถ้าเป็นแอดมิน
     if ($account->role === 'แอดมิน') {
         return redirect()->route('admin.dashboard');
     }
     
 
-    // 🧩 2. ถ้าเป็นหัวหน้าชมรม
     $leaderclub = Member::where('student_id', $account->std_id)
         ->where('role', 'หัวหน้าชมรม')
         ->with('club')
@@ -94,7 +91,6 @@ class UserController extends Controller
             ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
             ->orderBy('date', 'asc')->get();
 
-        // 👉 หน้าเฉพาะของหัวหน้าชมรม
         return view('leaderHome', [
             'leaderclub' => $club,
             'pendingCount' => $pendingCount,
@@ -103,7 +99,7 @@ class UserController extends Controller
         ]);
     }
 
-    // 🧩 3. นักศึกษาทั่วไป
+
     $myClubs = Member::with('club')
         ->where('student_id', $account->std_id)
         ->where('status', 'approved')
@@ -111,16 +107,15 @@ class UserController extends Controller
         ->pluck('club');
 
     $upcomingActivities = Activity::whereIn('club_id', $myClubs->pluck('id'))
-        ->where('date', '>=', now())
-        ->orderBy('date', 'asc')
-        ->get();
+        ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
+        ->orderBy('date', 'asc')->get();
 
     return view('homepage', compact('account', 'myClubs', 'upcomingActivities'));
 }
 
 
 
-    /** ✅ ออกจากระบบ */
+
     public function logout()
     {
         Session::flush();

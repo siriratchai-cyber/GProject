@@ -17,13 +17,13 @@ class Member extends Model
         'status'
     ];
 
-    // ✅ ความสัมพันธ์กับชมรม
+
     public function club()
     {
         return $this->belongsTo(Club::class);
     }
 
-    // ✅ ความสัมพันธ์กับบัญชีผู้ใช้
+ 
    public function account()
 {
     return $this->belongsTo(\App\Models\Account::class, 'student_id', 'std_id');

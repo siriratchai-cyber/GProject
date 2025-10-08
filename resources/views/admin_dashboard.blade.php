@@ -120,7 +120,7 @@
     <div class="dashboard-header">
       <div class="welcome-box">Welcome admin {{ $user->std_name ?? 'admin' }}</div>
       <div class="request-btn">
-        <a href="{{ route('admin.requests') }}">คำร้องขอ</a>
+        <a href="{{ route('admin.requests') }}">คำร้องขอ | <span>{{ $pendingCount }}</a>
       </div>
     </div>
 
