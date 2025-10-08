@@ -65,7 +65,7 @@
         @foreach($myClubs as $club)
           <div class="club-item">
             <img src="{{ $club->image ? asset('storage/'.$club->image) : asset('default.jpg') }}" style="width:60px;height:60px;border-radius:50%;">
-            <a href="{{ route('clubsShowactivity', ['id' => $club->id , 'std_id' => $account->std_id]) }}" style="font-weight:bold;text-decoration:none;color:#000;" >{{ $club->name }}</a>
+            <a href="{{ route('clubsShowactivity', ['id' => $club->id , 'std_id' => $account->std_id]) }}" style="font-weight:bold; color:#000;" >{{ $club->name }}</a>
           </div>
         @endforeach
       @endif
