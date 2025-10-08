@@ -210,7 +210,7 @@ class ClubController extends Controller
         ->with('success', 'ออกจากชมรมเรียบร้อย');
     }
 
-    public function backtoHomepage($id_club)
+    public function backtoHomepage()
     {
         $user = session('user');
         if (!$user) {
