@@ -21,9 +21,10 @@
     .logo {
       font-size: 32px;
       font-weight: bold;
-      font-family: "Georgia", cursive;
+      font-family: "Arial", cursive;
       text-align: center;
       flex: 1;
+      margin-left: 15px;
     }
     .username-box {
       background: #1a3552;
@@ -44,7 +45,6 @@
     <div class="logo">CP Club</div>
     <div class="nav">
       <a href="{{ route('clubs.index') }}">All Clubs</a>
-      <a href="{{ route('homepage.index') }}">Dashboard</a>
       <a href="{{ route('logout') }}">Logout</a>
     </div>
   </header>

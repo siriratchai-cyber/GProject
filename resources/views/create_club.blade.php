@@ -9,24 +9,44 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    body { font-family: "Arial", sans-serif; background: #d9e7f3; margin: 0; }
+    body { font-family: Arial, sans-serif; background: #d9e7f3; margin: 0; }
     header { background: #2d3e50; color: white; padding: 10px 30px; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-size: 28px; font-weight: bold; font-family: "Georgia", cursive; }
+    .logo { font-size: 28px; font-weight: bold; font-family: "Arial", cursive;  margin-left: 670px;}
     .card { border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
     .form-control, .form-select { border-radius: 12px !important; }
     .member-row { background: #f9fcff; border-radius: 15px; border: 1px solid #d9e7ff; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
-    #preview { width: 100%; height: 310px; object-fit: cover; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    #preview { width: 100%; height: 310px; object-fit: cover; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); } 
+    
+    .btn-back {
+      background: #5e5f68;
+      color: white;
+      border-radius: 25px;
+      padding: 7px 18px;
+      font-weight: 600;
+      display: inline-block;
+      margin-top: 25px;
+      margin-left: 25px;
+      text-decoration: none;
+    }
+.nav { display: flex; gap: 20px; }
+    .nav a { color: white; text-decoration: none; font-weight: bold; }
   </style>
 </head>
 <body>
 
 <header>
   <div class="logo">CP Club</div>
-  <a href="{{ route('clubs.index') }}" class="btn btn-light">⬅ กลับ</a>
+  <div class="nav">
+      <a href="{{ route('clubs.index') }}">All Clubs</a>
+      <a href="{{ route('logout') }}">Logout</a>
+    </div>
 </header>
+
+<a href="{{ route('clubs.index') }}" class=" btn-back">⬅ กลับ</a>
 
 <div class="container py-4">
   <div class="card p-4">
+    
     <h2 class="text-center text-primary mb-4">📌 สร้างชมรมใหม่</h2>
 
     <form action="{{ route('clubs.store') }}" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">

@@ -1,81 +1,143 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-  <meta charset="UTF-8">
-  <title>แก้ไขข้อมูลชมรม</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+@extends('layouts.headadmin')
+@section('title', 'แก้ไขข้อมูลชมรม')
+
+@section('username')
+  {{ $user->std_id }}
+@endsection
+
+@section('body')
   <style>
-    body {
+    body.page-edit {
       background: #d9e7f3;
-      font-family: 'Arial', sans-serif;
+      font-family: "Sarabun", sans-serif;
+      margin: 0;
     }
-    .container {
+
+    .edit-container {
+      max-width: 1000px;
+      margin: 20px auto;
       background: #f9f6f2;
-      border-radius: 15px;
-      padding: 30px;
-      margin-top: 30px;
+      border-radius: 20px;
+      padding: 40px 45px;
     }
+
+    h3 {
+      font-weight: 800;
+      color: #2d3e50;
+      text-align: center;
+      margin-bottom: 30px;
+      margin-top: -55px;
+    }
+
+    .form-section {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .image-box {
+      flex: 1 1 300px;
+      text-align: center;
+    }
+
+    .image-box img {
+      width: 100%;
+      max-width: 300px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 15px;
+      border: 1.5px solid #ccc;
+      margin-bottom: 15px;
+    }
+
+    .form-fields {
+      flex: 1 1 400px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #2b2b2b;
+      margin-top: 10px;
+    }
+
+    .form-control {
+      border-radius: 12px;
+      border: 1.5px solid #ccc;
+    }
+
     .btn-save {
       background: #2d3e50;
       color: white;
-      border-radius: 10px;
-      padding: 6px 16px;
       border: none;
+      border-radius: 12px;
+      padding: 10px 26px;
+      font-weight: 700;
+      margin-top: 25px;
     }
-    .btn-save:hover {
-      background: #5E5F68;
-    }
+
     .btn-back {
-      background: #5E5F68;
+      background: #5e5f68;
       color: white;
-      border-radius: 10px;
-      padding: 6px 16px;
+      border-radius: 25px;
+      padding: 7px 18px;
       text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 20px;
     }
-    .btn-back:hover {
-      background: #2d3e50;
-    }
+
     .btn-member {
-      background: #A9CF88;
+      background: #a9cf88;
       color: black;
-      border-radius: 10px;
-      padding: 6px 16px;
+      border-radius: 12px;
+      padding: 8px 18px;
       text-decoration: none;
-      font-weight: bold;
-    }
-    .btn-member:hover {
-      background: #7fb565;
-      color: white;
+      font-weight: 700;
+      display: inline-block;
+      position: absolute;
+      bottom: 25px;
+      left: 150px;
     }
   </style>
-</head>
-<body>
-  <div class="container">
-    <a href="{{ route('admin.dashboard') }}" class="btn-back mb-3">⬅ กลับ</a>
-    <h3>แก้ไขชมรม: {{ $club->name }}</h3>
+
+  <div class="edit-container page-edit">
+    <a href="{{ route('admin.dashboard') }}" class="btn-back">⬅ กลับ</a>
+    <h3>แก้ไขข้อมูล{{ $club->name }}</h3>
 
     <form method="POST" action="{{ route('admin.clubs.update', $club->id) }}" enctype="multipart/form-data">
       @csrf
-      <label>ชื่อชมรม</label>
-      <input class="form-control" name="name" value="{{ $club->name }}" required>
 
-      <label class="mt-3">รายละเอียด</label>
-      <textarea class="form-control" name="description" required>{{ $club->description }}</textarea>
+      <div class="form-section">
+        <div class="image-box">
+          @if($club->image)
+            <img id="preview" src="{{ asset('storage/' . $club->image) }}" alt="รูปชมรม">
+          @else
+            <img id="preview" src="https://via.placeholder.com/300x200?text=Preview" alt="Preview">
+          @endif
+          <input type="file" name="image" class="form-control" accept="image/*" onchange="previewImage(event)">
+        </div>
 
-      <label class="mt-3">รูปภาพ</label>
-      @if($club->image)
-        <img src="{{ asset('storage/'.$club->image) }}" width="200" class="d-block mb-2">
-      @endif
-      <input type="file" name="image" class="form-control mb-3">
+        <div class="form-fields">
+          <div class="mb-3">
+            <label>ชื่อชมรม</label>
+            <input class="form-control" name="name" value="{{ $club->name }}" required>
+          </div>
 
-      <button class="btn-save" type="submit">💾 บันทึก</button>
+          <div class="mb-3">
+            <label>รายละเอียด</label>
+            <textarea class="form-control" name="description" rows="4" required>{{ $club->description }}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <button class="btn-save" type="submit">บันทึกการแก้ไข</button>
+      </div>
     </form>
-
-    <hr>
-
-    <!-- ปุ่มแก้ไขสมาชิก -->
-    <a href="{{ route('admin.members.edit', $club->id) }}" class="btn-member mt-3">👥 แก้ไขสมาชิกในชมรม</a>
-
+    <div class="text-center">
+      <a href="{{ route('admin.members.edit', $club->id) }}" class="btn-member">แก้ไขสมาชิกในชมรม</a>
+    </div>
   </div>
-</body>
-</html>
+@endsection

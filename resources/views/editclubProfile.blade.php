@@ -96,6 +96,8 @@
         color: #303032;
     }
 
+    
+
 </style>
 @endsection
 
