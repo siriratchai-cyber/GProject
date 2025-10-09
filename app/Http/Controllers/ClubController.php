@@ -217,11 +217,6 @@ class ClubController extends Controller
             return redirect('/login');
         }
 
-        $account = Account::where('std_id', $user->std_id)->first();
-        if ($account->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
         return redirect()->route('homepage.index');
     }
 
