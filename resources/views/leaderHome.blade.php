@@ -14,7 +14,7 @@
 @section('body')
 <main>
     <div class="welcome">
-        <span>👋 Welcome Club Leader</span>
+        <span>Welcome Club Leader</span>
     </div>
 
     <a href="{{ route('requestToleader', ['from' => 'homepage', 'id_club' => $leaderclub->id]) }}" class="request-btn">

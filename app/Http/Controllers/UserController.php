@@ -39,7 +39,7 @@ class UserController extends Controller
         $user->role     = 'นักศึกษา'; 
         $user->save();
 
-        return redirect('login')->with('success', '✅ สมัครสมาชิกสำเร็จ');
+        return redirect('login')->with('success', 'สมัครสมาชิกสำเร็จ');
     }
 
     /**แสดงหน้า Login */
@@ -56,7 +56,7 @@ class UserController extends Controller
             ->first();
 
         if (!$user) {
-            return redirect('/login')->with('error', '❌ รหัสนักศึกษาหรือรหัสผ่านไม่ถูกต้อง');
+            return redirect('/login')->with('error', 'รหัสนักศึกษาหรือรหัสผ่านไม่ถูกต้อง');
         }
 
         session(['user' => $user]);
@@ -132,13 +132,13 @@ class UserController extends Controller
         $account = Account::where('email', $request->email)->first();
 
         if (!$account) {
-            return back()->with('error', '❌ ไม่พบรหัสนักศึกษานี้ในระบบ');
+            return back()->with('error', 'ไม่พบรหัสนักศึกษานี้ในระบบ');
         }
 
         $account->password = $request->new_password;
         $account->save();
 
-        return redirect('/login')->with('success', '✅ เปลี่ยนรหัสผ่านสำเร็จ');
+        return redirect('/login')->with('success', 'เปลี่ยนรหัสผ่านสำเร็จ');
     }
 
 }

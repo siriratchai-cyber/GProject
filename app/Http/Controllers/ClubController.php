@@ -15,7 +15,6 @@ class ClubController extends Controller
     {
         $user = session('user');
         if (!$user) return redirect('/login');
-
         $clubs = Club::where('status', 'approved')->get();
         return view('cpclub', compact('clubs', 'user'));
     }
@@ -93,7 +92,7 @@ class ClubController extends Controller
         }
 
         if (!empty($duplicateMessages)) {
-            $errorMessage = "⚠️ ตรวจพบข้อมูลซ้ำ:\n" . implode("\n", array_unique($duplicateMessages));
+            $errorMessage = "ตรวจพบข้อมูลซ้ำ:\n" . implode("\n", array_unique($duplicateMessages));
             return back()
                 ->with('error', nl2br(e($errorMessage)))
                 ->withInput();
@@ -102,7 +101,7 @@ class ClubController extends Controller
         // ตรวจจำนวนสมาชิก (รวมผู้สร้าง)
         if (count($members) + 1 < 5) {
             return back()
-                ->with('error', nl2br(e('❌ ต้องมีสมาชิกอย่างน้อย 5 คนรวมผู้สร้างชมรม')))
+                ->with('error', nl2br(e('ต้องมีสมาชิกอย่างน้อย 5 คนรวมผู้สร้างชมรม')))
                 ->withInput();
         }
 
@@ -113,7 +112,7 @@ class ClubController extends Controller
         }
         if ($leaders !== 1) {
             return back()
-                ->with('error', nl2br(e('❌ ต้องมีหัวหน้าชมรมเพียง 1 คน')))
+                ->with('error', nl2br(e('ต้องมีหัวหน้าชมรมเพียง 1 คน')))
                 ->withInput();
         }
 
@@ -152,14 +151,16 @@ class ClubController extends Controller
         }
 
         return redirect()->route('clubs.index')
-            ->with('success', '✅ สร้างชมรมใหม่เรียบร้อย รอการอนุมัติจากผู้ดูแลระบบ');
+            ->with('success', 'สร้างชมรมใหม่เรียบร้อย รอการอนุมัติจากผู้ดูแลระบบ');
     }
 
     /** -------------------- Club Homepage -------------------- */
     public function clubHomepage($id_club)
     {
         $user = session('user');
-        if (!$user) return redirect('/login');
+        if (!$user || $user->role !== 'หัวหน้าชมรม') {
+        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
 
         $leaderclub = Club::findOrFail($id_club);
         $activities = $leaderclub->activities()
@@ -225,6 +226,9 @@ class ClubController extends Controller
     public function editProfile($id_club)
     {
         $user = session('user');
+        if (!$user || $user->role !== 'หัวหน้าชมรม') {
+        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
         $leaderclub = Club::findOrFail($id_club);
         return view('editClubProfile', compact('user', 'leaderclub'));
     }
@@ -248,7 +252,9 @@ class ClubController extends Controller
     public function requestToLeader($from, $id_club)
     {
         $user = session('user');
-
+        if (!$user || $user->role !== 'หัวหน้าชมรม') {
+        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
         $leaderclub = Club::findOrFail($id_club);
         $member_pending = Member::with('account')
             ->where('club_id', $id_club)

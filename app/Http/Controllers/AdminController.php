@@ -12,8 +12,8 @@ class AdminController extends Controller
     public function dashboard()
 {
     $user = session('user');
-    if (!$user) {
-        return redirect('/login');
+    if (!$user || $user->role !== 'แอดมิน') {
+        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
     }
 
     $clubs = Club::withCount('members')
@@ -29,6 +29,9 @@ class AdminController extends Controller
     public function requests()
     {
         $user = session('user');
+        if (!$user || $user->role !== 'แอดมิน') {
+        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
         $pendingClubs = Club::where('status', 'pending')->get();
 
         return view('admin_requests', compact('pendingClubs', 'user'));
@@ -60,6 +63,9 @@ class AdminController extends Controller
     public function editClub($id)
     {
         $user = session('user');
+        if (!$user || $user->role !== 'แอดมิน') {
+        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
         $club = Club::with(['members.account'])->findOrFail($id);
         return view('admin_edit_club', compact('club' , 'user'));
     }
@@ -98,6 +104,9 @@ class AdminController extends Controller
     public function editMembers($id)
     {
         $user = session('user');
+        if (!$user || $user->role !== 'แอดมิน') {
+        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
         $club = Club::with('members')->findOrFail($id);
         return view('admin_members_list', compact('club' , 'user'));
     }
@@ -105,6 +114,9 @@ class AdminController extends Controller
     public function editSingleMember($club_id, $member_id)
     {
         $user = session('user');
+        if (!$user || $user->role !== 'แอดมิน') {
+        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
         $club = Club::findOrFail($club_id);
 
         $member = Member::where('club_id', $club_id)

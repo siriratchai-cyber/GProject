@@ -12,6 +12,9 @@ class ActivityController extends Controller
     public function showActivity($id_club){
         $leaderclub = Club::findOrFail($id_club);
         $user = session('user');
+        if (!$user || $user->role !== 'หัวหน้าชมรม') {
+        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
         $activities = $leaderclub->activities()
             ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
             ->orderBy('date', 'asc')->get();

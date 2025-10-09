@@ -19,7 +19,7 @@
         const now = new Date();
 
         if (selectedDateTime < now) {
-            alert("❌ วันหรือเวลาน้อยกว่าปัจจุบัน");
+            alert(" วันหรือเวลาน้อยกว่าปัจจุบัน");
             Input_time.value = ""
         }
     }

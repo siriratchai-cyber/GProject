@@ -47,7 +47,7 @@
 <div class="container py-4">
   <div class="card p-4">
     
-    <h2 class="text-center text-primary mb-4">📌 สร้างชมรมใหม่</h2>
+    <h2 class="text-center text-primary mb-4"> สร้างชมรมใหม่</h2>
 
     <form action="{{ route('clubs.store') }}" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
       @csrf
@@ -84,7 +84,7 @@
       <button type="button" class="btn btn-secondary mb-3" onclick="addMember()">+ เพิ่มสมาชิก</button>
 
       <div class="text-center">
-        <button type="submit" id="saveBtn" class="btn btn-success px-4" disabled>💾 บันทึกชมรม</button>
+        <button type="submit" id="saveBtn" class="btn btn-success px-4" disabled> บันทึกชมรม</button>
       </div>
     </form>
   </div>
@@ -184,7 +184,7 @@ function checkMemberCount() {
 function checkLeaderLimit(select){
   const creatorRole = document.querySelector("select[name='creator_role']").value;
   if (creatorRole === "หัวหน้าชมรม" && select.value === "หัวหน้าชมรม") {
-    Swal.fire("❌ ผู้สร้างเป็นหัวหน้าชมรมแล้ว ห้ามเพิ่มหัวหน้าซ้ำ");
+    Swal.fire(" ผู้สร้างเป็นหัวหน้าชมรมแล้ว ห้ามเพิ่มหัวหน้าซ้ำ");
     select.value = "";
     return;
   }
@@ -192,7 +192,7 @@ function checkLeaderLimit(select){
     let leaders = document.querySelectorAll(".position-select");
     leaders.forEach(s => {
       if(s !== select && s.value === "หัวหน้าชมรม"){
-        Swal.fire("❌ จำกัดหัวหน้าชมรมได้เพียง 1 คนเท่านั้น");
+        Swal.fire(" จำกัดหัวหน้าชมรมได้เพียง 1 คนเท่านั้น");
         select.value = "";
       }
     });
@@ -205,7 +205,7 @@ function checkCreatorRole(select){
   if(creatorRole === "หัวหน้าชมรม"){
     const memberLeaders = Array.from(document.querySelectorAll(".position-select")).filter(s => s.value === "หัวหน้าชมรม");
     if(memberLeaders.length > 0){
-      Swal.fire("❌ มีหัวหน้าชมรมอยู่แล้วในรายชื่อสมาชิก");
+      Swal.fire(" มีหัวหน้าชมรมอยู่แล้วในรายชื่อสมาชิก");
       select.value = "";
     }
   }
@@ -214,22 +214,27 @@ function checkCreatorRole(select){
 
 function validateForm(){
   const rows = document.querySelectorAll(".member-row");
-  if(rows.length + 1 < 5){
-    Swal.fire("⚠️ ต้องมีสมาชิกอย่างน้อย 5 คนรวมผู้สร้าง");
+  if(rows.length + 1 < 5 ){
+    Swal.fire(" ต้องมีสมาชิกอย่างน้อย 5 คนรวมผู้สร้าง");
     return false;
   }
   const leaderFromCreator = document.querySelector("select[name='creator_role']").value === "หัวหน้าชมรม";
   const leaderFromMembers = Array.from(document.querySelectorAll(".position-select")).some(s => s.value === "หัวหน้าชมรม");
   if(!leaderFromCreator && !leaderFromMembers){
-    Swal.fire("❌ ต้องมีหัวหน้าชมรมอย่างน้อย 1 คน");
+    Swal.fire(" ต้องมีหัวหน้าชมรมอย่างน้อย 1 คน");
     return false;
   }
   return true;
 }
 
+</script>
 
+</body>
+</html>
 @if(old('members'))
-  const oldMembers = @json(old('members'));
+<script>
+  const oldMembers = 
+  @json(old('members'));
   oldMembers.forEach((m, i) => {
     addMember();
     document.querySelector(`[name="members[${i}][student_name]"]`).value = m.student_name || "";
@@ -238,8 +243,5 @@ function validateForm(){
     document.querySelector(`[name="members[${i}][year_level]"]`).value = m.year_level || "";
     document.querySelector(`[name="members[${i}][position]"]`).value = m.position || "";
   });
-@endif
 </script>
-
-</body>
-</html>
+@endif

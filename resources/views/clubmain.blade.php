@@ -13,7 +13,7 @@
     <main>
             <div class="box-select">
                 <a href="{{ route('backtoHome')}}" class="back">⬅ กลับ</a>
-                <a href="{{ route('requestToleader', ['from' => 'club', 'id_club' => $leaderclub->id]) }}" class="btn-request">
+                <a href="{{ route('requestToleader', ['from' => 'club', 'id_club' => $leaderclub->id]) }}" class="request">
                     คำร้องขอ | <span>{{ $pendingCount }}</span>
                 </a>
             </div>
