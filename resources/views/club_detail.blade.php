@@ -4,13 +4,11 @@
   <meta charset="UTF-8">
   <title>{{ $club->name }} - CP Club</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
   <style>
     body { margin:0; font-family: "Arial", sans-serif; background:#d9e7f3; }
     header { background:#2d3e50; color:white; display:flex; justify-content:space-between; align-items:center; padding:10px 30px; }
-    .logo { font-size:28px; font-weight:bold; font-family:"Arial", cursive; }
+    .logo { font-size:28px; font-weight:bold; font-family:"Arial", cursive; margin-left: 140px;}
     .nav { display:flex; gap:20px; }
     .nav a { color:white; text-decoration:none; font-weight:bold; }
 
@@ -29,17 +27,7 @@
 
     #activityList .activity-card { background:white; border-radius:15px; padding:15px; margin-bottom:15px; }
     #activityList strong { display:block; margin-bottom:5px; }
-    .btn-back {
-      background: #5e5f68;
-      color: white;
-      border-radius: 25px;
-      padding: 7px 18px;
-      font-weight: 600;
-      display: inline-block;
-      margin-top: 25px;
-      margin-left: 25px;
-      text-decoration: none;
-    }
+    .btn-back {background: #5e5f68;color: white;border-radius: 25px;padding: 7px 18px;font-weight: 600;display: inline-block;margin-top: 25px;margin-left: 25px;text-decoration: none;}
   </style>
 </head>
 <body>

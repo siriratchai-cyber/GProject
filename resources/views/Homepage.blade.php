@@ -5,31 +5,10 @@
   <title>Student Homepage - CP Club</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      font-family: "Arial", sans-serif;
-      background: #d9e7f3;
-      margin: 0;
-    }
-    header {
-      background: #2d3e50;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 30px;
-    }
-    .logo {
-      font-size: 32px;
-      font-weight: bold;
-      font-family: "Arial", cursive;
-      text-align: center;
-      flex: 1;
-    }
-    .username-box {
-      background: #1a3552;
-      padding: 5px 15px;
-      border-radius: 5px;
-    }
+    body {font-family: "Arial", sans-serif;background: #d9e7f3;}
+    header {background: #2d3e50;color: white;display: flex;align-items: center;justify-content: space-between;padding: 10px 30px;}
+    .logo {font-size: 32px;font-weight: bold;font-family: "Arial", cursive;text-align: center;flex: 1;}
+    .username-box {background: #1a3552;padding: 5px 15px;border-radius: 5px;}
     .nav { display: flex; gap: 20px; }
     .nav a { color: white; text-decoration: none; font-weight: bold; }
     .club-container { width: 80%; margin: 40px auto; display: flex; flex-direction: column; gap: 20px; }

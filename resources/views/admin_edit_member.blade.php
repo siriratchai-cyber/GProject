@@ -125,7 +125,7 @@
           <label class="form-label">สาขา</label>
           <select name="major" class="form-select">
             <option value="">-- เลือก --</option>
-            @foreach(['CY', 'GIS', 'CS', 'IT'] as $mem)
+            @foreach(['CY', 'GIS', 'CS', 'IT' , 'AI'] as $mem)
               <option value="{{ $mem }}" @selected(old('major', $account->major ?? '') === $mem)>
                 {{ $mem }}
               </option>

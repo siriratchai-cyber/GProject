@@ -27,6 +27,7 @@
             font-size: 32px;
             font-weight: bold;
             font-family: "Arial", cursive;
+            margin-right: 80px;
         }
 
         .nav {
