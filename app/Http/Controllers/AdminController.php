@@ -6,31 +6,32 @@ use App\Models\Club;
 use App\Models\Member;
 use App\Models\Account;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
     public function dashboard()
-{
-    $user = session('user');
-    if (!$user || $user->role !== 'แอดมิน') {
-        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+    {
+        $user = session('user');
+        if (!$user || $user->role !== 'แอดมิน') {
+            return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+        }
+
+        $clubs = Club::withCount('members')
+            ->where('status', 'approved')
+            ->get();
+
+        $pendingCount = Club::where('status', 'pending')->count();
+
+        return view('admin_dashboard', compact('clubs', 'user', 'pendingCount'));
     }
-
-    $clubs = Club::withCount('members')
-        ->where('status', 'approved')
-        ->get();
-
-    $pendingCount = Club::where('status', 'pending')->count();
-
-    return view('admin_dashboard', compact('clubs', 'user', 'pendingCount'));
-}
 
 
     public function requests()
     {
         $user = session('user');
         if (!$user || $user->role !== 'แอดมิน') {
-        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+            return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
         $pendingClubs = Club::where('status', 'pending')->get();
 
@@ -64,10 +65,10 @@ class AdminController extends Controller
     {
         $user = session('user');
         if (!$user || $user->role !== 'แอดมิน') {
-        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+            return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
         $club = Club::with(['members.account'])->findOrFail($id);
-        return view('admin_edit_club', compact('club' , 'user'));
+        return view('admin_edit_club', compact('club', 'user'));
     }
 
     public function updateClub(Request $request, $id)
@@ -93,9 +94,8 @@ class AdminController extends Controller
 
     public function destroyClub($id)
     {
-        Member::where('club_id', $id)->delete();
-        Club::destroy($id);
-
+        $club = Club::findOrFail($id);
+        $club->delete();
         return redirect()->route('admin.dashboard')->with('success', 'ลบชมรมเรียบร้อยแล้ว');
     }
 
@@ -104,17 +104,17 @@ class AdminController extends Controller
     {
         $user = session('user');
         if (!$user || $user->role !== 'แอดมิน') {
-        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+            return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
         $club = Club::with('members')->findOrFail($id);
-        return view('admin_members_list', compact('club' , 'user'));
+        return view('admin_members_list', compact('club', 'user'));
     }
 
     public function editSingleMember($club_id, $member_id)
     {
         $user = session('user');
         if (!$user || $user->role !== 'แอดมิน') {
-        return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+            return redirect('/login')->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
         }
         $club = Club::findOrFail($club_id);
 
@@ -135,46 +135,45 @@ class AdminController extends Controller
             ]
         );
 
-        return view('admin_edit_member', compact('club', 'member', 'account' , 'user'));
+        return view('admin_edit_member', compact('club', 'member', 'account', 'user'));
     }
 
     public function updateMember(Request $request, $club_id, $member_id)
     {
-
-        $data = $request->validate([
-            'std_name' => 'nullable|string|max:255',
-            'std_id' => 'nullable|string|max:20',
-            'email' => 'nullable|email',
-            'password' => 'nullable|string|max:255',
-            'major' => 'nullable|string|max:50',
+        $request->validate([
+            'std_name' => 'required|string|max:255',
+            'std_id' => 'required|string|max:20',
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
             'year' => 'nullable|integer',
-            'role' => 'nullable|string',
-            'status' => 'nullable|string',
+            'major' => 'nullable|string|max:50',
         ]);
 
-        $member = Member::where('club_id', $club_id)
-            ->where('id', $member_id)
-            ->first();
 
-        $member->role = $data['role'] ?? $member->role;
-        $member->status = $data['status'] ?? $member->status;
-        $member->save();
-
+        $member = Member::findOrFail($member_id);
         $account = Account::where('std_id', $member->student_id)->first();
+
         if ($account) {
             $account->update([
-                'std_name' => $data['std_name'] ?? $account->std_name,
-                'email' => $data['email'] ?? $account->email,
-                'password' => $data['password'] ?? $account->password,
-                'major' => $data['major'] ?? $account->major,
-                'year' => $data['year'] ?? $account->year,
+                'std_name' => $request->std_name,
+                'std_id' => $request->std_id,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'major' => $request->major,
+                'year' => $request->year,
             ]);
         }
 
-        return redirect()->route('admin.members.edit', $club_id)
-            ->with('success', '✅ อัปเดตข้อมูลสมาชิกเรียบร้อยแล้ว');
+        $member->update([
+            'name' => $request->std_name,
+            'student_id' => $request->std_id,
+        ]);
 
+        return redirect()
+            ->route('admin.members.edit', $club_id)
+            ->with('success', '✅ อัปเดตข้อมูลสมาชิกเรียบร้อยแล้ว');
     }
+
     public function addMember(Request $request, $club_id)
     {
         $user = session('user');
