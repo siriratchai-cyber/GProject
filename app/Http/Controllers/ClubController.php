@@ -18,6 +18,7 @@ class ClubController extends Controller
         $clubs = Club::where('status', 'approved')->get();
         return view('cpclub', compact('clubs', 'user'));
     }
+    
 
     public function show($id)
     {
