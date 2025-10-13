@@ -119,7 +119,7 @@
         @foreach($upcomingActivities as $act)
           <div class="activity-item">
             @if($act->club)
-              <img src="{{ $act->club->image ? asset('storage/' . $act->club->image) : asset('default.jpg') }}" alt="">
+              <img src="{{ $act->club->image ? asset('storage/' . $act->club->image) : asset('default.jpg') }}" alt="" style="width:60px;height:60px;border-radius:50%;">
               <div class="activity-name">{{ $act->activity_name }}</div>
             @else
               <img src="{{ asset('default.jpg') }}" alt="">
@@ -127,8 +127,8 @@
             @endif
             <div>
               <b>{{ $act->club->name }}</b><br>
-              วันที่ {{ $activity->date }}<br>
-              เวลา {{ $act->time }} | {{ $act->location }}
+              วันที่ {{ \Carbon\Carbon::parse($act->date)->format('d F Y') }}<br>
+              เวลา {{ \Carbon\Carbon::createFromFormat('H:i:s', $act->time)->format('H:i') }} | {{ $act->location }}
             </div>
           </div>
         @endforeach

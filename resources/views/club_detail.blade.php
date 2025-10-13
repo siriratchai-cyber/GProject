@@ -80,7 +80,7 @@ Swal.fire({ icon:'error', title:'ไม่สำเร็จ!', text:"{{ implode
             <li>
               <div class="activity-item">
                 <strong>{{ $activity->activity_name }}</strong>
-                <📅>รายละเอียด : {{ $activity->description }} | 📅 {{ $activity->date }} | 🕒 {{ $activity->time }} | 📍 {{ $activity->location }}</📅>
+                <📅>รายละเอียด : {{ $activity->description }} | 📅 {{ \Carbon\Carbon::parse($activity->date)->format('d F Y') }} | 🕒 {{ \Carbon\Carbon::createFromFormat('H:i:s', $activity->time)->format('H:i') }} | 📍 {{ $activity->location }}</📅>
                 <hr>
               </div>
             </li>

@@ -7,6 +7,7 @@ use App\Models\Club;
 use App\Models\Member;
 use App\Models\Activity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
@@ -33,7 +34,7 @@ class UserController extends Controller
         $user->std_name = $request->std_name;
         $user->std_id = $request->std_id;
         $user->email = $request->email;
-        $user->password = $request->password;
+        $user->password = Hash::make($request->password);
         $user->major = $request->major;
         $user->year = $request->year;
         $user->role = 'นักศึกษา';
@@ -146,7 +147,7 @@ class UserController extends Controller
             return back()->with('error', 'ไม่พบรหัสนักศึกษานี้ในระบบ');
         }
 
-        $account->password = $request->new_password;
+        $account->password = Hash::make($request->new_password);
         $account->save();
 
         return redirect('/login')->with('success', 'เปลี่ยนรหัสผ่านสำเร็จ');
