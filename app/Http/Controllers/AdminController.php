@@ -48,8 +48,8 @@ class AdminController extends Controller
 
     public function rejectClub($id)
     {
-        $club = Club::find($id);
-        $club->delete();
+        Member::where('club_id', $id)->delete();
+        Club::destroy($id);
         return back()->with('success', '❌ ปฏิเสธคำขอสร้างชมรมแล้ว');
     }
 
@@ -93,9 +93,8 @@ class AdminController extends Controller
 
     public function destroyClub($id)
     {
-        $club = Club::findOrFail($id);
         Member::where('club_id', $id)->delete();
-        $club->delete();
+        Club::destroy($id);
 
         return redirect()->route('admin.dashboard')->with('success', 'ลบชมรมเรียบร้อยแล้ว');
     }

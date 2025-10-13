@@ -281,9 +281,7 @@ class ClubController extends Controller
 
     public function rejected($from, $id_club, $id_member)
     {
-        $member = Member::findOrFail($id_member);
-        $member->delete();
-
+        Member::destroy($id_member);
         return redirect()->route('requestToleader', ['from' => $from, 'id_club' => $id_club])
             ->with('success', 'ปฏิเสธคำร้องเรียบร้อยแล้ว');
     }
