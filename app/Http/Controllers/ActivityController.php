@@ -40,8 +40,7 @@ class ActivityController extends Controller
 
     public function deleteActivity($id_club, $id_activity)
     {
-        $activity = Activity::findOrFail($id_activity);
-        $activity->delete();
+        Activity::destroy($id_activity);
         return redirect()->route('showActivity', ['id_club' => $id_club])
             ->with('success', 'ลบกิจกรรมสำเร็จ');
     }
