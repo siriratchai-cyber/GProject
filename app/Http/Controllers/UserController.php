@@ -50,17 +50,14 @@ class UserController extends Controller
     }
 
     /**ตรวจสอบการเข้าสู่ระบบ */
-    public function checklogin(Request $request)
-    {
-        $user = Account::where('std_id', $request->std_id)
-            ->where('password', $request->password)
-            ->first();
-
-        if (!$user) {
-            return redirect('/login')->with('error', 'รหัสนักศึกษาหรือรหัสผ่านไม่ถูกต้อง');
-        }
-
-        session(['user' => $user]);
+    public function checklogin(Request $request) 
+    { 
+        $user = Account::where('std_id', $request->std_id)->first(); 
+        if (!$user || !Hash::check($request->password, $user->password)) 
+            { 
+                return redirect('/login')->with('error', 'รหัสนักศึกษาหรือรหัสผ่านไม่ถูกต้อง'); 
+            }
+        session(['user' => $user]); 
         return redirect('/homepage');
     }
 
