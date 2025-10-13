@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Club;
 use App\Models\Member;
-use App\Models\Account;
+use App\Models\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -29,7 +29,9 @@ class ClubController extends Controller
     public function showactivity($id, $std_id)
     {
         $club = Club::with('members', 'activities')->findOrFail($id);
-        $activities = $club->activities;
+        $activities = Activity::where('club_id', $club->id)
+            ->whereRaw("STR_TO_DATE(CONCAT(date, ' ', time), '%Y-%m-%d %H:%i:%s') >= NOW()")
+            ->orderBy('date', 'asc')->get();
         return view('club_detail', compact('club', 'activities', 'std_id'));
     }
 

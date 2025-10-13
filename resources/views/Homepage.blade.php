@@ -58,7 +58,7 @@
             <img src="{{ $act->club->image ? asset('storage/'.$act->club->image) : asset('default.jpg') }}" alt="club" style="width:40px;height:40px;border-radius:50%;">
             <div>
               <b>{{ $act->club->name }}</b><br>
-              วันที่ {{ \Carbon\Carbon::parse($act->date)->format('d F Y') }}<br>
+              วันที่ {{ $activity->date }}<br>
               เวลา {{ $act->time }} | {{ $act->location }}
             </div>
           </div>
