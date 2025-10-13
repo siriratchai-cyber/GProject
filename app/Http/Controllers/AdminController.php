@@ -26,7 +26,6 @@ class AdminController extends Controller
         return view('admin_dashboard', compact('clubs', 'user', 'pendingCount'));
     }
 
-
     public function requests()
     {
         $user = session('user');
